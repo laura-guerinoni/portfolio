@@ -662,6 +662,85 @@ document.addEventListener('DOMContentLoaded', function() {
     img.src = `assets/laine_${keyword}.png`;
   });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get references to elements
+    const video = document.getElementById('vr-video');
+    const videoContainer = document.getElementById('gif-container');
+    
+    // Create a placeholder dynamically and insert it
+    const placeholder = document.createElement('div');
+    placeholder.id = 'video-placeholder';
+    placeholder.className = 'gif-placeholder';
+    placeholder.textContent = 'Loading video...';
+    videoContainer.insertBefore(placeholder, video);
+    
+    // Initially hide the video
+    video.style.display = 'none';
+    
+    // Set the source attribute empty initially
+    const videoSource = video.querySelector('source');
+    const originalSrc = videoSource.getAttribute('src');
+    videoSource.setAttribute('src', '');
+    
+    // Create an observer with options
+    const options = {
+        root: null,
+        rootMargin: '50px', // Load when within 50px of viewport
+        threshold: 0.1
+    };
+    
+    // Lazy load function
+    const lazyLoadVideo = function(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !video.getAttribute('data-loaded')) {
+                video.setAttribute('data-loaded', 'true');
+                
+                // Set the original source back
+                videoSource.setAttribute('src', originalSrc);
+                
+                // Load the video
+                video.load();
+                
+                // Once the video can play, hide the placeholder and show the video
+                video.addEventListener('canplay', function onCanPlay() {
+                    placeholder.style.display = 'none';
+                    video.style.display = 'block';
+                    // Remove the event listener to avoid multiple calls
+                    video.removeEventListener('canplay', onCanPlay);
+                });
+                
+                // Handle errors
+                video.addEventListener('error', function() {
+                    console.error('Error loading video');
+                    placeholder.textContent = 'Error loading video. Page will reload to try again.';
+                    // Optional: add a reload button or automatic retry
+                });
+                
+                observer.unobserve(entry.target);
+            }
+        });
+    };
+    
+    // Create the observer
+    const observer = new IntersectionObserver(lazyLoadVideo, options);
+    
+    // Observe the container
+    observer.observe(videoContainer);
+    
+    // Fallback for older browsers that don't support IntersectionObserver
+    if (!('IntersectionObserver' in window)) {
+        // Set the source back immediately
+        videoSource.setAttribute('src', originalSrc);
+        video.load();
+        
+        video.addEventListener('canplay', function() {
+            placeholder.style.display = 'none';
+            video.style.display = 'block';
+        });
+    }
+});
     </script>
 </body>
 </html>
