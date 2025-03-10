@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enjoy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/laura.png" type="image/png">
+    <style>
+        body {
+            background-color: #FFF8E1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px;
+            height: 100%;
+            max-height: 100vh;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .left {
+            width: 43%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Changed to space-between */
+        }
+
+        .left-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        /* New header container styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* Reduced spacing */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;    
+            background-color: #fff;
+            margin-right: 15px;
+        }
+
+        .logo img {
+            height: 24px;
+            width: 24px;
+        }
+
+        /* Adjust h2 margin when in the header */
+        .header-container h2 {
+            margin: 0;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+        }
+        .author p {
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        .author img {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            margin-top: 62px;
+            transition: opacity 0.2s;
+            opacity: 0.7;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        .back-link img {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+        
+        .back-link p {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .gif-container {
+            margin-top: 20px; /* Consistent spacing */
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            border-radius: 8px;
+            max-width: 40%;
+            position: relative;
+        }
+        
+        .gif-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            color: #666;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .right {
+            background: white;
+            padding: 24px 24px;
+            border-radius: 8px;
+            box-shadow: #333333 -5px 5px, 
+            rgba(51, 51, 51, 0.3) -10px 10px, 
+            rgba(51, 51, 51, 0.2) -15px 15px;
+            width: 57%;
+            height: 90%;
+            overflow-y: auto; /* Only show scrollbar when needed */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .sections-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section {
+            padding: 0px 30px;
+        }
+
+        .skill-tag {
+    background-color: #F2F2F2; /* ✅ Default light gray */
+    padding: 0px 38px 0px 12px;
+    border-radius: 16px;
+    font-size: 16px;
+    white-space: nowrap;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+
+/* ✅ Add this hover effect */
+.skill-tag:hover {
+    background-color: #E0E0E0; /* Slightly darker gray */
+}
+
+        .skill-tag-icon {
+            position: absolute;
+            right: 13px; /* Icon on the right */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+        }
+
+        .floating-image {
+            position: fixed;
+            display: none;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            width: 500px;
+            max-width: 90vw;
+            z-index: 1000;
+            background-color: #ffffff; 
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .floating-image-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+        }
+            
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        h1 .tight-line {
+            line-height: 0.4;
+            display: block;
+        }
+
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        h4 {
+            display: inline-flex;
+            align-items: center;
+            color: #333;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.8;
+            font-family: 'Inter', sans-serif;
+            font-weight: 350;
+        }
+
+        /* Pretty scrollbar styling */
+        .right::-webkit-scrollbar {
+            width: 6px; /* Slimmer scrollbar */
+        }
+        
+        .right::-webkit-scrollbar-track {
+            background: transparent; /* Transparent track */
+            margin: 4px 0; /* Add some margin */
+        }
+        
+        .right::-webkit-scrollbar-thumb {
+            background: #E0E0E0; 
+            border-radius: 10px; /* Rounded corners */
+        }
+        
+        .right::-webkit-scrollbar-thumb:hover {
+            background: rgba(51, 51, 51, 0.3); /* Darker on hover */
+        }
+
+
+                /* Mobile styles */
+                @media (max-width: 768px) {
+            body {
+                overflow: auto;
+                height: auto;
+            }
+            
+            .container {
+                flex-direction: column;
+                padding: 20px;
+                height: auto;
+                max-height: none;
+            }
+            
+            .left, .right {
+                width: 100%;
+                height: auto;
+                max-height: none;
+            }
+            
+            .left {
+                margin-bottom: 30px;
+            }
+            
+            .right {
+                box-shadow: #333333 -3px 3px, 
+                rgba(51, 51, 51, 0.3) -6px 6px, 
+                rgba(51, 51, 51, 0.2) -9px 9px;
+            }
+            
+            .gif-container {
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 32px;
+                margin-top: 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            h3 {
+                font-size: 20px;
+            }
+            
+            .section {
+                padding: 0px 15px;
+                margin-bottom: 20px;
+            }
+            
+            .skill-tag {
+                display: inline-block;
+                margin-bottom: 5px;
+                font-size: 14px;
+            }
+            
+            .floating-image {
+                width: 85vw;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
+            
+            .back-link {
+                margin-top: 30px;
+                margin-bottom: 20px;
+            }
+            
+            .gif-placeholder {
+                height: 150px;
+            }
+        }
+        
+        /* Additional mobile optimization */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            p {
+                font-size: 14px;
+            }
+            
+            .section {
+                padding: 0px 10px;
+            }
+            
+            .skill-tag {
+                padding: 0px 34px 0px 10px;
+                font-size: 13px;
+            }
+            
+            .skill-tag-icon {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="left">
+            <div class="left-content">
+                <div class="header-container">
+                    <div class="logo">
+                        <img src="assets/logo_Enjoy.svg" alt="Enjoy Logo">
+                    </div>
+                    <h2>Enjoy</h2>
+                </div>
+
+                <h1>Sharing wheels, <br> reimagining freedom<span class="tight-line"></span></h1>
+
+                
+        
+                <div class="gif-container" id="gif-container">
+                    <video id="vr-video" autoplay loop muted playsinline style="max-width: 100%; border-radius: 8px; display: block;">
+                        <source src="assets/Enjoy.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+           <!-- <div class="author">
+                <p>Designed by Laura <img src="assets/laura.png" alt="Laura"></p>
+            </div> -->
+
+            <a href="landing-page-html.html" class="back-link">
+                <img src="assets/back.svg" alt="Back">
+                Back to other projects
+            </a>
+        </div>
+        <div class="right">
+            <div class="sections-wrapper">
+                <div class="section" id="section1">
+                    <h3>1. Research and findings</h3>
+                    <p>When evaluating the current Enjoy app, my colleagues and I carried out 
+                        an expert heuristic evaluation, followed by a moderated usability test, 
+                        to observe how the users completed a set of carefully chosen tasks. The <span class="skill-tag" data-keyword="collected_data">collected data<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> 
+                        was cleaned, organized, and clusterized in order to map it and extrapolate the main insights. Based on them, I formulated the 
+                        <span class="skill-tag" data-keyword="redesign_requirements">redesign requirements<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> to follow in the following stage of the project.</p>
+                </div>
+                <div class="section" id="section2">
+                    <h3>2. Prototyping and testing</h3>
+                    <p>After a closed card sorting and a Tree Test paved the path to an improved <span class="skill-tag" data-keyword="information_architecture">information architecture<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span>, a lo-fi prototype was designed. Through iterative user testing (moderated and <span class="skill-tag" data-keyword="heatmap_testing">heatmap testing<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span>), the
+                        <span class="skill-tag" data-keyword="design_system">design system<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> was polished and small changes led to the final prototype version.</p>
+                </div>
+                <div class="section" id="section3">
+                    <h3>3. Results and retrospective</h3>
+                    <p>Ultimately, a <span class="skill-tag" data-keyword="design_comparison">design comparison<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span>between the old and new version of the app was made, in which it is evident that the new one addresses and solves many of the initial issues. Speaking of <span class="skill-tag" data-keyword="KPIs">KPIs<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span>, the average completion time per task decreased by 66%, and the success rate raised to 100% from the original 85%.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Event listener for page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Force a refresh when page becomes visible again
+                window.location.reload(true);
+            }
+        });
+
+        // GIF loading handler
+        const gifImage = document.getElementById('Enjoy-gif');
+        const gifPlaceholder = document.getElementById('gif-placeholder');
+        
+        gifImage.onload = function() {
+            gifPlaceholder.style.display = 'none';
+            gifImage.style.display = 'block';
+        };
+        
+        gifImage.onerror = function() {
+            gifPlaceholder.textContent = 'Failed to load animation';
+        };
+
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.addEventListener('mouseenter', function(e) {
+                const keyword = this.dataset.keyword;
+                const keywordTitle = keyword.replace(/_/g, ' ').split(' ').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+                
+                // Remove any existing floating images
+                let existingImages = document.querySelectorAll('.floating-image');
+                existingImages.forEach(img => img.remove());
+                
+                // Create container
+                let container = document.createElement('div');
+                container.className = 'floating-image';
+                
+                // Create and add title
+                let title = document.createElement('div');
+                title.className = 'floating-image-title';
+                title.textContent = keywordTitle;
+                container.appendChild(title);
+                
+                // Create and add image
+                let img = document.createElement('img');
+                img.src = `assets/Enjoy_${keyword}.png`;
+                img.style.width = '100%';
+                img.style.display = 'block';
+                container.appendChild(img);
+                
+                // Position the container
+                const tagRect = this.getBoundingClientRect();
+                const containerWidth = 500;
+                const containerHeight = container.offsetHeight;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                // Calculate horizontal position
+                let left = tagRect.left + tagRect.width / 2 - containerWidth / 2;
+                left = Math.max(10, Math.min(left, windowWidth - containerWidth - 10));
+                
+                // Calculate vertical position
+                let top = tagRect.bottom + 10;
+                if (top + containerHeight > windowHeight) {
+                    top = tagRect.top - containerHeight - 10;
+                }
+                
+                container.style.left = `${left}px`;
+                container.style.top = `${top}px`;
+                
+                document.body.appendChild(container);
+                container.style.display = 'block';
+            });
+            
+            tag.addEventListener('mouseleave', function() {
+                let images = document.querySelectorAll('.floating-image');
+                images.forEach(img => img.remove());
+            });
+        });
+
+
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+    tag.addEventListener('mouseenter', function(e) {
+        const keyword = this.dataset.keyword;
+        const keywordTitle = keyword.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+
+        // Remove existing floating images
+        document.querySelectorAll('.floating-image').forEach(img => img.remove());
+
+        // Create floating image container
+        let container = document.createElement('div');
+        container.className = 'floating-image';
+
+        let title = document.createElement('div');
+        title.className = 'floating-image-title';
+        title.textContent = keywordTitle;
+        container.appendChild(title);
+
+        let img = document.createElement('img');
+        img.src = `assets/Enjoy_${keyword}.png`
+        img.style.width = '100%';
+        img.style.display = 'block';
+        container.appendChild(img);
+
+        document.body.appendChild(container);
+        container.style.display = 'block';
+
+        // Positioning logic
+        const tagRect = this.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        let top = tagRect.bottom + 10;
+        let left = tagRect.left + (tagRect.width / 2) - (containerRect.width / 2);
+
+        // Prevent overflow at the bottom
+        if (top + containerRect.height > windowHeight) {
+            top = tagRect.top - containerRect.height - 10;
+        }
+
+        // Prevent overflow at the top
+        if (top < 0) {
+            top = tagRect.top + (tagRect.height / 2) - (containerRect.height / 2);
+            left = tagRect.right + 10;
+
+            // Prevent overflow on the right
+            if (left + containerRect.width > windowWidth) {
+                left = tagRect.left - containerRect.width - 10;
+            }
+        }
+
+        // Final adjustments to ensure it's inside the viewport
+        container.style.left = `${Math.max(10, Math.min(left, windowWidth - containerRect.width - 10))}px`;
+        container.style.top = `${Math.max(10, Math.min(top, windowHeight - containerRect.height - 10))}px`;
+    });
+
+    tag.addEventListener('mouseleave', function() {
+        document.querySelectorAll('.floating-image').forEach(img => img.remove());
+    });
+});
+
+// Add this code to the existing JavaScript section
+document.querySelectorAll('.skill-tag').forEach(tag => {
+    // Track if the tag is active
+    tag.isActive = false;
+    
+    // Add click event listener for mobile/touch devices
+    tag.addEventListener('click', function(e) {
+        const keyword = this.dataset.keyword;
+        
+        // If tag is already active, hide the image and reset
+        if (this.isActive) {
+            document.querySelectorAll('.floating-image').forEach(img => img.remove());
+            this.style.backgroundColor = '#F2F2F2'; // Reset to default color
+            this.isActive = false;
+        } else {
+            // First click - show the image and set active state
+            this.isActive = true;
+            this.style.backgroundColor = '#E0E0E0'; // Darker shade
+            
+            // Remove any existing floating images
+            document.querySelectorAll('.floating-image').forEach(img => img.remove());
+            
+            // Create and display the floating image (same as in mouseenter)
+            const keywordTitle = keyword.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+            
+            let container = document.createElement('div');
+            container.className = 'floating-image';
+            
+            let title = document.createElement('div');
+            title.className = 'floating-image-title';
+            title.textContent = keywordTitle;
+            container.appendChild(title);
+            
+            let img = document.createElement('img');
+            img.src = `assets/Enjoy_${keyword}.png`;
+            img.style.width = '100%';
+            img.style.display = 'block';
+            container.appendChild(img);
+            
+            document.body.appendChild(container);
+            container.style.display = 'block';
+            
+            // Position the container for mobile
+            const tagRect = this.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // Mobile positioning logic
+            if (window.innerWidth <= 768) {
+                container.style.left = '50%';
+                container.style.transform = 'translateX(-50%)';
+                container.style.top = `${tagRect.bottom + 10}px`;
+                
+                // If it would go off the bottom, position it at the bottom of the viewport
+                if (tagRect.bottom + 10 + containerRect.height > windowHeight) {
+                    container.style.top = `${windowHeight - containerRect.height - 10}px`;
+                }
+            } else {
+                // For larger screens, use the existing positioning logic
+                let top = tagRect.bottom + 10;
+                let left = tagRect.left + (tagRect.width / 2) - (containerRect.width / 2);
+                
+                // Prevent overflow
+                if (top + containerRect.height > windowHeight) {
+                    top = tagRect.top - containerRect.height - 10;
+                }
+                
+                container.style.left = `${Math.max(10, Math.min(left, windowWidth - containerRect.width - 10))}px`;
+                container.style.top = `${Math.max(10, Math.min(top, windowHeight - containerRect.height - 10))}px`;
+            }
+        }
+    });
+    
+    // Reset active state when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.skill-tag') && !e.target.closest('.floating-image')) {
+            document.querySelectorAll('.skill-tag').forEach(t => {
+                t.isActive = false;
+                t.style.backgroundColor = '#F2F2F2'; // Reset to default color
+            });
+            document.querySelectorAll('.floating-image').forEach(img => img.remove());
+        }
+    });
+});
+
+
+// Add this to your existing script
+document.addEventListener('DOMContentLoaded', function() {
+  // Preload all potential images
+  document.querySelectorAll('.skill-tag').forEach(tag => {
+    const keyword = tag.dataset.keyword;
+    const img = new Image();
+    img.src = `assets/Enjoy_${keyword}.png`;
+  });
+});
+    </script>
+</body>
+</html>

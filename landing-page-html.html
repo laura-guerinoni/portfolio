@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laura Guerinoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/laura.png" type="image/png">
+    <style>
+        /* Add these styles to reduce spacing and handle new elements */
+        .section-header {
+        }
+        
+        .project-content p {
+            margin-bottom: 64px;
+        }
+        
+        .skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px; /* Same spacing as from title to content */
+    margin-bottom: 32px; /* Same spacing before the gif */
+}
+        
+        .skill-tag {
+            background-color: rgba(0, 0, 0, 0.08);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            white-space: nowrap;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+        
+        .project-gif {
+            width: 100%;
+            margin-top: 68px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+        }
+        
+        .project-gif img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .deep-dive-link {
+            display: inline-flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            margin-top: 62px;
+            transition: opacity 0.2s;
+            opacity: 0.7;
+        }
+        
+        p {
+    font-size: 28px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    max-width: 600px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 350;
+}
+
+        
+        .deep-dive-link:hover {
+            opacity: 1;
+        }
+        
+        .deep-dive-link svg {
+            margin-left: 6px;
+            height: 16px;
+            width: 16px;
+        }
+        
+        .morphing-tag {
+    position: relative;
+    display: inline-block;
+    height: 1.15em; /* Match the line height */
+    width: max-content; /* Adjust width to content */
+    background-color: transparent;
+    z-index: 1; 
+}
+
+.morphing-word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.morphing-word .word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    filter: blur(1em);
+    transition: opacity 0.3s, filter 0.3s;
+}
+
+.morphing-word .word:first-child {
+    opacity: 1;
+    filter: blur(0);
+}
+
+.morphing-word .word:nth-child(1) {
+    color: black;
+}
+
+.morphing-word .word:nth-child(2) {
+    color: red;
+}
+
+@keyframes morphing-animation {
+    0%, 10%, 90%, 100% { 
+        opacity: 1; 
+        filter: blur(0); 
+    }        
+    25%, 75% { 
+        opacity: 0; 
+        filter: blur(1em); 
+    }        
+}
+
+.morphing-sequence {
+    animation: morphing-animation 8s infinite ease-in-out;
+}
+
+.morphing-sequence:nth-child(2) {
+    animation-delay: -2s;
+}
+
+.morphing-sequence:nth-child(1) {
+    animation-delay: +2s;
+}
+      
+.morphing-word .word:nth-child(1) {
+    color: black;
+}
+
+
+.morphing-word .word:nth-child(2) {
+    color: #333;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    /* letter-spacing: 0.05em;  Extra spacing */
+    font-style: italic;
+
+}
+
+.morphing-sequence:nth-child(1) .word:first-child {
+    color: black;
+}
+
+.morphing-sequence:nth-child(1) .word:last-child {
+    color: #333;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    /* letter-spacing: 0.05em;  Extra spacing */
+    font-style: italic;
+
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    #laura-icon {
+        display: none;
+        visibility: hidden;
+        width: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .sidebar {
+        position: static;
+        transform: none;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        gap: 15px;
+        padding-top: 60px;
+        left: 0;
+        top: 80px;
+        background-color: transparent; /* Remove grey background */
+        box-shadow: none;
+    }
+
+    .icon {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+
+    }
+
+    .icon:hover {
+        width: 40px;
+        padding: 0;
+        background-color: transparent;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .icon-text {
+        display: none;
+    }
+
+    .main-content {
+        position: static;
+        transform: none;
+        margin-bottom: 40px;
+        padding: 5vh 40px;
+        margin-right: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 600px; /* Ensure content is centered and not overflowing */
+        margin-left: 20;
+        margin-right: 20;
+        width: calc(100% - 40px - 5vh); /* Subtract margins from width */
+        text-align: left; /* Ensures text is left-aligned */
+    }
+
+    h1 {
+        font-size: 36px;
+        margin-bottom: 24px;
+        text-align: left; /* Ensures text is left-aligned */
+    }
+
+    p {
+        font-size: 20px;
+        text-align: left;
+        width: 100%; /* Ensure paragraphs use full width */
+    }
+
+    .buttons {
+        flex-direction: row; /* Keep buttons on same line */
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        width: 100%; /* Use full width */
+        font-size: 16px;
+    }
+
+    .button {
+        flex-grow: 0; /* Prevent buttons from expanding */
+        width: auto; /* Allow natural width */
+        max-width: none; /* Remove max-width restriction */
+    }
+
+    .primary-button {
+        min-width: 0; /* Remove minimum width */
+    }
+
+    .projects-container {
+        margin-top: 0;
+    }
+
+    .project-section {
+        padding: 5vh 20px;
+    }
+
+    .project-content-wrapper {
+        padding: 0 20px;
+    }
+
+
+    .section-header {
+        flex-direction: row; /* Ensure icon and title are on same line */
+        align-items: center;
+        text-align: left;
+        margin-bottom: 20px;
+        justify-content: flex-start; /* Left align */
+    }
+
+    .section-icon {
+        margin-right: 16px;
+        margin-bottom: 0;
+    }
+
+    .skills-tags {
+        justify-content: flex-start; /* Left align skill tags */
+        flex-wrap: wrap;
+    }
+
+
+      /* Center icon-letter within the icon with even padding */
+      .icon-letter, .icon-laura {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Ensure icon remains centered before and after click */
+    .sidebar .icon {
+        justify-content: center;
+    }
+
+    /* Reduce button font size by 25% */
+    .buttons .button {
+        font-size: 16px; /* 18px * 0.75 */
+        padding: 9px 18px; /* Proportionally reduced */
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#main-anchor" class="icon introduction-icon" id="laura-icon">
+            <span class="icon-laura">
+            <img src="assets/laura.png" alt="Icon" width="24" height="24" class="icon-laura"></span>
+            <span class="icon-text">Laura</span>
+        </a>
+        <a href="#lite-tone" class="icon meta-icon" id="lite-tone-icon">
+            <span class="icon-letter">
+                <img src="assets/logo_lite_tone.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">Lite-Tone</span>
+        </a>
+        <a href="#laine" class="icon google-icon" id="laine-icon">
+            <span class="icon-letter">
+            <img src="assets/logo_laine.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">Laine</span>
+        </a>
+        <a href="#inviso" class="icon product-hunt-icon" id="inviso-icon">
+            <span class="icon-letter">
+                <img src="assets/logo_inviso.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">Inviso</span>
+        </a>
+        <a href="#enjoy" class="icon bookmark-icon" id="enjoy-icon">
+            <span class="icon-letter">
+                <img src="assets/logo_enjoy.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">Enjoy</span>
+        </a>
+        <a href="#vr-training" class="icon chat-icon" id="vr-training-icon">
+            <span class="icon-letter">
+                <img src="assets/logo_vr.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">VR Training</span>
+        </a>
+        <a href="#pet-in-a-pot" class="icon other-icon" id="pet-in-a-pot-icon">
+            <span class="icon-letter">
+                <img src="assets/logo_pip.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
+            <span class="icon-text">Pet in a Pot</span>
+        </a>
+    </div>
+
+    <!-- Invisible anchor point at the top of the page -->
+    <div id="main-anchor"></div>
+
+    <div id="main" class="main-content">
+        <h1>Hey, I'm Laura.</h1>
+        
+        <p>I think design is a conversation, I make sure it speaks the
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="word morphing-sequence">human</span>
+                    <span class="word morphing-sequence"> ··user··</span>
+                </span>
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&thinsp;&thinsp; language.</p>
+        
+        <p>Because ultimately, understanding and being understood is all
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="word morphing-sequence">people</span>
+                    <span class="word morphing-sequence"> ·users·</span>
+                </span>
+            </span> 
+            &ensp;&ensp;&ensp;&thinsp;&thinsp;&thinsp;&nbsp;&nbsp;&nbsp; want from you.</p>
+        
+           <!-- <p>I think design is a conversation, I make sure it speaks 
+                <span class="morphing-tag">
+                    <span class="morphing-word">
+                        <span class="word morphing-sequence">human</span>
+                        <span class="word morphing-sequence"> **user</span>
+                    </span>
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&thinsp;&thinsp; .</p>
+            
+            <p>Because ultimately, understanding and being understood is all
+                <span class="morphing-tag">
+                    <span class="morphing-word">
+                        <span class="word morphing-sequence">people</span>
+                        <span class="word morphing-sequence"> *users</span>
+                    </span>
+                </span> 
+                &ensp;&ensp;&ensp;&thinsp;&thinsp;&thinsp;&nbsp;&nbsp;&nbsp; want from you.</p> -->
+
+        <!-- 
+        
+        <p>I think design is a conversation, I make sure <br> it speaks 
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="word morphing-sequence">human</span>
+                    <span class="word morphing-sequence">user</span>
+                </span>
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; —ultimately, understanding and being understood is all
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="word morphing-sequence">people</span>
+                    <span class="word morphing-sequence">users</span>
+                </span>
+            </span> 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; want.</p>
+        
+        --> 
+        
+        <div class="buttons">
+            <button class="button primary-button" id="copyEmailBtn">Copy my Email</button>
+            <div class="dropdown">
+                <button class="button secondary-button" onclick="toggleDropdown()">
+                    Download <img src="assets/chevron_down.svg" alt="Chevron Down" width="16" height="16" style="margin-left: 5px;">
+                </button>
+                <div id="downloadDropdown" class="dropdown-menu">
+                    <a href="laura_guerinoni_resume.pdf" download class="dropdown-item" onclick="showDownloadFeedback('Resume')">
+                        <img src="assets/doc-icon.svg" alt="Resume" width="24" height="24" style="margin-right: 8px;"> 
+                        Resume
+                    </a>
+                    <a href="laura_guerinoni_portfolio.pdf" download class="dropdown-item" onclick="showDownloadFeedback('Portfolio')">
+                        <img src="assets/portfolio-icon.svg" alt="Portfolio" width="24" height="24" style="margin-right: 8px;"> 
+                        Portfolio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Project sections -->
+    <div class="projects-container">
+
+
+        
+
+
+                <!-- Lite-Tone Project Section -->
+<div id="lite-tone" class="project-section">
+    <div class="project-content-wrapper">
+        <div class="section-header">
+            <div class="section-icon lite-tone-icon">
+                <img src="assets/logo_lite_tone.svg" alt="Lite-Tone Icon">
+            </div>
+            <h2 class="project-title">Lite-Tone</h2> <span class="project-year-tag"> (2025) </span></h2>
+        </div>
+        <h3 class="project-subtitle">Optimizing software spend with financial SaaS</h3>
+        <div class="project-content">
+
+            <div class="skills-tags">
+                <span class="skill-tag">User research</span>
+                <span class="skill-tag">User interface</span>
+                <span class="skill-tag">Design system</span>
+                <span class="skill-tag">Prototyping</span>
+                <span class="skill-tag">Figma</span>
+                <span class="skill-tag">Problem solving</span>
+                <span class="skill-tag">Design requirements</span>
+                <span class="skill-tag">Minimalism</span>
+            </div>
+
+            <p>This SaaS exploration is a personal project I pursued during downtime while working on Laine for Bain & Company. I challenged myself to develop a fast, effective solution to a major business issue: software spending and reliable invoice matching—all within a limited timeframe.</p>
+            
+            <div class="project-gif">
+                <video autoplay loop muted playsinline src="assets/lite-tone.mp4" alt="Lite-Tone Project Demo"></video>
+            </div>
+            
+            <!-- <a href="lite-tone-deep-dive.html" class="deep-dive-link">
+                View project deep-dive
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </a>-->
+        </div>
+    </div>
+</div>
+
+        <!-- Laine Project Section -->
+        <div id="laine" class="project-section">
+            <div class="project-content-wrapper">
+                <div class="section-header">
+                    <div class="section-icon laine-icon">
+                        <img src="assets/logo_laine.svg" alt="Laine Icon">
+                    </div>
+                    <h2 class="project-title">Laine</h2> <span class="project-year-tag"> (2024-2025) </span></h2>
+                    
+                    </div>
+                    <h3 class="project-subtitle">AI-powered marketing SaaS at Bain & Company</h3>
+
+                <div class="project-content">
+
+
+                    <div class="skills-tags">
+                        <span class="skill-tag">Research & Development </span>
+                        <span class="skill-tag">Branding</span>
+                        <span class="skill-tag">Information architecture</span>
+                        <span class="skill-tag">UI</span>
+                        <span class="skill-tag">Prototyping</span>
+                        <span class="skill-tag">Supervising devs</span>
+                        <span class="skill-tag">User testing</span>
+                        <span class="skill-tag">Webflow website</span>
+                    </div>
+
+                    <p>This AI-driven B2B platform helps businesses optimize growth strategies. Developed in Bain & Company's startup incubator, it delivers real-time, actionable insights across marketing, profitability, sales, and customer lifecycle. Unlike traditional tools, Laine automates implementation and continuously refines strategies to drive business growth.</p>
+                    
+                    
+                    
+                    <div class="project-gif">
+                        <video autoplay loop muted playsinline src="assets/laine.mp4" alt="Lite-Tone Project Demo"></video>
+                    </div>
+                    
+                    <a href="laine-deep-dive.html" class="deep-dive-link">
+                        View project deep-dive
+                        <img src="assets/right.svg" alt="Back">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        
+
+        <!-- Inviso Project Section -->
+        <div id="inviso" class="project-section">
+            <div class="project-content-wrapper">
+                <div class="section-header">
+                    <div class="section-icon inviso-icon">
+                        <img src="assets/logo_inviso.svg" alt="Inviso Icon">
+                    </div>
+                    <h2 class="project-title">Inviso</h2> <span class="project-year-tag"> (2023) </span></h2>
+                </div>
+                <h3 class="project-subtitle">Design of an AI data visualization tool</h3>
+                <div class="project-content">
+
+                    <div class="skills-tags">
+                        <span class="skill-tag">Context analysis</span>
+                        <span class="skill-tag">Benchmarking</span>
+                        <span class="skill-tag">User stories</span>
+                        <span class="skill-tag">Offering map</span>
+                        <span class="skill-tag">Information architecture</span>
+                        <span class="skill-tag">UI & prototyping</span>
+                        <span class="skill-tag">User testing</span>
+                    </div>
+
+                    <p>This dashboard for the British Museum combines in-house, digital initiatives, and external data to facilitate strategic operations with AI. It assists managers, financial and marketing departments by predicting future trends, highlighting potential target groups, audience opinions, demographics, and inspiring smarter content delivery.</p>
+                    
+
+                    
+                    <div class="project-gif">
+                        <video autoplay loop muted playsinline src="assets/inviso.mp4" alt="Lite-Tone Project Demo"></video>
+                    </div>
+                    
+                    <a href="inviso-deep-dive.html" class="deep-dive-link">
+                        View project deep-dive
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enjoy Project Section -->
+        <div id="enjoy" class="project-section">
+            <div class="project-content-wrapper">
+                <div class="section-header">
+                    <div class="section-icon enjoy-icon">
+                        <img src="assets/logo_enjoy.svg" alt="Enjoy Icon">
+                    </div>
+                    <h2 class="project-title">Enjoy</h2> <span class="project-year-tag"> (2023) </span></h2>
+                </div>
+                <h3 class="project-subtitle">Redesigning the Italian car sharing experience</h3>
+
+
+                
+                <div class="project-content">
+
+
+                    <div class="skills-tags">
+                        <span class="skill-tag">Heuristic evaluation</span>
+                        <span class="skill-tag">Redesign requirements</span>
+                        <span class="skill-tag">Information architecture</span>
+                        <span class="skill-tag">App features selection</span>
+                        <span class="skill-tag">UX</span>
+                        <span class="skill-tag">UI</span>
+                        <span class="skill-tag">Moderated usability testing</span>
+
+
+                    </div>
+                    
+
+                    <p>Enjoy is a well-known Italian car-sharing service providing cars across major Italian cities. Despite popularity, its ratings aren't the best. This case study project aimed to understand system issues by listening to users and designing a smoother, more enjoyable experience by targeting the app's most problematic aspects based on user insights.</p>
+                    
+
+                    <div class="project-gif">
+                        <video autoplay loop muted playsinline src="assets/enjoy.mp4" alt="Lite-Tone Project Demo"></video>
+                    </div>
+                    
+                    <a href="enjoy-deep-dive.html" class="deep-dive-link">
+                        View project deep-dive
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- VR Training Project Section -->
+        <div id="vr-training" class="project-section">
+            <div class="project-content-wrapper">
+                <div class="section-header">
+                    <div class="section-icon vr-icon">
+                        <img src="assets/logo_vr.svg" alt="VR Training Icon">
+                    </div>
+                    <h2 class="project-title">VR Biofeedback Training</h2> <span class="project-year-tag"> (2022) </span></h2>
+
+                </div>
+                <h3 class="project-subtitle">Maximising shooting athletes trainings</h3>
+                <div class="project-content">
+
+                    <div class="skills-tags">
+                        <span class="skill-tag">Literature research</span>
+                        <span class="skill-tag">Concept definition</span>
+                        <span class="skill-tag">Information architecture</span>
+                        <span class="skill-tag">Wireframes</span>
+                        <span class="skill-tag">Unity development</span>
+                        <span class="skill-tag">Bug fixing</span>
+                        <span class="skill-tag">Bitalino</span>
+                        <span class="skill-tag">Testing</span>
+                    </div>
+
+                    <p>This cost-effective, man-machine digital interface improves shooting athletes' training. VR training isn't new for armed forces, and that knowledge opens new frontiers for shooting athletes, especially combined with biofeedback. The developed virtual reality application integrates shooters' electrodermal activity via sensors to help athletes improve focus and performance.
+                    </p>
+                    
+
+                    
+                    <div class="project-gif">
+                       <!-- <img src="assets/vr-training.gif" alt="VR Training Project Demo"> -->
+                       <video autoplay loop muted playsinline src="assets/vr-training.mp4" alt="Lite-Tone Project Demo"></video>
+
+                    </div>
+                    
+                    <a href="vr-training-deep-dive.html" class="deep-dive-link">
+                        View project deep-dive
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pet in a Pot Project Section -->
+        <div id="pet-in-a-pot" class="project-section">
+            <div class="project-content-wrapper">
+                <div class="section-header">
+                    <div class="section-icon pip-icon">
+                        <img src="assets/logo_pip.svg" alt="Pet in a Pot Icon">
+                    </div>
+                    <h2 class="project-title">Pet in a Pot</h2> <span class="project-year-tag"> (2022) </span></h2>
+                </div>
+                <h3 class="project-subtitle">Designing an IoT plant vase and mobile app</h3>
+                <div class="project-content">
+
+                    <div class="skills-tags">
+                        <span class="skill-tag">Context analysis</span>
+                        <span class="skill-tag">Idea development</span>
+                        <span class="skill-tag">Benchmarking</span>
+                        <span class="skill-tag">Code architecture</span>
+                        <span class="skill-tag">User experience</span>
+                        <span class="skill-tag">Prototype design</span>
+                    </div>
+
+                    <p>Pet in a Pot is a plant brand with an innovative product: an interactive vase connected to an app teaching people plant care by monitoring conditions and needs. The vase detects people and communicates through cute eyes. The app sends reminders. Its mission educates on proper plant care while raising environmental awareness.
+                    </p>
+                    
+
+                    
+                    <div class="project-gif">
+                        <video autoplay loop muted playsinline src="assets/pet-in-a-pot.mp4" alt="Lite-Tone Project Demo"></video>
+                    </div>
+                    
+                    <a href="pet-in-a-pot-deep-dive.html" class="deep-dive-link">
+                        View project deep-dive
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification element -->
+    <div id="notification" class="notification">
+        <span id="notification-text">Download in progress</span>
+    </div>
+
+    <script>
+        // Function to toggle dropdown
+        function toggleDropdown() {
+            document.getElementById("downloadDropdown").classList.toggle("show");
+        }
+        
+        // Close the dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.secondary-button')) {
+                var dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // Function to show feedback notification
+        function showDownloadFeedback(fileType) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = "Download in progress";
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to check which section is currently in view
+        function getActiveSection() {
+    const scrollPosition = window.scrollY;
+    const sections = [
+        { id: 'main', element: document.querySelector('.main-content') },
+        { id: 'lite-tone', element: document.getElementById('lite-tone') },  // This was missing
+        { id: 'laine', element: document.getElementById('laine') },
+        { id: 'inviso', element: document.getElementById('inviso') },
+        { id: 'enjoy', element: document.getElementById('enjoy') },
+        { id: 'vr-training', element: document.getElementById('vr-training') },
+        { id: 'pet-in-a-pot', element: document.getElementById('pet-in-a-pot') }
+    ];
+            
+            // Check if we're in the main section or get the current section in view
+            if (scrollPosition < sections[1].element.offsetTop - 100) {
+                return 'main';
+            }
+            
+            // Find which section we're in
+            for (let i = 1; i < sections.length - 1; i++) {
+                if (scrollPosition >= sections[i].element.offsetTop - 100 && 
+                    scrollPosition < sections[i + 1].element.offsetTop - 100) {
+                    return sections[i].id;
+                }
+            }
+            
+            // If we're past the second to last section, we must be in the last one
+            return sections[sections.length - 1].id;
+        }
+        
+        // Function to update sidebar active state
+        function updateSidebarActiveState() {
+            const activeSection = getActiveSection();
+            
+            // Remove active class from all icons
+            document.querySelectorAll('.sidebar .icon').forEach(icon => {
+                icon.classList.remove('active');
+            });
+            
+            // Add active class to current section icon
+            if (activeSection !== 'main') {
+                const activeIcon = document.getElementById(activeSection + '-icon');
+                if (activeIcon) {
+                    activeIcon.classList.add('active');
+                }
+            }
+            
+            // Handle Laura icon visibility
+            const lauraIcon = document.getElementById('laura-icon');
+            if (activeSection === 'main') {
+                lauraIcon.classList.remove('visible');
+                // Use setTimeout to match the transition duration
+                setTimeout(() => {
+                    if (!lauraIcon.classList.contains('visible')) {
+                        lauraIcon.style.visibility = 'hidden';
+                    }
+                }, 500);
+            } else {
+                // Make sure it's displayed before we start the opacity transition
+                lauraIcon.style.visibility = 'visible';
+                // Force a reflow
+                lauraIcon.offsetHeight;
+                // Then add visible class
+                lauraIcon.classList.add('visible');
+            }
+        }
+        
+        // Add scroll event listener
+        window.addEventListener('scroll', updateSidebarActiveState);
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSidebarActiveState();
+            
+            // Copy email button functionality
+            document.getElementById('copyEmailBtn').addEventListener('click', function() {
+                navigator.clipboard.writeText('lau.guerinoni@gmail.com')
+                    .then(() => {
+                        const notification = document.getElementById('notification');
+                        const notificationText = document.getElementById('notification-text');
+                        
+                        notificationText.textContent = "Email copied";
+                        notification.classList.add('show');
+                        
+                        // Hide notification after 3 seconds
+                        setTimeout(() => {
+                            notification.classList.remove('show');
+                        }, 3000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+            });
+        });
+        
+        // Improved smooth scrolling for anchor links with perfect alignment
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // Special case for Laura icon - scroll to top
+                    if (targetId === '#main-anchor') {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        // Calculate exact position to ensure perfect alignment
+                        // Subtracting 1px to ensure we don't see the section above
+                        const offsetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - 1;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
