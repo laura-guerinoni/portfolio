@@ -451,19 +451,6 @@
             }
         });
 
-        // GIF loading handler
-        const gifImage = document.getElementById('Inviso-gif');
-        const gifPlaceholder = document.getElementById('gif-placeholder');
-        
-        gifImage.onload = function() {
-            gifPlaceholder.style.display = 'none';
-            gifImage.style.display = 'block';
-        };
-        
-        gifImage.onerror = function() {
-            gifPlaceholder.textContent = 'Failed to load animation';
-        };
-
         document.querySelectorAll('.skill-tag').forEach(tag => {
             tag.addEventListener('mouseenter', function(e) {
                 const keyword = this.dataset.keyword;
