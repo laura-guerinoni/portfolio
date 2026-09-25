@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Laura Guerinoni</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@350;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="assets/laura.png" type="image/png">
@@ -88,20 +88,24 @@
            MORPHING TAG — normal-flow box + absolutely-positioned overlay.
 
            - .word-primary ("human"/"people") is a NORMAL inline-block
-             child, sitting in the real document flow, with font-weight
-             pinned to match the surrounding paragraph text (350,
-             not italic) — so it never renders bolder than the rest
-             of the sentence.
+             child, sitting in the real document flow, at the SAME
+             light weight (350) as the rest of the paragraph — this
+             now actually works because the Inter font is loaded at
+             both weight 350 and weight 500 above; previously only
+             500 was loaded, so requesting 350 anywhere silently
+             rendered as 500 (the only weight the browser had).
            - .word-alt-wrap (the highlighted "user"/"users") is
-             absolutely positioned to exactly fill that same box.
+             absolutely positioned to exactly fill that same box, at
+             weight 500 italic — now visibly distinct from the body
+             text and from "human"/"people".
            - No left padding: the highlight starts flush at the very
-             first letter, same as the word itself, so "user" and
-             "users" both start at the same left edge and only differ
-             in how much empty highlighted space trails on the right.
+             first letter, so "user" and "users" both start at the
+             same left edge and only differ in how much empty
+             highlighted space trails on the right.
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #F2A97A; /* apricot orange */
+            --highlight-color: #EEC090; /* apricot orange */
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -109,6 +113,7 @@
 
         .word-primary {
             color: black;
+            font-family: 'Inter', sans-serif;
             font-weight: 350;
             font-style: normal;
             white-space: nowrap;
