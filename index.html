@@ -85,35 +85,80 @@
         }
         
         /* ============================================================
-           MORPHING TAG — rebuilt as a JS text-swap instead of a
-           two-word stacked box.
+           MORPHING TAG — fixed-width box, pure CSS crossfade.
 
-           Why: stacking both words in one grid/box forces the box to
-           be as wide as the LONGER word, so when the SHORTER word
-           displays there's leftover empty space before the next bit
-           of the sentence — that's exactly the big gap you saw before
-           "language." and "want". Swapping the text content directly
-           means the element is only ever as wide as whichever word is
-           currently showing, so there's never leftover space, in any
-           browser.
+           - The box's width/height is set by "human"/"people" (the
+             longer words), since those are laid out normally as the
+             grid's implicit sizing reference (first child, un-padded
+             content sets the track size; both words + the highlight
+             share the same grid cell so they never shift "language."
+             or "want" left/right).
+           - "user"/"users" occupy that exact same box (grid-area:
+             stack, stretch), so they never make the box shrink.
+           - A highlight pill (.morph-highlight) also fills that exact
+             box and fades in/out in sync with "user"/"users", so the
+             leftover space around the shorter word reads as a tag,
+             not a glitch.
+           - Pure CSS keyframes (no JS timers) = no drift, no reflow.
            ============================================================ */
 
         .morphing-tag {
-            display: inline-block;
-            color: black;
-            transition: opacity 0.35s ease, filter 0.35s ease;
+            display: inline-grid;
+            vertical-align: baseline;
         }
 
-        .morphing-tag.is-swapping {
+        .morphing-word {
+            display: grid;
+            grid-template-areas: "stack";
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .morph-highlight {
+            grid-area: stack;
+            align-self: stretch;
+            justify-self: stretch;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.08);
             opacity: 0;
-            filter: blur(0.6em);
+            animation: morph-highlight-fade 8s infinite ease-in-out;
         }
 
-        .morphing-tag.is-alt {
+        .morphing-word .word {
+            grid-area: stack;
+            align-self: center;
+            justify-self: start;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .word-primary {
+            color: black;
+            animation: morph-fade-primary 8s infinite ease-in-out;
+        }
+
+        .word-alt {
             color: #333;
             font-family: 'Inter', sans-serif;
             font-weight: 500;
             font-style: italic;
+            justify-self: center;
+            animation: morph-fade-alt 8s infinite ease-in-out;
+        }
+
+        @keyframes morph-fade-primary {
+            0%, 10%, 90%, 100% { opacity: 1; filter: blur(0); }
+            25%, 75% { opacity: 0; filter: blur(1em); }
+        }
+
+        @keyframes morph-fade-alt {
+            0%, 10%, 90%, 100% { opacity: 0; filter: blur(1em); }
+            25%, 75% { opacity: 1; filter: blur(0); }
+        }
+
+        @keyframes morph-highlight-fade {
+            0%, 10%, 90%, 100% { opacity: 0; }
+            25%, 75% { opacity: 1; }
         }
 
 @media (max-width: 768px) {
@@ -310,30 +355,30 @@
         <h1>Hey, I'm Laura.</h1>
         
         <p>I think design is a conversation, I make sure it speaks the
-            <span class="morphing-tag" data-words="human,user">human</span>
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="morph-highlight"></span>
+                    <span class="word word-primary">human</span>
+                    <span class="word word-alt">user</span>
+                </span>
+            </span>
             language.</p>
         
         <p>Because ultimately, understanding and being understood is all
-            <span class="morphing-tag" data-words="people,users">people</span>
+            <span class="morphing-tag">
+                <span class="morphing-word">
+                    <span class="morph-highlight"></span>
+                    <span class="word word-primary">people</span>
+                    <span class="word word-alt">users</span>
+                </span>
+            </span> 
             want from you.</p>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">Copy my Email</button>
-            <div class="dropdown">
-                <button class="button secondary-button" onclick="toggleDropdown()">
-                    Download <img src="assets/chevron_down.svg" alt="Chevron Down" width="16" height="16" style="margin-left: 5px;">
-                </button>
-                <div id="downloadDropdown" class="dropdown-menu">
-                    <a href="laura_guerinoni_resume.pdf" download class="dropdown-item" onclick="showDownloadFeedback('Resume')">
-                        <img src="assets/doc-icon.svg" alt="Resume" width="24" height="24" style="margin-right: 8px;"> 
-                        Resume
-                    </a>
-                    <a href="laura_guerinoni_portfolio.pdf" download class="dropdown-item" onclick="showDownloadFeedback('Portfolio')">
-                        <img src="assets/portfolio-icon.svg" alt="Portfolio" width="24" height="24" style="margin-right: 8px;"> 
-                        Portfolio
-                    </a>
-                </div>
-            </div>
+            <a href="laura_guerinoni_resume.pdf" download class="button secondary-button" onclick="showDownloadFeedback('Resume')">
+                Download Resume
+            </a>
         </div>
     </div>
 </div>
@@ -609,24 +654,6 @@
     </div>
 
     <script>
-        // Function to toggle dropdown
-        function toggleDropdown() {
-            document.getElementById("downloadDropdown").classList.toggle("show");
-        }
-        
-        // Close the dropdown if clicked outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.secondary-button')) {
-                var dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-
         // Function to show feedback notification
         function showDownloadFeedback(fileType) {
             const notification = document.getElementById('notification');
@@ -763,26 +790,6 @@
                 }
             });
         });
-
-        // Morphing tag: swap text content directly instead of stacking
-        // two differently-sized words in one box, so there's never
-        // leftover space around the shorter word.
-        function startMorphingTags() {
-            document.querySelectorAll('.morphing-tag').forEach(function(tag) {
-                const words = tag.dataset.words.split(',').map(w => w.trim());
-                let index = 0;
-                setInterval(function() {
-                    tag.classList.add('is-swapping');
-                    setTimeout(function() {
-                        index = (index + 1) % words.length;
-                        tag.textContent = words[index];
-                        tag.classList.toggle('is-alt', index === 1);
-                        tag.classList.remove('is-swapping');
-                    }, 350); // matches the CSS transition duration
-                }, 4000); // how long each word stays visible before swapping
-            });
-        }
-        document.addEventListener('DOMContentLoaded', startMorphingTags);
     </script>
 </body>
 </html>
