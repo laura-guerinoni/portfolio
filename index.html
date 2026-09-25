@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,98 +85,86 @@
             width: 16px;
         }
         
+        /* ============================================================
+           MORPHING TAG — rebuilt with CSS Grid stacking instead of
+           absolute positioning for cross-browser consistency.
+           ============================================================ */
+
         .morphing-tag {
-    position: relative;
-    display: inline-block;
-    height: 1.15em; /* Match the line height */
-    width: max-content; /* Adjust width to content */
-    background-color: transparent;
-    z-index: 1; 
-}
+            display: inline-grid;
+            vertical-align: baseline;
+        }
 
-.morphing-word {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-}
+        .morphing-word {
+            display: grid;
+            grid-template-areas: "stack";
+        }
 
-.morphing-word .word {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    filter: blur(1em);
-    transition: opacity 0.3s, filter 0.3s;
-}
+        .morphing-word .word {
+            grid-area: stack;
+            white-space: nowrap;
+            opacity: 0;
+            filter: blur(1em);
+            transition: opacity 0.3s, filter 0.3s;
+        }
 
-.morphing-word .word:first-child {
-    opacity: 1;
-    filter: blur(0);
-}
+        .morphing-word .word:first-child {
+            opacity: 1;
+            filter: blur(0);
+        }
 
-.morphing-word .word:nth-child(1) {
-    color: black;
-}
+        .morphing-word .word:nth-child(1) {
+            color: black;
+        }
 
-.morphing-word .word:nth-child(2) {
-    color: red;
-}
+        .morphing-word .word:nth-child(2) {
+            color: red;
+        }
 
-@keyframes morphing-animation {
-    0%, 10%, 90%, 100% { 
-        opacity: 1; 
-        filter: blur(0); 
-    }        
-    25%, 75% { 
-        opacity: 0; 
-        filter: blur(1em); 
-    }        
-}
+        @keyframes morphing-animation {
+            0%, 10%, 90%, 100% { 
+                opacity: 1; 
+                filter: blur(0); 
+            }        
+            25%, 75% { 
+                opacity: 0; 
+                filter: blur(1em); 
+            }        
+        }
 
-.morphing-sequence {
-    animation: morphing-animation 8s infinite ease-in-out;
-}
+        .morphing-sequence {
+            animation: morphing-animation 8s infinite ease-in-out;
+        }
 
-.morphing-sequence:nth-child(2) {
-    animation-delay: -2s;
-}
+        .morphing-sequence:nth-child(2) {
+            animation-delay: -2s;
+        }
 
-.morphing-sequence:nth-child(1) {
-    animation-delay: +2s;
-}
+        .morphing-sequence:nth-child(1) {
+            animation-delay: +2s;
+        }
       
-.morphing-word .word:nth-child(1) {
-    color: black;
-}
+        .morphing-word .word:nth-child(1) {
+            color: black;
+        }
 
+        .morphing-word .word:nth-child(2) {
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-style: italic;
+        }
 
-.morphing-word .word:nth-child(2) {
-    color: #333;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    /* letter-spacing: 0.05em;  Extra spacing */
-    font-style: italic;
+        .morphing-sequence:nth-child(1) .word:first-child {
+            color: black;
+        }
 
-}
-
-.morphing-sequence:nth-child(1) .word:first-child {
-    color: black;
-}
-
-.morphing-sequence:nth-child(1) .word:last-child {
-    color: #333;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    /* letter-spacing: 0.05em;  Extra spacing */
-    font-style: italic;
-
-}
+        .morphing-sequence:nth-child(1) .word:last-child {
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-style: italic;
+        }
 
 @media (max-width: 768px) {
     body {
@@ -374,57 +363,19 @@
             <span class="morphing-tag">
                 <span class="morphing-word">
                     <span class="word morphing-sequence">human</span>
-                    <span class="word morphing-sequence"> ··user··</span>
-                </span>
-            </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&thinsp;&thinsp; language.</p>
-        
-        <p>Because ultimately, understanding and being understood is all
-            <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="word morphing-sequence">people</span>
-                    <span class="word morphing-sequence"> ·users·</span>
-                </span>
-            </span> 
-            &ensp;&ensp;&ensp;&thinsp;&thinsp;&thinsp;&nbsp;&nbsp;&nbsp; want from you.</p>
-        
-           <!-- <p>I think design is a conversation, I make sure it speaks 
-                <span class="morphing-tag">
-                    <span class="morphing-word">
-                        <span class="word morphing-sequence">human</span>
-                        <span class="word morphing-sequence"> **user</span>
-                    </span>
-                </span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&thinsp;&thinsp; .</p>
-            
-            <p>Because ultimately, understanding and being understood is all
-                <span class="morphing-tag">
-                    <span class="morphing-word">
-                        <span class="word morphing-sequence">people</span>
-                        <span class="word morphing-sequence"> *users</span>
-                    </span>
-                </span> 
-                &ensp;&ensp;&ensp;&thinsp;&thinsp;&thinsp;&nbsp;&nbsp;&nbsp; want from you.</p> -->
-
-        <!-- 
-        
-        <p>I think design is a conversation, I make sure <br> it speaks 
-            <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="word morphing-sequence">human</span>
                     <span class="word morphing-sequence">user</span>
                 </span>
             </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; —ultimately, understanding and being understood is all
+            language.</p>
+        
+        <p>Because ultimately, understanding and being understood is all
             <span class="morphing-tag">
                 <span class="morphing-word">
                     <span class="word morphing-sequence">people</span>
                     <span class="word morphing-sequence">users</span>
                 </span>
             </span> 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; want.</p>
-        
-        --> 
+            want from you.</p>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">Copy my Email</button>
@@ -875,3 +826,4 @@
     </script>
 </body>
 </html>
+```
