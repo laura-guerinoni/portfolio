@@ -97,12 +97,14 @@
              that same box — same width, same height, same baseline —
              no matter which word is showing. "language." / "want" never
              shift.
-           - The highlight color lives in one variable so it's easy to
-             swap.
+           - The shorter word is left-aligned inside that box (small
+             inset padding on the left, like a highlighter starting a
+             touch before the word), with any leftover width sitting
+             empty on the right rather than centering the word.
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #FFCE7A; /* warm amber — swap this for any other hue */
+            --highlight-color: #F1E48A; /* softened warm yellow */
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -119,7 +121,8 @@
             inset: 6% 0; /* slightly shorter than a full line so the highlight hugs the text instead of the whole line-height */
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding-left: 0.15em; /* small gap before the word starts, like a highlighter stroke */
             background-color: var(--highlight-color);
             border-radius: 4px;
             animation: morph-fade-alt 8s infinite ease-in-out;
