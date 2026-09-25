@@ -88,23 +88,20 @@
            MORPHING TAG — normal-flow box + absolutely-positioned overlay.
 
            - .word-primary ("human"/"people") is a NORMAL inline-block
-             child, sitting in the real document flow. That's what gives
-             the whole tag a correct, browser-consistent baseline —
-             it's positioned exactly like any other word in the sentence,
-             so it can never "float".
+             child, sitting in the real document flow, with font-weight
+             pinned to match the surrounding paragraph text (350,
+             not italic) — so it never renders bolder than the rest
+             of the sentence.
            - .word-alt-wrap (the highlighted "user"/"users") is
-             absolutely positioned with inset: 0, so it exactly fills
-             that same box — same width, same height, same baseline —
-             no matter which word is showing. "language." / "want" never
-             shift.
-           - The shorter word is left-aligned inside that box (small
-             inset padding on the left, like a highlighter starting a
-             touch before the word), with any leftover width sitting
-             empty on the right rather than centering the word.
+             absolutely positioned to exactly fill that same box.
+           - No left padding: the highlight starts flush at the very
+             first letter, same as the word itself, so "user" and
+             "users" both start at the same left edge and only differ
+             in how much empty highlighted space trails on the right.
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #F1E48A; /* softened warm yellow */
+            --highlight-color: #F2A97A; /* apricot orange */
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -112,6 +109,8 @@
 
         .word-primary {
             color: black;
+            font-weight: 350;
+            font-style: normal;
             white-space: nowrap;
             animation: morph-fade-primary 8s infinite ease-in-out;
         }
@@ -122,7 +121,6 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding-left: 0.15em; /* small gap before the word starts, like a highlighter stroke */
             background-color: var(--highlight-color);
             border-radius: 4px;
             animation: morph-fade-alt 8s infinite ease-in-out;
