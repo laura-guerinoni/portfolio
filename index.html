@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,80 +85,31 @@
         }
         
         /* ============================================================
-           MORPHING TAG — rebuilt with CSS Grid stacking instead of
-           absolute positioning for cross-browser consistency.
+           MORPHING TAG — rebuilt as a JS text-swap instead of a
+           two-word stacked box.
+
+           Why: stacking both words in one grid/box forces the box to
+           be as wide as the LONGER word, so when the SHORTER word
+           displays there's leftover empty space before the next bit
+           of the sentence — that's exactly the big gap you saw before
+           "language." and "want". Swapping the text content directly
+           means the element is only ever as wide as whichever word is
+           currently showing, so there's never leftover space, in any
+           browser.
            ============================================================ */
 
         .morphing-tag {
-            display: inline-grid;
-            vertical-align: baseline;
+            display: inline-block;
+            color: black;
+            transition: opacity 0.35s ease, filter 0.35s ease;
         }
 
-        .morphing-word {
-            display: grid;
-            grid-template-areas: "stack";
-        }
-
-        .morphing-word .word {
-            grid-area: stack;
-            white-space: nowrap;
+        .morphing-tag.is-swapping {
             opacity: 0;
-            filter: blur(1em);
-            transition: opacity 0.3s, filter 0.3s;
+            filter: blur(0.6em);
         }
 
-        .morphing-word .word:first-child {
-            opacity: 1;
-            filter: blur(0);
-        }
-
-        .morphing-word .word:nth-child(1) {
-            color: black;
-        }
-
-        .morphing-word .word:nth-child(2) {
-            color: red;
-        }
-
-        @keyframes morphing-animation {
-            0%, 10%, 90%, 100% { 
-                opacity: 1; 
-                filter: blur(0); 
-            }        
-            25%, 75% { 
-                opacity: 0; 
-                filter: blur(1em); 
-            }        
-        }
-
-        .morphing-sequence {
-            animation: morphing-animation 8s infinite ease-in-out;
-        }
-
-        .morphing-sequence:nth-child(2) {
-            animation-delay: -2s;
-        }
-
-        .morphing-sequence:nth-child(1) {
-            animation-delay: +2s;
-        }
-      
-        .morphing-word .word:nth-child(1) {
-            color: black;
-        }
-
-        .morphing-word .word:nth-child(2) {
-            color: #333;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-style: italic;
-        }
-
-        .morphing-sequence:nth-child(1) .word:first-child {
-            color: black;
-        }
-
-        .morphing-sequence:nth-child(1) .word:last-child {
+        .morphing-tag.is-alt {
             color: #333;
             font-family: 'Inter', sans-serif;
             font-weight: 500;
@@ -360,21 +310,11 @@
         <h1>Hey, I'm Laura.</h1>
         
         <p>I think design is a conversation, I make sure it speaks the
-            <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="word morphing-sequence">human</span>
-                    <span class="word morphing-sequence">user</span>
-                </span>
-            </span>
+            <span class="morphing-tag" data-words="human,user">human</span>
             language.</p>
         
         <p>Because ultimately, understanding and being understood is all
-            <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="word morphing-sequence">people</span>
-                    <span class="word morphing-sequence">users</span>
-                </span>
-            </span> 
+            <span class="morphing-tag" data-words="people,users">people</span>
             want from you.</p>
         
         <div class="buttons">
@@ -823,7 +763,26 @@
                 }
             });
         });
+
+        // Morphing tag: swap text content directly instead of stacking
+        // two differently-sized words in one box, so there's never
+        // leftover space around the shorter word.
+        function startMorphingTags() {
+            document.querySelectorAll('.morphing-tag').forEach(function(tag) {
+                const words = tag.dataset.words.split(',').map(w => w.trim());
+                let index = 0;
+                setInterval(function() {
+                    tag.classList.add('is-swapping');
+                    setTimeout(function() {
+                        index = (index + 1) % words.length;
+                        tag.textContent = words[index];
+                        tag.classList.toggle('is-alt', index === 1);
+                        tag.classList.remove('is-swapping');
+                    }, 350); // matches the CSS transition duration
+                }, 4000); // how long each word stays visible before swapping
+            });
+        }
+        document.addEventListener('DOMContentLoaded', startMorphingTags);
     </script>
 </body>
 </html>
-```
