@@ -86,10 +86,14 @@
         
         /* ============================================================
            MORPHING TAG — normal-flow box + absolutely-positioned overlay.
+
+           --highlight-color is a PLACEHOLDER lilac — swap it for the
+           exact hex used behind Laura's photo in the sidebar once you
+           have it (I don't have access to styles.css to read it).
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #FBCEB1; /* apricot */
+            --highlight-color: #E4DFFA; /* placeholder lilac — replace with your sidebar avatar background hex */
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -134,37 +138,68 @@
         }
 
         /* ============================================================
-           SCROLL REVEAL — project icon + title "write themselves in"
-           as each project section scrolls into view.
+           SCROLL REVEAL — project icon, title, year, subtitle and
+           skill tags reveal in a quick, staggered sequence as each
+           project section scrolls into view.
 
-           - Each letter of .project-title is wrapped in its own
-             <span class="reveal-letter"> by JS on page load, with a
-             CSS custom property --i holding its index. That index
-             drives a staggered transition-delay, so letters fade/rise
-             in left-to-right like they're being typed.
-           - .section-icon starts faded out and slightly small, and
-             scales up into place at the same time the title starts
-             writing itself.
-           - An IntersectionObserver adds .in-view to the parent
-             .project-section the first time it's ~30% visible; the
-             reveal only ever plays once per section (no re-trigger on
-             scrolling back up), so it never feels twitchy on repeat
-             scrolling.
+           - .project-title now reveals via a single clip-path "wipe"
+             (fixed 0.6s, regardless of word length) instead of the
+             previous letter-by-letter stagger — that's what caused
+             the too-long empty gap on longer titles like "VR
+             Biofeedback Training", since the rest of the section
+             (subtitle, year, skills) was already fully visible while
+             the title was still mid-typing.
+           - Icon → title → year → subtitle → skill tags now fire in
+             a tight staggered sequence (each starting shortly before
+             the previous one finishes), so nothing sits fully-formed
+             on screen while something else is still blank.
+           - Still triggered once per section via IntersectionObserver
+             adding .in-view — no re-trigger on scrolling back up.
            ============================================================ */
 
         .project-title {
-            overflow: visible; /* letters use translateY, don't let it clip */
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+            transition-delay: 0.1s;
         }
 
-        .reveal-letter {
+        .project-section.in-view .project-title {
+            clip-path: inset(0 0 0 0);
+        }
+
+        .project-year-tag {
             display: inline-block;
             opacity: 0;
-            transform: translateY(0.35em);
+            transform: translateX(-6px);
             transition: opacity 0.4s ease, transform 0.4s ease;
-            transition-delay: calc(var(--i) * 0.035s);
+            transition-delay: 0.55s;
         }
 
-        .project-section.in-view .reveal-letter {
+        .project-section.in-view .project-year-tag {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .project-subtitle {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition-delay: 0.7s;
+        }
+
+        .project-section.in-view .project-subtitle {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .skills-tags {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition-delay: 0.85s;
+        }
+
+        .project-section.in-view .skills-tags {
             opacity: 1;
             transform: translateY(0);
         }
@@ -183,9 +218,7 @@
         /* ============================================================
            SIDEBAR ICON — active section icon grows slightly, in
            addition to whatever background/color change styles.css
-           already applies. This block loads after styles.css in the
-           document, so it safely layers on top without editing that
-           file.
+           already applies.
            ============================================================ */
 
         .sidebar .icon {
@@ -194,6 +227,39 @@
 
         .sidebar .icon.active {
             transform: scale(1.18);
+        }
+
+        /* ============================================================
+           LAURA HOVER PHOTO — hovering the "Laura" sidebar item pops
+           her photo out at a slight diagonal tilt, using the same
+           shadow already used on the project video cards
+           (.project-gif) elsewhere on this page, for visual
+           consistency.
+           ============================================================ */
+
+        #laura-icon {
+            position: relative;
+        }
+
+        .laura-hover-photo {
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            width: 96px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 12px;
+            transform: translateY(-50%) rotate(-8deg) scale(0.85);
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; /* same shadow as .project-gif */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 20;
+        }
+
+        #laura-icon:hover .laura-hover-photo {
+            opacity: 1;
+            transform: translateY(-50%) rotate(-8deg) scale(1);
         }
 
 @media (max-width: 768px) {
@@ -207,6 +273,10 @@
         height: 0;
         margin: 0;
         padding: 0;
+    }
+
+    .laura-hover-photo {
+        display: none;
     }
 
 
@@ -350,6 +420,7 @@
             <span class="icon-laura">
             <img src="assets/laura.png" alt="Icon" width="24" height="24" class="icon-laura"></span>
             <span class="icon-text">Laura</span>
+            <img src="assets/laura.png" alt="Laura" class="laura-hover-photo">
         </a>
         <a href="#lite-tone" class="icon meta-icon" id="lite-tone-icon">
             <span class="icon-letter">
@@ -825,28 +896,12 @@
         });
 
         // ============================================================
-        // SCROLL REVEAL — wrap each project title's letters in a span
-        // (so each can fade/rise in on its own staggered delay), then
-        // watch each project section and add .in-view the first time
-        // it scrolls into view, which triggers the CSS reveal for
-        // both the title letters and the section icon.
+        // SCROLL REVEAL — watch each project section and add .in-view
+        // the first time it scrolls into view. That single class
+        // triggers the whole staggered CSS reveal (icon, title wipe,
+        // year, subtitle, skill tags) defined in the <style> block.
         // ============================================================
-        function wrapTitleLetters() {
-            document.querySelectorAll('.project-title').forEach(function(title) {
-                const text = title.textContent;
-                title.innerHTML = '';
-                text.split('').forEach(function(char, i) {
-                    const span = document.createElement('span');
-                    span.className = 'reveal-letter';
-                    span.style.setProperty('--i', i);
-                    span.textContent = char === ' ' ? '\u00A0' : char;
-                    title.appendChild(span);
-                });
-            });
-        }
-
         function setupSectionReveals() {
-            wrapTitleLetters();
             const sections = document.querySelectorAll('.project-section');
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
@@ -855,7 +910,7 @@
                         observer.unobserve(entry.target); // reveal plays once per section
                     }
                 });
-            }, { threshold: 0.25 });
+            }, { threshold: 0.2 });
             sections.forEach(function(section) {
                 observer.observe(section);
             });
