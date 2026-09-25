@@ -86,26 +86,10 @@
         
         /* ============================================================
            MORPHING TAG — normal-flow box + absolutely-positioned overlay.
-
-           - .word-primary ("human"/"people") is a NORMAL inline-block
-             child, sitting in the real document flow, at the SAME
-             light weight (350) as the rest of the paragraph — this
-             now actually works because the Inter font is loaded at
-             both weight 350 and weight 500 above; previously only
-             500 was loaded, so requesting 350 anywhere silently
-             rendered as 500 (the only weight the browser had).
-           - .word-alt-wrap (the highlighted "user"/"users") is
-             absolutely positioned to exactly fill that same box, at
-             weight 500 italic — now visibly distinct from the body
-             text and from "human"/"people".
-           - No left padding: the highlight starts flush at the very
-             first letter, so "user" and "users" both start at the
-             same left edge and only differ in how much empty
-             highlighted space trails on the right.
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #EEC090; /* apricot orange */
+            --highlight-color: #FBCEB1; /* apricot */
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -122,7 +106,7 @@
 
         .word-alt-wrap {
             position: absolute;
-            inset: 6% 0; /* slightly shorter than a full line so the highlight hugs the text instead of the whole line-height */
+            inset: 6% 0;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -147,6 +131,69 @@
         @keyframes morph-fade-alt {
             0%, 10%, 90%, 100% { opacity: 0; filter: blur(1em); }
             25%, 75% { opacity: 1; filter: blur(0); }
+        }
+
+        /* ============================================================
+           SCROLL REVEAL — project icon + title "write themselves in"
+           as each project section scrolls into view.
+
+           - Each letter of .project-title is wrapped in its own
+             <span class="reveal-letter"> by JS on page load, with a
+             CSS custom property --i holding its index. That index
+             drives a staggered transition-delay, so letters fade/rise
+             in left-to-right like they're being typed.
+           - .section-icon starts faded out and slightly small, and
+             scales up into place at the same time the title starts
+             writing itself.
+           - An IntersectionObserver adds .in-view to the parent
+             .project-section the first time it's ~30% visible; the
+             reveal only ever plays once per section (no re-trigger on
+             scrolling back up), so it never feels twitchy on repeat
+             scrolling.
+           ============================================================ */
+
+        .project-title {
+            overflow: visible; /* letters use translateY, don't let it clip */
+        }
+
+        .reveal-letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.35em);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transition-delay: calc(var(--i) * 0.035s);
+        }
+
+        .project-section.in-view .reveal-letter {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-icon {
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .project-section.in-view .section-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ============================================================
+           SIDEBAR ICON — active section icon grows slightly, in
+           addition to whatever background/color change styles.css
+           already applies. This block loads after styles.css in the
+           document, so it safely layers on top without editing that
+           file.
+           ============================================================ */
+
+        .sidebar .icon {
+            transition: transform 0.25s ease;
+        }
+
+        .sidebar .icon.active {
+            transform: scale(1.18);
         }
 
 @media (max-width: 768px) {
@@ -776,6 +823,45 @@
                 }
             });
         });
+
+        // ============================================================
+        // SCROLL REVEAL — wrap each project title's letters in a span
+        // (so each can fade/rise in on its own staggered delay), then
+        // watch each project section and add .in-view the first time
+        // it scrolls into view, which triggers the CSS reveal for
+        // both the title letters and the section icon.
+        // ============================================================
+        function wrapTitleLetters() {
+            document.querySelectorAll('.project-title').forEach(function(title) {
+                const text = title.textContent;
+                title.innerHTML = '';
+                text.split('').forEach(function(char, i) {
+                    const span = document.createElement('span');
+                    span.className = 'reveal-letter';
+                    span.style.setProperty('--i', i);
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    title.appendChild(span);
+                });
+            });
+        }
+
+        function setupSectionReveals() {
+            wrapTitleLetters();
+            const sections = document.querySelectorAll('.project-section');
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target); // reveal plays once per section
+                    }
+                });
+            }, { threshold: 0.25 });
+            sections.forEach(function(section) {
+                observer.observe(section);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', setupSectionReveals);
     </script>
 </body>
 </html>
