@@ -85,56 +85,44 @@
         }
         
         /* ============================================================
-           MORPHING TAG — fixed-width box, pure CSS crossfade.
+           MORPHING TAG — normal-flow box + absolutely-positioned overlay.
 
-           - The box's width/height is set by "human"/"people" (the
-             longer words), since those are laid out normally as the
-             grid's implicit sizing reference (first child, un-padded
-             content sets the track size; both words + the highlight
-             share the same grid cell so they never shift "language."
-             or "want" left/right).
-           - "user"/"users" occupy that exact same box (grid-area:
-             stack, stretch), so they never make the box shrink.
-           - A highlight pill (.morph-highlight) also fills that exact
-             box and fades in/out in sync with "user"/"users", so the
-             leftover space around the shorter word reads as a tag,
-             not a glitch.
-           - Pure CSS keyframes (no JS timers) = no drift, no reflow.
+           - .word-primary ("human"/"people") is a NORMAL inline-block
+             child, sitting in the real document flow. That's what gives
+             the whole tag a correct, browser-consistent baseline —
+             it's positioned exactly like any other word in the sentence,
+             so it can never "float".
+           - .word-alt-wrap (the highlighted "user"/"users") is
+             absolutely positioned with inset: 0, so it exactly fills
+             that same box — same width, same height, same baseline —
+             no matter which word is showing. "language." / "want" never
+             shift.
+           - The highlight color lives in one variable so it's easy to
+             swap.
            ============================================================ */
 
         .morphing-tag {
-            display: inline-grid;
-            vertical-align: baseline;
-        }
-
-        .morphing-word {
-            display: grid;
-            grid-template-areas: "stack";
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
-
-        .morph-highlight {
-            grid-area: stack;
-            align-self: stretch;
-            justify-self: stretch;
-            border-radius: 6px;
-            background-color: rgba(0, 0, 0, 0.08);
-            opacity: 0;
-            animation: morph-highlight-fade 8s infinite ease-in-out;
-        }
-
-        .morphing-word .word {
-            grid-area: stack;
-            align-self: center;
-            justify-self: start;
-            white-space: nowrap;
+            --highlight-color: #FFCE7A; /* warm amber — swap this for any other hue */
             position: relative;
+            display: inline-block;
+            vertical-align: baseline;
         }
 
         .word-primary {
             color: black;
+            white-space: nowrap;
             animation: morph-fade-primary 8s infinite ease-in-out;
+        }
+
+        .word-alt-wrap {
+            position: absolute;
+            inset: 6% 0; /* slightly shorter than a full line so the highlight hugs the text instead of the whole line-height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--highlight-color);
+            border-radius: 4px;
+            animation: morph-fade-alt 8s infinite ease-in-out;
         }
 
         .word-alt {
@@ -142,8 +130,7 @@
             font-family: 'Inter', sans-serif;
             font-weight: 500;
             font-style: italic;
-            justify-self: center;
-            animation: morph-fade-alt 8s infinite ease-in-out;
+            white-space: nowrap;
         }
 
         @keyframes morph-fade-primary {
@@ -154,11 +141,6 @@
         @keyframes morph-fade-alt {
             0%, 10%, 90%, 100% { opacity: 0; filter: blur(1em); }
             25%, 75% { opacity: 1; filter: blur(0); }
-        }
-
-        @keyframes morph-highlight-fade {
-            0%, 10%, 90%, 100% { opacity: 0; }
-            25%, 75% { opacity: 1; }
         }
 
 @media (max-width: 768px) {
@@ -356,20 +338,18 @@
         
         <p>I think design is a conversation, I make sure it speaks the
             <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="morph-highlight"></span>
-                    <span class="word word-primary">human</span>
-                    <span class="word word-alt">user</span>
+                <span class="word-primary">human</span>
+                <span class="word-alt-wrap">
+                    <span class="word-alt">user</span>
                 </span>
             </span>
             language.</p>
         
         <p>Because ultimately, understanding and being understood is all
             <span class="morphing-tag">
-                <span class="morphing-word">
-                    <span class="morph-highlight"></span>
-                    <span class="word word-primary">people</span>
-                    <span class="word word-alt">users</span>
+                <span class="word-primary">people</span>
+                <span class="word-alt-wrap">
+                    <span class="word-alt">users</span>
                 </span>
             </span> 
             want from you.</p>
