@@ -98,57 +98,15 @@
         }
         
         /* ============================================================
-           MORPHING TAG — normal-flow box + absolutely-positioned overlay.
-           --highlight-color is the lilac behind Laura's photo in the
-           sidebar (.introduction-icon in styles.css).
-           ============================================================ */
-
-        .morphing-tag {
-            --highlight-color: #ECDBFF;
-            position: relative;
-            display: inline-block;
-            vertical-align: baseline;
-        }
-
-        .word-primary {
-            color: black;
-            font-family: 'Inter', sans-serif;
-            font-weight: 350;
-            font-style: normal;
-            white-space: nowrap;
-            animation: morph-fade-primary 8s infinite ease-in-out;
-        }
-
-        .word-alt-wrap {
-            position: absolute;
-            inset: 6% 0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            background-color: var(--highlight-color);
-            border-radius: 4px;
-            animation: morph-fade-alt 8s infinite ease-in-out;
-        }
-
-        .word-alt {
-            color: #333;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-style: italic;
-            white-space: nowrap;
-        }
-
-        /* ============================================================
-           TICKER — the two jobs roll upward like a departure board.
-           Deliberately a different effect (and same styling for both)
-           from the human/user morph, since neither job is a
-           "translation" of the other. Same 8s cycle as the morph, but
-           it rolls in between the morph's changes so they never move
-           at the same time. The track repeats the first item so the loop can keep
-           rolling up and reset invisibly.
+           TICKER — the swapping words roll upward like a departure
+           board, underlined in the lilac behind Laura's sidebar photo.
+           Each track repeats its first item so the loop keeps rolling
+           up and resets invisibly. Both tickers share an 8s cycle but
+           roll at different moments, so they never move together.
            ============================================================ */
 
         .ticker {
+            --ticker-lilac: #ECDBFF;
             display: inline-block;
             height: 1.6em;
             overflow: hidden;
@@ -161,18 +119,22 @@
             animation: ticker-roll 8s infinite;
         }
 
+        .ticker--offset .ticker-track {
+            animation-name: ticker-roll-offset;
+        }
+
         .ticker-item {
             height: 1.6em;
             white-space: nowrap;
-            font-weight: 500;
             color: #333;
         }
 
         .ticker-text {
+            font-weight: 500;
             text-decoration: underline;
-            text-decoration-thickness: 1.5px;
-            text-underline-offset: 0.2em;
-            text-decoration-color: rgba(51, 51, 51, 0.25);
+            text-decoration-thickness: 3px;
+            text-underline-offset: 0.18em;
+            text-decoration-color: var(--ticker-lilac);
         }
 
         @keyframes ticker-roll {
@@ -181,18 +143,14 @@
             98%, 100% { transform: translateY(-3.2em); }
         }
 
+        @keyframes ticker-roll-offset {
+            0%, 13%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            23%, 63%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            73%, 100% { transform: translateY(-3.2em); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .ticker-track { animation: none; }
-        }
-
-        @keyframes morph-fade-primary {
-            0%, 10%, 90%, 100% { opacity: 1; filter: blur(0); }
-            25%, 75% { opacity: 0; filter: blur(1em); }
-        }
-
-        @keyframes morph-fade-alt {
-            0%, 10%, 90%, 100% { opacity: 0; filter: blur(1em); }
-            25%, 75% { opacity: 1; filter: blur(0); }
         }
 
         /* ============================================================
@@ -511,13 +469,13 @@
             </span></p>
 
         <p>I think design is a conversation, I make sure it speaks the
-            <span class="morphing-tag">
-                <span class="word-primary">human</span>
-                <span class="word-alt-wrap">
-                    <span class="word-alt">user</span>
+            <span class="ticker ticker--offset" aria-label="human language, user language">
+                <span class="ticker-track" aria-hidden="true">
+                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
+                    <span class="ticker-item"><span class="ticker-text">user</span> language.</span>
+                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
                 </span>
-            </span>
-            language.</p>
+            </span></p>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">
