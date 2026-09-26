@@ -138,6 +138,53 @@
             white-space: nowrap;
         }
 
+        /* ============================================================
+           TICKER — the two jobs roll upward like a departure board.
+           Deliberately a different effect (and same styling for both)
+           from the human/user morph, since neither job is a
+           "translation" of the other. Same 8s cycle as the morph, but
+           it rolls in between the morph's changes so they never move
+           at the same time. The track repeats the first item so the loop can keep
+           rolling up and reset invisibly.
+           ============================================================ */
+
+        .ticker {
+            display: inline-block;
+            height: 1.6em;
+            overflow: hidden;
+            vertical-align: top;
+        }
+
+        .ticker-track {
+            display: flex;
+            flex-direction: column;
+            animation: ticker-roll 8s infinite;
+        }
+
+        .ticker-item {
+            height: 1.6em;
+            white-space: nowrap;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .ticker-text {
+            text-decoration: underline;
+            text-decoration-thickness: 1.5px;
+            text-underline-offset: 0.2em;
+            text-decoration-color: rgba(51, 51, 51, 0.25);
+        }
+
+        @keyframes ticker-roll {
+            0%, 38%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            48%, 88%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            98%, 100% { transform: translateY(-3.2em); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ticker-track { animation: none; }
+        }
+
         @keyframes morph-fade-primary {
             0%, 10%, 90%, 100% { opacity: 1; filter: blur(0); }
             25%, 75% { opacity: 0; filter: blur(1em); }
@@ -455,12 +502,13 @@
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
         <p>I design digital products, with experience in
-            <span class="morphing-tag">
-                <span class="word-primary">consulting at Bain&nbsp;&amp;&nbsp;Company</span>
-                <span class="word-alt-wrap">
-                    <span class="word-alt">fintech at Withless</span>
+            <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
+                <span class="ticker-track" aria-hidden="true">
+                    <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
+                    <span class="ticker-item"><span class="ticker-text">fintech at Withless</span>.</span>
+                    <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
                 </span>
-            </span>.</p>
+            </span></p>
 
         <p>I think design is a conversation, I make sure it speaks the
             <span class="morphing-tag">
