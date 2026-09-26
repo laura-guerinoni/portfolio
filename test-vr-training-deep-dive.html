@@ -681,7 +681,6 @@
 
         .contact-btn:hover,
         .contact-btn:focus-visible {
-            background: var(--lilac);
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
         }
@@ -728,6 +727,119 @@
             .contact-btn .contact-label { display: none; }
         }
 
+        /* ---------- glow: just a pinch of lilac, near the contact rail ---------- */
+        .glow span:nth-child(1) {
+            background: var(--lilac);
+            top: 18%;
+            right: -16vw;
+            left: auto;
+            bottom: auto;
+            width: 36vw;
+            height: 36vw;
+            opacity: 0.6;
+        }
+
+        /* ---------- artefacts: smaller, never cropped, sides in the image's own color ---------- */
+        .bento { grid-auto-flow: dense; }
+
+        .tile { background: #f4f4f4; }
+
+        .tile img { max-height: 58vh; }
+
+        /* ---------- video intro: a dropped "photo" that straightens, with a sticker ---------- */
+        .showcase { perspective: none; }
+
+        .window {
+            position: relative;
+            width: fit-content;
+            max-width: 860px;
+            margin: 0 auto;
+            background: none;
+            box-shadow: none;
+            overflow: visible;
+            border-radius: 24px;
+            transform-origin: center;
+            transform:
+                perspective(1400px)
+                rotateX(var(--ry, 0deg))
+                rotateY(var(--rx, 0deg))
+                translateY(calc(60px * (1 - var(--settle, 1))))
+                rotate(calc(-5deg * (1 - var(--settle, 1))))
+                scale(calc(0.9 + 0.1 * var(--settle, 1)));
+            transition: transform 0.25s ease-out;
+        }
+
+        .window video {
+            display: block;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16), 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .sticker {
+            position: absolute;
+            top: -26px;
+            left: -26px;
+            width: 76px;
+            height: 76px;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+            display: grid;
+            place-items: center;
+            transform: rotate(-10deg) scale(calc(0.4 + 0.6 * var(--settle, 1)));
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .sticker img { width: 42px; height: 42px; }
+
+        .window:hover .sticker { transform: rotate(6deg) scale(1.08); }
+
+        /* ---------- next project: white card, next project's icon and color ---------- */
+        .next-inner {
+            background: #fff;
+            padding: 36px 44px;
+            align-items: center;
+            gap: 28px;
+            box-shadow: var(--shadow);
+            transition: background-color 0.5s ease, transform 0.4s var(--ease-out);
+        }
+
+        .next:hover .next-inner { background: var(--next-color); transform: none; }
+
+        .next-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 22px;
+            background: var(--next-color);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transform: rotate(-6deg);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.5s ease;
+        }
+
+        .next-icon img { width: 46px; height: 46px; }
+
+        .next:hover .next-icon { transform: rotate(4deg) scale(1.05); background: #fff; }
+
+        .next-text { flex: 1; }
+
+        .next-title { font-size: clamp(36px, 4.6vw, 64px); }
+
+        .next-arrow { width: 56px; height: 56px; }
+
+        @media (max-width: 860px) {
+            .next-inner { flex-direction: row; flex-wrap: wrap; }
+            .sticker { width: 56px; height: 56px; top: -18px; left: -12px; border-radius: 16px; }
+            .sticker img { width: 30px; height: 30px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .window { transform: none; }
+            .sticker { transform: rotate(-10deg); }
+        }
+
         .step-list {
             font-size: 19px;
             line-height: 1.75;
@@ -765,7 +877,7 @@
 
     <!-- HERO -->
     <header class="hero">
-        <div class="glow" aria-hidden="true"><span></span><span></span></div>
+        <div class="glow" aria-hidden="true"><span></span></div>
         <div class="wrap">
             <div class="hero-grid">
                 <div>
@@ -779,6 +891,7 @@
 
                 <dl class="facts reveal" style="--delay: 0.7s">
                     <div class="fact"><dt class="label">Type</dt><dd>Case study</dd></div>
+                    <div class="fact"><dt class="label">Client</dt><dd>Athletic associations</dd></div>
                     <div class="fact"><dt class="label">Year</dt><dd>2022</dd></div>
                     <div class="fact">
                         <dt class="label">Scope</dt>
@@ -819,7 +932,7 @@
     <!-- VIDEO -->
     <section class="showcase wrap">
         <div class="window" id="window">
-            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="sticker" aria-hidden="true"><img src="assets/logo_vr.svg" alt=""></div>
             <video autoplay loop muted playsinline preload="metadata" src="assets/vr-training.mp4" aria-label="VR Biofeedback Training demo"></video>
         </div>
     </section>
@@ -891,8 +1004,9 @@
 
         <!-- NEXT PROJECT -->
         <a href="test-pet-in-a-pot-deep-dive.html" class="next reveal">
-            <div class="next-inner" style="background: #F0F8F0;">
-                <div>
+            <div class="next-inner" style="--next-color: #F0F8F0;">
+                <div class="next-icon" aria-hidden="true"><img src="assets/logo_pip.svg" alt=""></div>
+                <div class="next-text">
                     <div class="label">Next project</div>
                     <div class="next-title">Pet in a Pot</div>
                     <div class="next-sub">Designing an IoT plant vase and mobile app</div>
@@ -1018,6 +1132,46 @@
         lightbox.addEventListener('click', closeLightbox);
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
     
+        // Tile sides take the artefact's own background color (sampled at its edges),
+        // so narrower images never sit on white bars.
+        document.querySelectorAll('.tile img').forEach(function(img) {
+            function paint() {
+                try {
+                    const w = img.naturalWidth, h = img.naturalHeight;
+                    const c = document.createElement('canvas');
+                    c.width = c.height = 1;
+                    const ctx = c.getContext('2d', { willReadFrequently: true });
+                    // sample just inside the edges (corners are often transparent)
+                    const spots = [[w * 0.03, h * 0.5], [w * 0.5, h * 0.03], [w * 0.97, h * 0.5], [w * 0.5, h * 0.97]];
+                    for (const [x, y] of spots) {
+                        ctx.clearRect(0, 0, 1, 1);
+                        ctx.drawImage(img, Math.round(x), Math.round(y), 1, 1, 0, 0, 1, 1);
+                        const d = ctx.getImageData(0, 0, 1, 1).data;
+                        if (d[3] > 240) {
+                            img.parentElement.style.background = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+                            return;
+                        }
+                    }
+                } catch (e) { /* keep the default light grey */ }
+            }
+            if (img.complete && img.naturalWidth) paint(); else img.addEventListener('load', paint);
+        });
+
+        // Video "photo" leans gently towards the mouse.
+        if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+            win.addEventListener('mousemove', function(e) {
+                const r = win.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - 0.5;
+                const y = (e.clientY - r.top) / r.height - 0.5;
+                win.style.setProperty('--rx', (x * 8).toFixed(2) + 'deg');
+                win.style.setProperty('--ry', (-y * 8).toFixed(2) + 'deg');
+            });
+            win.addEventListener('mouseleave', function() {
+                win.style.setProperty('--rx', '0deg');
+                win.style.setProperty('--ry', '0deg');
+            });
+        }
+
         // Contact rail: copy email (with a toast), LinkedIn opens in a new tab.
         const toast = document.getElementById('toast');
         document.getElementById('contact-email').addEventListener('click', function() {
