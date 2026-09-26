@@ -190,18 +190,23 @@
         }
 
         /* ============================================================
-           LAURA HOVER PHOTO — hovering the "Laura" sidebar button pops
-           her photo out next to it, tilted on a diagonal, on the same
-           lilac and with the same shadow as the sidebar buttons.
-           It sits outside the button because .icon has overflow:hidden.
+           LAURA HOVER PHOTO — hovering "Laura" in the headline pops
+           her photo out above the name, tilted on a diagonal, on the
+           same lilac and with the same shadow as the sidebar buttons.
            ============================================================ */
+
+        .hover-name {
+            position: relative;
+            display: inline-block;
+            cursor: default;
+        }
 
         .laura-hover-photo {
             position: absolute;
-            left: 172px;
-            top: -24px;
-            width: 112px;
-            height: 112px;
+            left: 55%;
+            bottom: 85%;
+            width: 120px;
+            height: 120px;
             padding: 6px;
             box-sizing: border-box;
             background-color: #ECDBFF;
@@ -209,17 +214,18 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05),
                         0 8px 20px rgba(0, 0, 0, 0.08),
                         0 2px 4px rgba(0, 0, 0, 0.04); /* same as .icon:hover */
-            transform: translateX(-16px) rotate(0deg) scale(0.6);
-            transform-origin: left center;
+            transform: translateY(12px) rotate(0deg) scale(0.5);
+            transform-origin: bottom left;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease,
                         transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
         }
 
-        #laura-icon:hover + .laura-hover-photo {
+        .hover-name:hover .laura-hover-photo {
             opacity: 1;
-            transform: translateX(0) rotate(-8deg) scale(1);
+            transform: translateY(0) rotate(8deg) scale(1);
         }
 
 @media (max-width: 768px) {
@@ -381,7 +387,6 @@
             <img src="assets/laura.png" alt="Icon" width="24" height="24" class="icon-laura"></span>
             <span class="icon-text">Laura</span>
         </a>
-        <img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true">
         <a href="#lite-tone" class="icon meta-icon" id="lite-tone-icon">
             <span class="icon-letter">
                 <img src="assets/logo_lite_tone.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
@@ -418,7 +423,7 @@
     <div id="main-anchor"></div>
 
     <div id="main" class="main-content">
-        <h1>Hey, I'm Laura.</h1>
+        <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
         <p>I think design is a conversation, I make sure it speaks the
             <span class="morphing-tag">
@@ -856,23 +861,23 @@
         });
 
         // ============================================================
-        // SCROLL REVEAL — watch each project section and add .in-view
-        // the first time it scrolls into view. That single class
+        // SCROLL REVEAL — watch each project header and add .in-view to
+        // its section as soon as the header scrolls into view. That single class
         // triggers the whole staggered CSS reveal (icon, title wipe,
         // year, subtitle, skill tags) defined in the <style> block.
         // ============================================================
         function setupSectionReveals() {
-            const sections = document.querySelectorAll('.project-section');
+            const headers = document.querySelectorAll('.project-section .section-header');
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('in-view');
+                        entry.target.closest('.project-section').classList.add('in-view');
                         observer.unobserve(entry.target); // reveal plays once per section
                     }
                 });
-            }, { threshold: 0.2 });
-            sections.forEach(function(section) {
-                observer.observe(section);
+            }, { rootMargin: '0px 0px -15% 0px' });
+            headers.forEach(function(header) {
+                observer.observe(header);
             });
         }
 
