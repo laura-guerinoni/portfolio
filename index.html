@@ -138,41 +138,6 @@
             white-space: nowrap;
         }
 
-        /* .highlight-both: neither phrase is the "plain" one (current vs
-           previous job), so both sit on the lilac highlight. Both phrases
-           share one grid cell, so the slot is always as wide as the
-           longer one — the shorter gets extra lilac on the right and the
-           text after it never moves. */
-        .morphing-tag.highlight-both {
-            display: inline-grid;
-        }
-
-        .highlight-both .word-primary,
-        .highlight-both .word-alt-wrap {
-            grid-area: 1 / 1;
-        }
-
-        .highlight-both .word-alt-wrap {
-            position: relative;
-            inset: auto;
-            margin: 0.06em 0;
-        }
-
-        .morphing-tag.highlight-both::before {
-            content: '';
-            position: absolute;
-            inset: 6% 0;
-            background-color: var(--highlight-color);
-            border-radius: 4px;
-        }
-
-        .highlight-both .word-primary {
-            position: relative;
-            color: #333;
-            font-weight: 500;
-            font-style: italic;
-        }
-
         @keyframes morph-fade-primary {
             0%, 10%, 90%, 100% { opacity: 1; filter: blur(0); }
             25%, 75% { opacity: 0; filter: blur(1em); }
@@ -490,7 +455,12 @@
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
         <p>I design digital products, with experience in
-            <span class="morphing-tag highlight-both"><span class="word-primary">fintech at Withless</span><span class="word-alt-wrap"><span class="word-alt">consulting at Bain&nbsp;&amp;&nbsp;Company</span></span></span>.</p>
+            <span class="morphing-tag">
+                <span class="word-primary">consulting at Bain&nbsp;&amp;&nbsp;Company</span>
+                <span class="word-alt-wrap">
+                    <span class="word-alt">fintech at Withless</span>
+                </span>
+            </span>.</p>
 
         <p>I think design is a conversation, I make sure it speaks the
             <span class="morphing-tag">
