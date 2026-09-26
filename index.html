@@ -155,9 +155,9 @@
              middle of the screen (sections go transparent once JS runs).
            - Each piece (header, chips, text, video) reveals on its own,
              only once it is actually on screen.
-           - Skill chips: fall in with real physics (Matter.js) — they
-             tumble, collide and pile up at an angle, and can be
-             picked up and thrown with the mouse.
+           - Skill chips: rain down one by one from above, tumbling
+             and drifting as they fall, then land in their own slot in
+             the row with a little squash and bounce.
            ============================================================ */
 
         body {
@@ -198,31 +198,10 @@
             filter: none;
         }
 
-        /* Physics chip pit: chips are placed by JS with transforms */
-        .skills-tags.chip-pit {
-            position: relative;
-            display: block;
-            opacity: 1;
-            transform: none;
-        }
-
-        .chip-pit .skill-tag {
-            position: absolute;
-            left: 0;
-            top: 0;
+        /* Chips wait hidden until they rain in (JS adds .chips-ready) */
+        .skills-tags.chips-ready .skill-tag {
+            display: inline-block;
             opacity: 0;
-            cursor: grab;
-            user-select: none;
-            will-change: transform;
-            transition: opacity 0.25s ease;
-        }
-
-        .chip-pit .skill-tag.is-dropped {
-            opacity: 1;
-        }
-
-        .chip-pit.is-dragging .skill-tag {
-            cursor: grabbing;
         }
 
         /* ============================================================
@@ -782,7 +761,6 @@
         <span id="notification-text">Download in progress</span>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
     <script>
         // Function to show feedback notification
         function showDownloadFeedback(fileType) {
@@ -970,107 +948,38 @@
             const reveal = function(el) { el.classList.add('is-revealed'); };
             onceVisible(document.querySelectorAll('.section-header, .project-subtitle, .project-content > p, .project-gif'), reveal);
 
-            const pits = document.querySelectorAll('.skills-tags');
-            if (typeof Matter === 'undefined' || prefersReducedMotion) return; // chips stay as a normal row
-            // Wait for the web font so chip widths are measured correctly.
-            document.fonts.ready.then(function() {
-                pits.forEach(preparePit);
-                // Only start raining once the whole chip area is on screen.
-                onceVisible(pits, dropChips, '0px 0px -12% 0px');
-            });
+            if (prefersReducedMotion || !Element.prototype.animate) return; // chips just stay visible
+            const chipRows = document.querySelectorAll('.skills-tags');
+            chipRows.forEach(function(row) { row.classList.add('chips-ready'); });
+            // Only start raining once the whole chip row is on screen.
+            onceVisible(chipRows, rainChips, '0px 0px -12% 0px');
         }
 
-        // Measure chips in their normal layout, then switch the container
-        // to a fixed-height "pit" the physics world lives in.
-        function preparePit(pit) {
-            const chips = Array.from(pit.querySelectorAll('.skill-tag'));
-            const sizes = chips.map(function(chip) {
-                return { w: chip.offsetWidth, h: chip.offsetHeight };
-            });
-            const width = pit.clientWidth;
-            const chipHeight = sizes[0] ? sizes[0].h : 30;
-            const totalWidth = sizes.reduce(function(sum, s) { return sum + s.w; }, 0);
-            const rows = Math.ceil((totalWidth * 1.3) / width);
-            pit.style.height = Math.max(96, rows * chipHeight * 1.25 + 24) + 'px';
-            pit.classList.add('chip-pit');
+        // Each chip falls from above with a random tilt and sideways
+        // drift, speeds up like it's under gravity, lands exactly in its
+        // place in the row, squashes a touch, bounces and settles.
+        function rainChips(row) {
+            const chips = row.querySelectorAll('.skill-tag');
             chips.forEach(function(chip, i) {
-                chip.style.width = sizes[i].w + 'px';
-                chip.style.height = sizes[i].h + 'px';
-                chip.style.boxSizing = 'border-box';
-            });
-            pit._chipSizes = sizes;
-        }
+                const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
+                const drift = (Math.random() - 0.5) * 90;
+                const height = 220 + Math.random() * 120;
+                const delay = i * 110 + Math.random() * 80;
 
-        function dropChips(pit) {
-            const { Engine, Runner, Bodies, Body, Composite, Mouse, MouseConstraint, Events } = Matter;
-            const chips = Array.from(pit.querySelectorAll('.skill-tag'));
-            const sizes = pit._chipSizes;
-            const width = pit.clientWidth;
-            const height = pit.clientHeight;
-
-            const engine = Engine.create({ enableSleeping: true });
-            engine.gravity.y = 1.1;
-            const wall = { isStatic: true, friction: 0.6 };
-            Composite.add(engine.world, [
-                Bodies.rectangle(width / 2, height + 50, width * 3, 100, wall),       // floor
-                Bodies.rectangle(-50, height - 1000, 100, 2000, wall),               // left wall
-                Bodies.rectangle(width + 50, height - 1000, 100, 2000, wall)         // right wall
-            ]);
-
-            const bodies = chips.map(function(chip, i) {
-                const s = sizes[i];
-                const x = s.w / 2 + Math.random() * Math.max(1, width - s.w);
-                return Bodies.rectangle(x, -80 - s.h, s.w, s.h, {
-                    chamfer: { radius: s.h / 2 },
-                    angle: (Math.random() - 0.5) * 0.9,
-                    restitution: 0.25,
-                    friction: 0.45,
-                    frictionAir: 0.012,
-                    density: 0.002
+                chip.animate([
+                    { offset: 0,    opacity: 0, transform: 'translate(' + drift + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' },
+                    { offset: 0.12, opacity: 1 },
+                    { offset: 0.55, opacity: 1, transform: 'translate(0, 0) rotate(' + (-tilt * 0.25) + 'deg) scale(1.04, 0.9)', easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)' },
+                    { offset: 0.7,  opacity: 1, transform: 'translate(0, -14px) rotate(' + (tilt * 0.12) + 'deg) scale(1)', easing: 'cubic-bezier(0.6, 0, 0.8, 0.4)' },
+                    { offset: 0.82, opacity: 1, transform: 'translate(0, 0) rotate(' + (-tilt * 0.05) + 'deg) scale(1.02, 0.96)', easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)' },
+                    { offset: 0.91, opacity: 1, transform: 'translate(0, -3px) rotate(0deg) scale(1)' },
+                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg) scale(1)' }
+                ], {
+                    duration: 1150,
+                    delay: delay,
+                    fill: 'both'
                 });
             });
-
-            // Rain them in one by one.
-            bodies.forEach(function(body, i) {
-                setTimeout(function() {
-                    Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.12);
-                    Composite.add(engine.world, body);
-                    chips[i].classList.add('is-dropped');
-                }, i * 140 + Math.random() * 90);
-            });
-
-            // Drag & throw with the mouse (desktop). Wheel/touch handlers
-            // are removed so the page still scrolls normally over the chips.
-            const mouse = Mouse.create(pit);
-            ['wheel', 'touchmove', 'touchstart', 'touchend'].forEach(function(type) {
-                pit.removeEventListener(type, type === 'wheel' ? mouse.mousewheel :
-                    type === 'touchmove' ? mouse.mousemove :
-                    type === 'touchstart' ? mouse.mousedown : mouse.mouseup);
-            });
-            const grab = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: { stiffness: 0.2, render: { visible: false } }
-            });
-            Composite.add(engine.world, grab);
-            Events.on(grab, 'startdrag', function() { pit.classList.add('is-dragging'); });
-            Events.on(grab, 'enddrag', function() { pit.classList.remove('is-dragging'); });
-
-            const runner = Runner.create();
-            Runner.run(runner, engine);
-            Events.on(engine, 'afterUpdate', function() {
-                bodies.forEach(function(body, i) {
-                    const s = sizes[i];
-                    chips[i].style.transform =
-                        'translate(' + (body.position.x - s.w / 2) + 'px,' + (body.position.y - s.h / 2) + 'px) rotate(' + body.angle + 'rad)';
-                });
-            });
-
-            // Pause the simulation while the section is off screen.
-            new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    runner.enabled = entry.isIntersecting;
-                });
-            }).observe(pit);
         }
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
