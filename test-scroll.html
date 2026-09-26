@@ -109,7 +109,7 @@
         .ticker {
             --ticker-lilac: #ECDBFF;
             display: inline-block;
-            height: 1.6em;
+            height: var(--tick-h, 1.6em); /* one line of the surrounding text */
             overflow: hidden;
             vertical-align: top;
         }
@@ -117,7 +117,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 8.6s infinite;
+            animation: ticker-roll 6.6s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -125,7 +125,7 @@
         }
 
         .ticker-item {
-            height: 1.6em;
+            height: var(--tick-h, 1.6em);
             white-space: nowrap;
             color: #333;
         }
@@ -139,12 +139,11 @@
             text-decoration-skip-ink: none; /* one continuous line under g/p/y */
         }
 
-        /* 8.6s cycle: each state holds ~3.5s (time to read the one
-           sentence in focus), then a 0.8s roll. */
+        /* 6.6s cycle: each state holds ~2.5s, then a 0.8s roll. */
         @keyframes ticker-roll {
-            0%, 40.7%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            50%, 90.7%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            100%        { transform: translateY(-3.2em); }
+            0%, 37.9%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 87.9%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            100%        { transform: translateY(calc(var(--tick-h, 1.6em) * -2)); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -293,6 +292,24 @@
             grid-area: 1 / 1;
         }
 
+        /* One sentence at a time, so the hero can be bigger */
+        .hero-sticky .main-content {
+            max-width: 760px;
+        }
+
+        .hero-sticky h1 {
+            font-size: 64px;
+            margin-bottom: 40px;
+        }
+
+        .hero-lines > p {
+            font-size: 40px;
+            line-height: 1.4;
+            --tick-h: 1.4em;
+            max-width: none;
+            margin-bottom: 8px;
+        }
+
         .reveal-word {
             display: inline-block;
             will-change: opacity, transform, filter;
@@ -314,6 +331,16 @@
 
     .hero-lines {
         display: block;
+    }
+
+    .hero-sticky h1 {
+        font-size: 36px;
+        margin-bottom: 24px;
+    }
+
+    .hero-lines > p {
+        font-size: 20px;
+        margin-bottom: 30px;
     }
 
     .reveal-word {
@@ -530,7 +557,14 @@
                 </span>
             </span></p>
 
-        <p id="hero-line-2">Design is a conversation. I make sure it speaks the human language.</p>
+        <p id="hero-line-2">Design is a conversation. I make sure it speaks the
+            <span class="ticker" aria-label="human language, user language">
+                <span class="ticker-track" aria-hidden="true">
+                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
+                    <span class="ticker-item"><span class="ticker-text">user</span> language.</span>
+                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
+                </span>
+            </span></p>
         </div>
         
         <div class="buttons">
