@@ -299,6 +299,10 @@
         }
 
 @media (max-width: 768px) {
+    .line-break {
+        display: none; /* let phones wrap naturally */
+    }
+
     .hero-scroll, .hero-sticky {
         position: static;
         height: auto;
@@ -510,7 +514,7 @@
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
-        <p id="hero-line-1">I shape digital products, with experience in
+        <p id="hero-line-1">I shape digital products, with experience<br class="line-break"> in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
@@ -519,7 +523,7 @@
                 </span>
             </span></p>
 
-        <p id="hero-line-2">Design is a conversation. I make sure it speaks the
+        <p id="hero-line-2">Design is a conversation. I make sure<br class="line-break"> it speaks the
             <span class="ticker is-idle" aria-label="human language, user language">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
@@ -1060,7 +1064,7 @@
                         }
                     });
                     line.replaceChild(frag, node);
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
                     node.classList.add('reveal-word');
                     words.push(node);
                 }
