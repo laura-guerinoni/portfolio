@@ -1050,23 +1050,48 @@
             elements.forEach(function(el) { observer.observe(el); });
         }
 
+        // Run fn once this section's header sequence (title → year →
+        // subtitle) has finished typing, plus `extra` seconds. If the
+        // header hasn't been revealed yet, wait for it.
+        function afterHeader(section, extra, fn) {
+            const go = function() {
+                const doneAt = section._headerAt + ((section._subEnd || 0) + extra) * 1000;
+                setTimeout(fn, Math.max(0, doneAt - performance.now()));
+            };
+            if (section._headerAt) go();
+            else (section._pending = section._pending || []).push(go);
+        }
+
         function setupSectionReveals() {
             setupPageColor();
-            const reveal = function(el) {
-                el.classList.add('is-revealed');
-                // TYPEWRITER TEST: start the subtitle with its header
-                if (el.classList.contains('section-header')) {
-                    const sub = el.closest('.project-content-wrapper').querySelector('.project-subtitle');
-                    if (sub) sub.classList.add('is-revealed');
-                }
-            };
-            onceVisible(document.querySelectorAll('.section-header, .project-subtitle, .project-content > p, .project-gif'), reveal);
+            const reveal = function(el) { el.classList.add('is-revealed'); };
+
+            // Header: title → year → subtitle type out as one sequence.
+            onceVisible(document.querySelectorAll('.section-header'), function(header) {
+                const section = header.closest('.project-section');
+                reveal(header);
+                const sub = section.querySelector('.project-subtitle');
+                if (sub) reveal(sub);
+                section._headerAt = performance.now();
+                (section._pending || []).forEach(function(go) { go(); });
+            });
+
+            // Everything below waits until it is on screen AND the subtitle
+            // has finished: chips first, then the description, then the video.
+            onceVisible(document.querySelectorAll('.project-content > p'), function(el) {
+                afterHeader(el.closest('.project-section'), 0.8, function() { reveal(el); });
+            });
+            onceVisible(document.querySelectorAll('.project-gif'), function(el) {
+                afterHeader(el.closest('.project-section'), 1.2, function() { reveal(el); });
+            });
 
             if (prefersReducedMotion || !Element.prototype.animate) return; // chips just stay visible
             const chipRows = document.querySelectorAll('.skills-tags');
             chipRows.forEach(function(row) { row.classList.add('chips-ready'); });
             // Only start raining once the whole chip row is on screen.
-            onceVisible(chipRows, rainChips, '0px 0px -12% 0px');
+            onceVisible(chipRows, function(row) {
+                afterHeader(row.closest('.project-section'), 0.1, function() { rainChips(row); });
+            }, '0px 0px -12% 0px');
         }
 
         // Each chip falls from above with a random tilt and sideways
@@ -1137,10 +1162,9 @@
                 // title → year → subtitle play as one sequence when the header shows
                 let t = title ? typeText(title, 0.15, 0.03) : 0.15;
                 if (year) t = typeText(year, t + 0.05, 0.03);
-                if (subtitle) {
-                    typeText(subtitle, t + 0.1, 0.018);
-                    subtitle.classList.add('tw-follows-header');
-                }
+                // remember when the subtitle finishes, so chips and text can follow it
+                if (subtitle) section._subEnd = typeText(subtitle, t + 0.1, 0.018);
+                else section._subEnd = t;
                 // the description types quickly on its own when it scrolls in
                 if (text) typeText(text, 0.1, 0.006);
             });
