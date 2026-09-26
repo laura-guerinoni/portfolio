@@ -681,7 +681,6 @@
 
         .contact-btn:hover,
         .contact-btn:focus-visible {
-            transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
@@ -829,6 +828,29 @@
 
         .next-arrow { width: 56px; height: 56px; }
 
+        /* ---------- back button: same small dark arrow as the other links ---------- */
+        .pill-back { padding: 6px 18px 6px 6px; gap: 10px; }
+
+        .pill-back svg {
+            width: 28px;
+            height: 28px;
+            padding: 7px;
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: var(--ink);
+            color: #fff;
+            flex-shrink: 0;
+            transition: transform 0.4s var(--ease-out);
+        }
+
+        .pill-back:hover svg { transform: rotate(45deg); }
+
+        /* no lift on hover: a moving button flickers when the cursor sits on its edge */
+        a.pill:hover { transform: none; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08), 0 12px 28px rgba(0, 0, 0, 0.1); }
+
+        /* arrows turn in place (no sliding into the padding) */
+        .next:hover .next-arrow { transform: rotate(-45deg); }
+
         @media (max-width: 860px) {
             .next-inner { flex-direction: row; flex-wrap: wrap; }
             .sticker { width: 56px; height: 56px; top: -18px; left: -12px; border-radius: 16px; }
@@ -856,8 +878,8 @@
     <div class="cursor" id="cursor">View</div>
 
     <div class="topbar">
-        <a href="test-scroll.html#laine" class="pill">
-            <img src="assets/back.svg" alt="">
+        <a href="test-scroll.html#laine" class="pill pill-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
             All projects
         </a>
         <span class="pill pill--context">Laine · 2024–2025</span>

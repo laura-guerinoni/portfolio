@@ -600,14 +600,14 @@
            sticker animation as the app icons on the deep-dive videos.
            Hovering the name while it's out gives it a little wiggle.
            ============================================================ */
-        .hero-state-2 .laura-hover-photo {
+        .hero-photo .laura-hover-photo {
             opacity: 1;
             transform: translate(0, -50%) rotate(-8deg) scale(1);
             transition: opacity 0.2s ease,
                         transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .hero-state-2 .hover-name:hover .laura-hover-photo {
+        .hero-photo .hover-name:hover .laura-hover-photo {
             transform: translate(0, -50%) rotate(6deg) scale(1.08);
         }
 
@@ -627,9 +627,9 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
         }
 
+        /* no lift on hover: a moving button flickers when the cursor sits on its edge */
         .deep-dive-link:hover {
-            transform: translateY(-2px);
-            box-shadow: rgba(0, 0, 0, 0.14) 0px 14px 50px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 14px 50px;
         }
 
         .deep-dive-link svg {
@@ -644,7 +644,7 @@
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .deep-dive-link:hover svg { transform: translateX(3px) rotate(-45deg); }
+        .deep-dive-link:hover svg { transform: rotate(-45deg); } /* circle stays put, arrow turns */
 
         /* ============================================================
            CONTACT RAIL (TEST) — email + LinkedIn on the right, styled
@@ -691,7 +691,6 @@
 
         .contact-btn:hover,
         .contact-btn:focus-visible {
-            transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
@@ -1523,16 +1522,35 @@
                 if (ticker2) ticker2.classList.toggle('is-idle', !second);
             }
 
+            // Scrolling down: the photo pops out first; the sentences switch
+            // afterwards (at least PHOTO_LEAD ms later), never both at once.
+            const PHOTO_LEAD = 550;
+            let photoAt = 0;
+            let pending = null;
+            function setPhoto(on) {
+                if (on && !main.classList.contains('hero-photo')) photoAt = performance.now();
+                main.classList.toggle('hero-photo', on);
+            }
+
             let lastY = window.scrollY;
             let ticking = false;
             function update() {
                 ticking = false;
                 const y = window.scrollY;
                 const vh = window.innerHeight;
-                if (y < vh * 0.05 || y < lastY) {
-                    setState(false);                 // default, and whenever scrolling up
-                } else if (y > lastY && y > vh * 0.1) {
-                    setState(true);                  // scrolling down past a small threshold
+                if (y < vh * 0.03) {                 // back at the top: everything resets
+                    clearTimeout(pending); pending = null;
+                    setState(false);
+                    setPhoto(false);
+                } else if (y < lastY) {              // scrolling up: first sentence again
+                    clearTimeout(pending); pending = null;
+                    setState(false);
+                } else if (y > lastY) {              // scrolling down
+                    setPhoto(true);
+                    if (y > vh * 0.12 && !main.classList.contains('hero-state-2') && !pending) {
+                        const wait = Math.max(0, photoAt + PHOTO_LEAD - performance.now());
+                        pending = setTimeout(function() { pending = null; setState(true); }, wait);
+                    }
                 }
                 lastY = y;
             }
