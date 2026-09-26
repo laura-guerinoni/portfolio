@@ -86,14 +86,12 @@
         
         /* ============================================================
            MORPHING TAG — normal-flow box + absolutely-positioned overlay.
-
-           --highlight-color is a PLACEHOLDER lilac — swap it for the
-           exact hex used behind Laura's photo in the sidebar once you
-           have it (I don't have access to styles.css to read it).
+           --highlight-color is the lilac behind Laura's photo in the
+           sidebar (.introduction-icon in styles.css).
            ============================================================ */
 
         .morphing-tag {
-            --highlight-color: #E4DFFA; /* placeholder lilac — replace with your sidebar avatar background hex */
+            --highlight-color: #ECDBFF;
             position: relative;
             display: inline-block;
             vertical-align: baseline;
@@ -138,81 +136,43 @@
         }
 
         /* ============================================================
-           SCROLL REVEAL — project icon, title, year, subtitle and
-           skill tags reveal in a quick, staggered sequence as each
-           project section scrolls into view.
-
-           - .project-title now reveals via a single clip-path "wipe"
-             (fixed 0.6s, regardless of word length) instead of the
-             previous letter-by-letter stagger — that's what caused
-             the too-long empty gap on longer titles like "VR
-             Biofeedback Training", since the rest of the section
-             (subtitle, year, skills) was already fully visible while
-             the title was still mid-typing.
-           - Icon → title → year → subtitle → skill tags now fire in
-             a tight staggered sequence (each starting shortly before
-             the previous one finishes), so nothing sits fully-formed
-             on screen while something else is still blank.
-           - Still triggered once per section via IntersectionObserver
-             adding .in-view — no re-trigger on scrolling back up.
+           SCROLL REVEAL — when a project section scrolls into view,
+           icon → title → year → subtitle → skill tags fade/slide in
+           in a quick cascade. The title leads, so there is never a
+           moment where the subtitle/year are visible but the title
+           is still blank.
            ============================================================ */
 
-        .project-title {
-            clip-path: inset(0 100% 0 0);
-            transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-            transition-delay: 0.1s;
-        }
-
-        .project-section.in-view .project-title {
-            clip-path: inset(0 0 0 0);
-        }
-
-        .project-year-tag {
-            display: inline-block;
-            opacity: 0;
-            transform: translateX(-6px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            transition-delay: 0.55s;
-        }
-
-        .project-section.in-view .project-year-tag {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .project-subtitle {
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            transition-delay: 0.7s;
-        }
-
-        .project-section.in-view .project-subtitle {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .section-icon,
+        .project-title,
+        .project-year-tag,
+        .project-subtitle,
         .skills-tags {
             opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            transition-delay: 0.85s;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        .section-icon { transform: scale(0.6); }
+        .project-title { transition-delay: 0.05s; }
+        .project-year-tag { display: inline-block; transition-delay: 0.15s; }
+        .project-subtitle { transition-delay: 0.22s; }
+        .skills-tags { transition-delay: 0.32s; }
+
+        .project-section.in-view .section-icon,
+        .project-section.in-view .project-title,
+        .project-section.in-view .project-year-tag,
+        .project-section.in-view .project-subtitle,
         .project-section.in-view .skills-tags {
             opacity: 1;
-            transform: translateY(0);
+            transform: none;
         }
 
-        .section-icon {
-            opacity: 0;
-            transform: scale(0.6);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .project-section.in-view .section-icon {
-            opacity: 1;
-            transform: scale(1);
+        @media (prefers-reduced-motion: reduce) {
+            .section-icon, .project-title, .project-year-tag,
+            .project-subtitle, .skills-tags {
+                transition: none;
+            }
         }
 
         /* ============================================================
@@ -230,36 +190,36 @@
         }
 
         /* ============================================================
-           LAURA HOVER PHOTO — hovering the "Laura" sidebar item pops
-           her photo out at a slight diagonal tilt, using the same
-           shadow already used on the project video cards
-           (.project-gif) elsewhere on this page, for visual
-           consistency.
+           LAURA HOVER PHOTO — hovering the "Laura" sidebar button pops
+           her photo out next to it, tilted on a diagonal, on the same
+           lilac and with the same shadow as the sidebar buttons.
+           It sits outside the button because .icon has overflow:hidden.
            ============================================================ */
-
-        #laura-icon {
-            position: relative;
-        }
 
         .laura-hover-photo {
             position: absolute;
-            left: 60px;
-            top: 50%;
-            width: 96px;
-            height: 96px;
-            object-fit: cover;
-            border-radius: 12px;
-            transform: translateY(-50%) rotate(-8deg) scale(0.85);
+            left: 172px;
+            top: -24px;
+            width: 112px;
+            height: 112px;
+            padding: 6px;
+            box-sizing: border-box;
+            background-color: #ECDBFF;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05),
+                        0 8px 20px rgba(0, 0, 0, 0.08),
+                        0 2px 4px rgba(0, 0, 0, 0.04); /* same as .icon:hover */
+            transform: translateX(-16px) rotate(0deg) scale(0.6);
+            transform-origin: left center;
             opacity: 0;
             pointer-events: none;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; /* same shadow as .project-gif */
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 20;
+            transition: opacity 0.2s ease,
+                        transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        #laura-icon:hover .laura-hover-photo {
+        #laura-icon:hover + .laura-hover-photo {
             opacity: 1;
-            transform: translateY(-50%) rotate(-8deg) scale(1);
+            transform: translateX(0) rotate(-8deg) scale(1);
         }
 
 @media (max-width: 768px) {
@@ -420,8 +380,8 @@
             <span class="icon-laura">
             <img src="assets/laura.png" alt="Icon" width="24" height="24" class="icon-laura"></span>
             <span class="icon-text">Laura</span>
-            <img src="assets/laura.png" alt="Laura" class="laura-hover-photo">
         </a>
+        <img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true">
         <a href="#lite-tone" class="icon meta-icon" id="lite-tone-icon">
             <span class="icon-letter">
                 <img src="assets/logo_lite_tone.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
