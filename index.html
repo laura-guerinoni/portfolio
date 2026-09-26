@@ -108,7 +108,7 @@
         .ticker {
             --ticker-lilac: #ECDBFF;
             display: inline-block;
-            height: 1.6em;
+            height: var(--tick-h, 1.6em); /* one line of the surrounding text */
             overflow: hidden;
             vertical-align: top;
         }
@@ -116,7 +116,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 12s infinite;
+            animation: ticker-roll 6.6s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -124,7 +124,7 @@
         }
 
         .ticker-item {
-            height: 1.6em;
+            height: var(--tick-h, 1.6em);
             white-space: nowrap;
             color: #333;
         }
@@ -138,12 +138,11 @@
             text-decoration-skip-ink: none; /* one continuous line under g/p/y */
         }
 
-        /* 12s cycle: each state holds ~5.2s (about the time to read
-           both hero sentences), then a 0.8s roll. */
+        /* 6.6s cycle: each state holds ~2.5s, then a 0.8s roll. */
         @keyframes ticker-roll {
-            0%, 43.3%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            50%, 93.3%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            100%        { transform: translateY(-3.2em); }
+            0%, 37.9%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 87.9%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            100%        { transform: translateY(calc(var(--tick-h, 1.6em) * -2)); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -216,6 +215,20 @@
             transition: transform 0.25s ease;
         }
 
+        /* Laura's button is hidden from the very first paint and only
+           fades in once you reach the first project (JS adds .visible). */
+        #laura-icon {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0s 0.5s;
+        }
+
+        #laura-icon.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease, visibility 0s;
+        }
+
         .sidebar .icon.active {
             transform: scale(1.18);
         }
@@ -259,9 +272,61 @@
             transform: translate(0, -50%) rotate(8deg) scale(1);
         }
 
+        /* ============================================================
+           HERO SCROLL — the hero pins in place while you scroll.
+           Sentence one starts black and sentence two gray; scrolling
+           fades sentence one to gray while sentence two comes to life
+           word by word.
+           ============================================================ */
+        .hero-scroll {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 190vh;
+        }
+
+        .hero-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .projects-container {
+            margin-top: 190vh;
+        }
+
+        .reveal-word {
+            display: inline-block;
+            opacity: 0.25; /* gray until scroll brings it to life */
+        }
+
+        #hero-line-1 .reveal-word {
+            opacity: 1;
+        }
+
+        /* A gray sentence holds still on its first phrase; the roll
+           (re)starts only when the sentence is in focus. */
+        .ticker.is-idle .ticker-track {
+            animation: none;
+        }
+
 @media (max-width: 768px) {
     .line-break {
         display: none; /* let phones wrap naturally */
+    }
+
+    .hero-scroll, .hero-sticky {
+        position: static;
+        height: auto;
+    }
+
+    .projects-container {
+        margin-top: 0;
+    }
+
+    .reveal-word {
+        opacity: 1 !important;
     }
 
     body {
@@ -457,10 +522,12 @@
     <!-- Invisible anchor point at the top of the page -->
     <div id="main-anchor"></div>
 
+    <div class="hero-scroll">
+    <div class="hero-sticky">
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
-        <p>I shape digital products, with expertise<br class="line-break"> in
+        <p id="hero-line-1">I shape digital products, with expertise<br class="line-break"> in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
@@ -469,8 +536,8 @@
                 </span>
             </span></p>
 
-        <p>Design is a conversation. I make sure<br class="line-break"> it speaks the
-            <span class="ticker ticker--offset" aria-label="human language, user language">
+        <p id="hero-line-2">Design is a conversation. I make sure<br class="line-break"> it speaks the
+            <span class="ticker is-idle" aria-label="human language, user language">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
                     <span class="ticker-item"><span class="ticker-text">user</span> language.</span>
@@ -494,6 +561,8 @@
                 Download Resume
             </a>
         </div>
+    </div>
+    </div>
     </div>
 </div>
 
@@ -987,6 +1056,77 @@
         }
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
+
+        // HERO SCROLL — see the matching block in <style>.
+        // Wrap each word (and the ticker, as one unit) in .reveal-word.
+        function splitWords(line) {
+            const words = [];
+            Array.from(line.childNodes).forEach(function(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const frag = document.createDocumentFragment();
+                    node.textContent.split(/(\s+)/).forEach(function(part) {
+                        if (!part) return;
+                        if (/^\s+$/.test(part)) {
+                            frag.appendChild(document.createTextNode(part));
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'reveal-word';
+                            span.textContent = part;
+                            frag.appendChild(span);
+                            words.push(span);
+                        }
+                    });
+                    line.replaceChild(frag, node);
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
+                    node.classList.add('reveal-word');
+                    words.push(node);
+                }
+            });
+            return words;
+        }
+
+        const clamp01 = function(x) { return Math.min(1, Math.max(0, x)); };
+
+        // How far word i of n has inked in, for step progress p (0..1).
+        function inkAmount(p, i, n) {
+            const start = (i / n) * 0.75;
+            return clamp01((p - start) / 0.25);
+        }
+
+        const GRAY = 0.25;
+
+        function setupHeroLineReveal() {
+            const line1 = document.getElementById('hero-line-1');
+            const line2 = document.getElementById('hero-line-2');
+            if (!line1 || !line2) return;
+            const words1 = splitWords(line1);
+            const words2 = splitWords(line2);
+            const ticker1 = line1.querySelector('.ticker');
+            const ticker2 = line2.querySelector('.ticker');
+
+            let ticking = false;
+            function update() {
+                ticking = false;
+                const vh = window.innerHeight;
+                // happens between 0.1 and 0.7 screens of scroll
+                const p = clamp01((window.scrollY - vh * 0.1) / (vh * 0.6));
+                const fade = clamp01(p / 0.35); // sentence one steps back early
+                words1.forEach(function(word) {
+                    word.style.opacity = (1 - (1 - GRAY) * fade).toFixed(3);
+                });
+                words2.forEach(function(word, i) {
+                    word.style.opacity = (GRAY + (1 - GRAY) * inkAmount(p, i, words2.length)).toFixed(3);
+                });
+                if (ticker1) ticker1.classList.toggle('is-idle', fade > 0.5);
+                if (ticker2) ticker2.classList.toggle('is-idle', parseFloat(ticker2.style.opacity) < 0.6);
+            }
+            window.addEventListener('scroll', function() {
+                if (!ticking) { ticking = true; requestAnimationFrame(update); }
+            }, { passive: true });
+            update();
+        }
+
+        document.addEventListener('DOMContentLoaded', setupHeroLineReveal);
 
     </script>
 </body>
