@@ -101,8 +101,8 @@
            TICKER — the swapping words roll upward like a departure
            board, underlined in the lilac behind Laura's sidebar photo.
            Each track repeats its first item so the loop keeps rolling
-           up and resets invisibly. Both tickers share an 8s cycle but
-           roll at different moments, so they never move together.
+           up and resets invisibly. Both tickers roll together (the second
+           a beat later), so there is one moment of motion, then stillness.
            ============================================================ */
 
         .ticker {
@@ -120,7 +120,7 @@
         }
 
         .ticker--offset .ticker-track {
-            animation-name: ticker-roll-offset;
+            animation-delay: 0.15s; /* rolls right after the line above: one gesture */
         }
 
         .ticker-item {
@@ -141,12 +141,6 @@
             0%, 38%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
             48%, 88%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
             98%, 100% { transform: translateY(-3.2em); }
-        }
-
-        @keyframes ticker-roll-offset {
-            0%, 13%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            23%, 63%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            73%, 100% { transform: translateY(-3.2em); }
         }
 
         @media (prefers-reduced-motion: reduce) {
