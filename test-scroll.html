@@ -226,6 +226,23 @@
             transition-delay: var(--d);
         }
 
+        /* Keeping pace with fast scrolling: text already typing finishes
+           at once (.tw-done); text not started yet types 5x faster. */
+        .tw-done .tw-char {
+            opacity: 1 !important;
+            transition: none !important;
+        }
+
+        .tw-fast .is-revealed .tw-char {
+            transition-delay: calc(var(--d) * 0.2);
+        }
+
+        .tw-fast .project-gif,
+        .tw-fast .section-icon {
+            transition-duration: 0.4s;
+            transition-delay: 0s;
+        }
+
         .skills-tags.chips-ready .skill-tag {
             display: inline-block;
             opacity: 0;
@@ -1052,14 +1069,68 @@
 
         // Run fn once this section's header sequence (title → year →
         // subtitle) has finished typing, plus `extra` seconds. If the
-        // header hasn't been revealed yet, wait for it.
+        // visitor is scrolling fast (section "rushed"), run it right away.
         function afterHeader(section, extra, fn) {
+            let done = false;
+            const once = function() { if (!done) { done = true; fn(); } };
+            (section._waiters = section._waiters || []).push(once);
+            if (section._rushed) { once(); return; }
             const go = function() {
                 const doneAt = section._headerAt + ((section._subEnd || 0) + extra) * 1000;
-                setTimeout(fn, Math.max(0, doneAt - performance.now()));
+                setTimeout(once, Math.max(0, doneAt - performance.now()));
             };
             if (section._headerAt) go();
             else (section._pending = section._pending || []).push(go);
+        }
+
+        // Catch a section up with the visitor: finish anything mid-typing,
+        // and let everything still waiting play immediately and fast.
+        function rushSection(section) {
+            if (section._rushed) return;
+            section._rushed = true;
+            section.querySelectorAll('.is-revealed').forEach(function(el) {
+                if (el.querySelector('.tw-char')) el.classList.add('tw-done');
+            });
+            section.classList.add('tw-fast');
+            if (!section._headerAt) revealHeader(section.querySelector('.section-header'));
+            (section._waiters || []).forEach(function(once) { once(); });
+        }
+
+        function revealHeader(header) {
+            if (!header) return;
+            const section = header.closest('.project-section');
+            if (section._headerAt) return;
+            header.classList.add('is-revealed');
+            const sub = section.querySelector('.project-subtitle');
+            if (sub) sub.classList.add('is-revealed');
+            section._headerAt = performance.now();
+            (section._pending || []).forEach(function(go) { go(); });
+        }
+
+        function setupPaceKeeping() {
+            const sections = Array.from(document.querySelectorAll('.project-section'));
+            // 1. Fast scrolling: rush every section currently on screen.
+            let lastY = window.scrollY, lastT = performance.now();
+            window.addEventListener('scroll', function() {
+                const now = performance.now();
+                const speed = Math.abs(window.scrollY - lastY) / Math.max(1, now - lastT) * 1000; // px/s
+                lastY = window.scrollY; lastT = now;
+                if (speed < window.innerHeight * 1.5) return;
+                sections.forEach(function(section) {
+                    const r = section.getBoundingClientRect();
+                    if (r.top < window.innerHeight && r.bottom > 0) rushSection(section);
+                });
+            }, { passive: true });
+            // 2. Scrolled past it: anything already in the top 30% of the
+            //    screen should be finished, not still waiting.
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) rushSection(entry.target.closest('.project-section'));
+                });
+            }, { rootMargin: '0px 0px -70% 0px' });
+            document.querySelectorAll('.skills-tags, .project-content > p, .project-gif').forEach(function(el) {
+                observer.observe(el);
+            });
         }
 
         function setupSectionReveals() {
@@ -1067,14 +1138,8 @@
             const reveal = function(el) { el.classList.add('is-revealed'); };
 
             // Header: title → year → subtitle type out as one sequence.
-            onceVisible(document.querySelectorAll('.section-header'), function(header) {
-                const section = header.closest('.project-section');
-                reveal(header);
-                const sub = section.querySelector('.project-subtitle');
-                if (sub) reveal(sub);
-                section._headerAt = performance.now();
-                (section._pending || []).forEach(function(go) { go(); });
-            });
+            onceVisible(document.querySelectorAll('.section-header'), revealHeader);
+            setupPaceKeeping();
 
             // Everything below waits until it is on screen AND the subtitle
             // has finished: chips first, then the description, then the video.
@@ -1090,20 +1155,22 @@
             chipRows.forEach(function(row) { row.classList.add('chips-ready'); });
             // Only start raining once the whole chip row is on screen.
             onceVisible(chipRows, function(row) {
-                afterHeader(row.closest('.project-section'), 0.1, function() { rainChips(row); });
+                const section = row.closest('.project-section');
+                afterHeader(section, 0.1, function() { rainChips(row, section._rushed); });
             }, '0px 0px -12% 0px');
         }
 
         // Each chip falls from above with a random tilt and sideways
         // drift, speeds up like it's under gravity, then eases off just
         // above its place in the row and settles in softly.
-        function rainChips(row) {
+        function rainChips(row, fast) {
             const chips = row.querySelectorAll('.skill-tag');
+            const pace = fast ? 0.4 : 1; // quicker rain when catching up with fast scrolling
             chips.forEach(function(chip, i) {
                 const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
                 const drift = (Math.random() - 0.5) * 90;
                 const height = 220 + Math.random() * 120;
-                const delay = i * 110 + Math.random() * 80;
+                const delay = (i * 110 + Math.random() * 80) * pace;
 
                 chip.animate([
                     { offset: 0,    opacity: 0, transform: 'translate(' + drift + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' },
@@ -1112,7 +1179,7 @@
                     { offset: 0.85, opacity: 1, transform: 'translate(0, 1px) rotate(' + (tilt * 0.04) + 'deg)', easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
                     { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg)' }
                 ], {
-                    duration: 1300,
+                    duration: fast ? 800 : 1300,
                     delay: delay,
                     fill: 'both'
                 });
