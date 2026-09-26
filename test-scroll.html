@@ -117,7 +117,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 12s infinite;
+            animation: ticker-roll 8.6s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -139,11 +139,11 @@
             text-decoration-skip-ink: none; /* one continuous line under g/p/y */
         }
 
-        /* 12s cycle: each state holds ~5.2s (about the time to read
-           both hero sentences), then a 0.8s roll. */
+        /* 8.6s cycle: each state holds ~3.5s (time to read the one
+           sentence in focus), then a 0.8s roll. */
         @keyframes ticker-roll {
-            0%, 43.3%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            50%, 93.3%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            0%, 40.7%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 90.7%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
             100%        { transform: translateY(-3.2em); }
         }
 
@@ -261,16 +261,17 @@
         }
 
         /* ============================================================
-           HERO SCROLL TEST — the hero pins in place for a short scroll
-           while the second sentence "inks in" word by word, then the
-           page carries on to the projects.
+           HERO SCROLL TEST — the hero pins in place while you scroll.
+           Only "Hey, I'm Laura." starts black. Step 1: sentence one
+           inks in word by word. Step 2: sentence two inks in while
+           sentence one fades back to gray — never both black at once.
            ============================================================ */
         .hero-scroll {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 170vh;
+            height: 240vh;
         }
 
         .hero-sticky {
@@ -280,7 +281,7 @@
         }
 
         .projects-container {
-            margin-top: 170vh;
+            margin-top: 240vh;
         }
 
         .reveal-word {
@@ -499,7 +500,7 @@
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
-        <p>I design digital products, with experience in
+        <p id="hero-line-1">I design digital products, with experience in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
@@ -508,14 +509,7 @@
                 </span>
             </span></p>
 
-        <p id="hero-line-2">Design is a conversation. I make sure it speaks the
-            <span class="ticker ticker--offset" aria-label="human language, user language">
-                <span class="ticker-track" aria-hidden="true">
-                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
-                    <span class="ticker-item"><span class="ticker-text">user</span> language.</span>
-                    <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
-                </span>
-            </span></p>
+        <p id="hero-line-2">Design is a conversation. I make sure it speaks the human language.</p>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">
@@ -1029,11 +1023,12 @@
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
 
-        // HERO SCROLL TEST — split line 2 into words and fade each one in
-        // as the visitor scrolls through the pinned hero.
-        function setupHeroLineReveal() {
-            const line = document.getElementById('hero-line-2');
-            if (!line) return;
+        // HERO SCROLL TEST — see the matching block in <style>.
+        const GHOST = 0.12;   // not read yet
+        const READ = 0.28;    // already read, stepped back
+
+        // Wrap each word (and the ticker, as one unit) in .reveal-word.
+        function splitWords(line) {
             const words = [];
             Array.from(line.childNodes).forEach(function(node) {
                 if (node.nodeType === Node.TEXT_NODE) {
@@ -1052,21 +1047,43 @@
                     });
                     line.replaceChild(frag, node);
                 } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    node.classList.add('reveal-word'); // the ticker counts as one word
+                    node.classList.add('reveal-word');
                     words.push(node);
                 }
             });
+            return words;
+        }
 
-            const n = words.length;
+        const clamp01 = function(x) { return Math.min(1, Math.max(0, x)); };
+
+        // How far word i of n has inked in, for step progress p (0..1).
+        function inkAmount(p, i, n) {
+            const start = (i / n) * 0.75;
+            return clamp01((p - start) / 0.25);
+        }
+
+        function setupHeroLineReveal() {
+            const line1 = document.getElementById('hero-line-1');
+            const line2 = document.getElementById('hero-line-2');
+            if (!line1 || !line2) return;
+            const words1 = splitWords(line1);
+            const words2 = splitWords(line2);
+
             let ticking = false;
             function update() {
                 ticking = false;
-                // fully revealed after scrolling ~60% of a screen
-                const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.6)));
-                words.forEach(function(word, i) {
-                    const start = (i / n) * 0.75;
-                    const t = Math.min(1, Math.max(0, (p - start) / 0.25));
-                    word.style.opacity = (0.12 + 0.88 * t).toFixed(3);
+                const vh = window.innerHeight;
+                const y = window.scrollY;
+                const step1 = clamp01(y / (vh * 0.5));                  // 0 → 0.5 screens
+                const step2 = clamp01((y - vh * 0.7) / (vh * 0.5));     // 0.7 → 1.2 screens
+                const fadeBack = clamp01(step2 / 0.35);                 // line 1 steps back early in step 2
+
+                words1.forEach(function(word, i) {
+                    const inked = GHOST + (1 - GHOST) * inkAmount(step1, i, words1.length);
+                    word.style.opacity = (inked + (READ - inked) * fadeBack).toFixed(3);
+                });
+                words2.forEach(function(word, i) {
+                    word.style.opacity = (GHOST + (1 - GHOST) * inkAmount(step2, i, words2.length)).toFixed(3);
                 });
             }
             window.addEventListener('scroll', function() {
