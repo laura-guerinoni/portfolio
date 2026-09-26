@@ -149,104 +149,80 @@
         }
 
         /* ============================================================
-           SCROLL REVEAL — when a project header scrolls into view:
-           1. the section's color floods out in a circle from its icon
-           2. icon → title → year → subtitle cascade in
-           3. the skill chips rain down from above, one by one, and
-              bounce as they land (random tilt/delay set in JS)
-           4. description and video fade up last
+           SCROLL REVEAL
+           - Page color: the whole page background glides from one
+             project color to the next as each section crosses the
+             middle of the screen (sections go transparent once JS runs).
+           - Each piece (header, chips, text, video) reveals on its own,
+             only once it is actually on screen.
+           - Skill chips: fall in with real physics (Matter.js) — they
+             tumble, collide and pile up at an angle, and can be
+             picked up and thrown with the mouse.
            ============================================================ */
 
-        .project-section.reveal-ready {
+        body {
+            transition: background-color 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .js-reveal .project-section {
             background-color: transparent !important;
-            isolation: isolate;
         }
 
-        .project-section.reveal-ready::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            background-color: var(--section-bg);
-            clip-path: circle(0 at var(--origin-x, 20%) var(--origin-y, 15%));
-            transition: clip-path 1.1s cubic-bezier(0.65, 0, 0.35, 1);
-        }
-
-        .project-section.in-view::before {
-            clip-path: circle(150% at var(--origin-x, 20%) var(--origin-y, 15%));
-        }
-
-        .section-icon,
-        .project-title,
-        .project-year-tag,
-        .project-subtitle,
-        .project-content > p,
-        .project-gif {
+        .js-reveal .section-icon,
+        .js-reveal .project-title,
+        .js-reveal .project-year-tag,
+        .js-reveal .project-subtitle,
+        .js-reveal .project-content > p,
+        .js-reveal .project-gif {
             opacity: 0;
-            transform: translateY(12px);
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(24px);
+            filter: blur(6px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .section-icon {
-            transform: scale(0.4) rotate(-20deg);
-            transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .project-title { transition-delay: 0.1s; }
-        .project-year-tag { display: inline-block; transition-delay: 0.2s; }
-        .project-subtitle { transition-delay: 0.28s; }
-        .project-content > p { transition-delay: 1.1s; }
-        .project-gif { transition-delay: 1.25s; }
+        .js-reveal .section-icon { transform: translateY(24px) scale(0.7); }
+        .js-reveal .project-title { transition-delay: 0.08s; }
+        .js-reveal .project-year-tag { display: inline-block; transition-delay: 0.16s; }
+        .js-reveal .project-subtitle { transition-delay: 0.24s; }
 
-        .project-section.in-view .section-icon,
-        .project-section.in-view .project-title,
-        .project-section.in-view .project-year-tag,
-        .project-section.in-view .project-subtitle,
-        .project-section.in-view .project-content > p,
-        .project-section.in-view .project-gif {
+        .js-reveal .is-revealed .section-icon,
+        .js-reveal .is-revealed .project-title,
+        .js-reveal .is-revealed .project-year-tag,
+        .js-reveal .is-revealed.project-subtitle,
+        .js-reveal .project-content > p.is-revealed,
+        .js-reveal .project-gif.is-revealed {
+            opacity: 1;
+            transform: none;
+            filter: none;
+        }
+
+        /* Physics chip pit: chips are placed by JS with transforms */
+        .skills-tags.chip-pit {
+            position: relative;
+            display: block;
             opacity: 1;
             transform: none;
         }
 
-        .skill-tag {
-            display: inline-block;
+        .chip-pit .skill-tag {
+            position: absolute;
+            left: 0;
+            top: 0;
             opacity: 0;
+            cursor: grab;
+            user-select: none;
+            will-change: transform;
+            transition: opacity 0.25s ease;
         }
 
-        .project-section.in-view .skill-tag {
-            animation: chip-rain 1s both;
-            animation-delay: var(--drop-delay, 0.4s);
+        .chip-pit .skill-tag.is-dropped {
+            opacity: 1;
         }
 
-        @keyframes chip-rain {
-            0% {
-                opacity: 0;
-                transform: translateY(-260px) rotate(var(--tilt, 12deg));
-                animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); /* gravity */
-            }
-            12% { opacity: 1; }
-            55% {
-                transform: translateY(0) rotate(calc(var(--tilt, 12deg) * -0.4));
-                animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
-            }
-            70% {
-                transform: translateY(-16px) rotate(calc(var(--tilt, 12deg) * 0.2));
-                animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
-            }
-            82% {
-                transform: translateY(0) rotate(0deg);
-                animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
-            }
-            90% { transform: translateY(-4px); }
-            100% { opacity: 1; transform: translateY(0) rotate(0deg); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .project-section.reveal-ready::before { transition: none; }
-            .section-icon, .project-title, .project-year-tag,
-            .project-subtitle, .project-content > p, .project-gif {
-                transition: none;
-            }
-            .project-section.in-view .skill-tag { animation: none; opacity: 1; }
+        .chip-pit.is-dragging .skill-tag {
+            cursor: grabbing;
         }
 
         /* ============================================================
@@ -806,6 +782,7 @@
         <span id="notification-text">Download in progress</span>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
     <script>
         // Function to show feedback notification
         function showDownloadFeedback(fileType) {
@@ -945,49 +922,155 @@
         });
 
         // ============================================================
-        // SCROLL REVEAL — watch each project header and add .in-view to
-        // its section as soon as the header scrolls into view. That
-        // class kicks off the color flood, header cascade and chip rain
-        // defined in the <style> block.
+        // SCROLL REVEAL — see the matching block in <style>.
         // ============================================================
-        function setupSectionReveals() {
-            const sections = document.querySelectorAll('.project-section');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            sections.forEach(function(section) {
-                // Hand the section's color to the ::before "flood" layer,
-                // centred on the project icon.
-                section.style.setProperty('--section-bg', getComputedStyle(section).backgroundColor);
-                const icon = section.querySelector('.section-icon');
-                if (icon) {
-                    const s = section.getBoundingClientRect();
-                    const i = icon.getBoundingClientRect();
-                    section.style.setProperty('--origin-x', (i.left + i.width / 2 - s.left) + 'px');
-                    section.style.setProperty('--origin-y', (i.top + i.height / 2 - s.top) + 'px');
-                }
-                section.classList.add('reveal-ready');
-
-                // Each chip gets its own tilt and a slightly irregular
-                // delay so they fall like raindrops, not in lockstep.
-                section.querySelectorAll('.skill-tag').forEach(function(tag, index) {
-                    const tilt = (Math.random() * 30 - 15).toFixed(1);
-                    const delay = 0.35 + index * 0.08 + Math.random() * 0.08;
-                    tag.style.setProperty('--tilt', tilt + 'deg');
-                    tag.style.setProperty('--drop-delay', delay.toFixed(2) + 's');
-                });
+        // Page background follows whichever section sits at the middle
+        // of the screen; white over the intro.
+        function setupPageColor() {
+            const sections = Array.from(document.querySelectorAll('.project-section'));
+            const colors = sections.map(function(section) {
+                return getComputedStyle(section).backgroundColor;
             });
+            document.documentElement.classList.add('js-reveal');
 
+            let ticking = false;
+            function update() {
+                ticking = false;
+                const middle = window.innerHeight * 0.5;
+                let color = '#ffffff';
+                sections.forEach(function(section, i) {
+                    const r = section.getBoundingClientRect();
+                    if (r.top <= middle && r.bottom > middle) color = colors[i];
+                });
+                document.body.style.backgroundColor = color;
+            }
+            window.addEventListener('scroll', function() {
+                if (!ticking) { ticking = true; requestAnimationFrame(update); }
+            }, { passive: true });
+            update();
+        }
+
+        // Reveal each element once it is well inside the viewport.
+        function onceVisible(elements, callback, rootMargin) {
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
-                        entry.target.closest('.project-section').classList.add('in-view');
-                        observer.unobserve(entry.target); // reveal plays once per section
+                        observer.unobserve(entry.target);
+                        callback(entry.target);
                     }
                 });
-            }, { rootMargin: '0px 0px -15% 0px' });
-            sections.forEach(function(section) {
-                const header = section.querySelector('.section-header');
-                if (header) observer.observe(header);
+            }, { rootMargin: rootMargin || '0px 0px -20% 0px' });
+            elements.forEach(function(el) { observer.observe(el); });
+        }
+
+        function setupSectionReveals() {
+            setupPageColor();
+            const reveal = function(el) { el.classList.add('is-revealed'); };
+            onceVisible(document.querySelectorAll('.section-header, .project-subtitle, .project-content > p, .project-gif'), reveal);
+
+            const pits = document.querySelectorAll('.skills-tags');
+            if (typeof Matter === 'undefined' || prefersReducedMotion) return; // chips stay as a normal row
+            // Wait for the web font so chip widths are measured correctly.
+            document.fonts.ready.then(function() {
+                pits.forEach(preparePit);
+                // Only start raining once the whole chip area is on screen.
+                onceVisible(pits, dropChips, '0px 0px -12% 0px');
             });
+        }
+
+        // Measure chips in their normal layout, then switch the container
+        // to a fixed-height "pit" the physics world lives in.
+        function preparePit(pit) {
+            const chips = Array.from(pit.querySelectorAll('.skill-tag'));
+            const sizes = chips.map(function(chip) {
+                return { w: chip.offsetWidth, h: chip.offsetHeight };
+            });
+            const width = pit.clientWidth;
+            const chipHeight = sizes[0] ? sizes[0].h : 30;
+            const totalWidth = sizes.reduce(function(sum, s) { return sum + s.w; }, 0);
+            const rows = Math.ceil((totalWidth * 1.3) / width);
+            pit.style.height = Math.max(96, rows * chipHeight * 1.25 + 24) + 'px';
+            pit.classList.add('chip-pit');
+            chips.forEach(function(chip, i) {
+                chip.style.width = sizes[i].w + 'px';
+                chip.style.height = sizes[i].h + 'px';
+                chip.style.boxSizing = 'border-box';
+            });
+            pit._chipSizes = sizes;
+        }
+
+        function dropChips(pit) {
+            const { Engine, Runner, Bodies, Body, Composite, Mouse, MouseConstraint, Events } = Matter;
+            const chips = Array.from(pit.querySelectorAll('.skill-tag'));
+            const sizes = pit._chipSizes;
+            const width = pit.clientWidth;
+            const height = pit.clientHeight;
+
+            const engine = Engine.create({ enableSleeping: true });
+            engine.gravity.y = 1.1;
+            const wall = { isStatic: true, friction: 0.6 };
+            Composite.add(engine.world, [
+                Bodies.rectangle(width / 2, height + 50, width * 3, 100, wall),       // floor
+                Bodies.rectangle(-50, height - 1000, 100, 2000, wall),               // left wall
+                Bodies.rectangle(width + 50, height - 1000, 100, 2000, wall)         // right wall
+            ]);
+
+            const bodies = chips.map(function(chip, i) {
+                const s = sizes[i];
+                const x = s.w / 2 + Math.random() * Math.max(1, width - s.w);
+                return Bodies.rectangle(x, -80 - s.h, s.w, s.h, {
+                    chamfer: { radius: s.h / 2 },
+                    angle: (Math.random() - 0.5) * 0.9,
+                    restitution: 0.25,
+                    friction: 0.45,
+                    frictionAir: 0.012,
+                    density: 0.002
+                });
+            });
+
+            // Rain them in one by one.
+            bodies.forEach(function(body, i) {
+                setTimeout(function() {
+                    Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.12);
+                    Composite.add(engine.world, body);
+                    chips[i].classList.add('is-dropped');
+                }, i * 140 + Math.random() * 90);
+            });
+
+            // Drag & throw with the mouse (desktop). Wheel/touch handlers
+            // are removed so the page still scrolls normally over the chips.
+            const mouse = Mouse.create(pit);
+            ['wheel', 'touchmove', 'touchstart', 'touchend'].forEach(function(type) {
+                pit.removeEventListener(type, type === 'wheel' ? mouse.mousewheel :
+                    type === 'touchmove' ? mouse.mousemove :
+                    type === 'touchstart' ? mouse.mousedown : mouse.mouseup);
+            });
+            const grab = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: { stiffness: 0.2, render: { visible: false } }
+            });
+            Composite.add(engine.world, grab);
+            Events.on(grab, 'startdrag', function() { pit.classList.add('is-dragging'); });
+            Events.on(grab, 'enddrag', function() { pit.classList.remove('is-dragging'); });
+
+            const runner = Runner.create();
+            Runner.run(runner, engine);
+            Events.on(engine, 'afterUpdate', function() {
+                bodies.forEach(function(body, i) {
+                    const s = sizes[i];
+                    chips[i].style.transform =
+                        'translate(' + (body.position.x - s.w / 2) + 'px,' + (body.position.y - s.h / 2) + 'px) rotate(' + body.angle + 'rad)';
+                });
+            });
+
+            // Pause the simulation while the section is off screen.
+            new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    runner.enabled = entry.isIntersecting;
+                });
+            }).observe(pit);
         }
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
