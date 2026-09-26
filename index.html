@@ -155,9 +155,8 @@
              middle of the screen (sections go transparent once JS runs).
            - Each piece (header, chips, text, video) reveals on its own,
              only once it is actually on screen.
-           - Skill chips: rain down one by one from above, tumbling
-             and drifting as they fall, then land in their own slot in
-             the row with a little squash and bounce.
+           - Skill chips: float down one by one like leaves, swaying
+             and tilting, then settle softly into their slot in the row.
            ============================================================ */
 
         body {
@@ -955,27 +954,28 @@
             onceVisible(chipRows, rainChips, '0px 0px -12% 0px');
         }
 
-        // Each chip falls from above with a random tilt and sideways
-        // drift, speeds up like it's under gravity, lands exactly in its
-        // place in the row, squashes a touch, bounces and settles.
+        // Each chip floats down from above like a leaf: it sways side to
+        // side with a soft tilt, slows as it arrives, and settles into
+        // its place in the row with a gentle wobble — light, not heavy.
         function rainChips(row) {
             const chips = row.querySelectorAll('.skill-tag');
             chips.forEach(function(chip, i) {
-                const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
-                const drift = (Math.random() - 0.5) * 90;
-                const height = 220 + Math.random() * 120;
-                const delay = i * 110 + Math.random() * 80;
+                const dir = Math.random() < 0.5 ? -1 : 1;
+                const tilt = dir * (10 + Math.random() * 14);
+                const sway = dir * (18 + Math.random() * 22);
+                const height = 140 + Math.random() * 80;
+                const delay = i * 90 + Math.random() * 120;
+                const soft = 'cubic-bezier(0.37, 0, 0.63, 1)';
 
                 chip.animate([
-                    { offset: 0,    opacity: 0, transform: 'translate(' + drift + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' },
-                    { offset: 0.12, opacity: 1 },
-                    { offset: 0.55, opacity: 1, transform: 'translate(0, 0) rotate(' + (-tilt * 0.25) + 'deg) scale(1.04, 0.9)', easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)' },
-                    { offset: 0.7,  opacity: 1, transform: 'translate(0, -14px) rotate(' + (tilt * 0.12) + 'deg) scale(1)', easing: 'cubic-bezier(0.6, 0, 0.8, 0.4)' },
-                    { offset: 0.82, opacity: 1, transform: 'translate(0, 0) rotate(' + (-tilt * 0.05) + 'deg) scale(1.02, 0.96)', easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)' },
-                    { offset: 0.91, opacity: 1, transform: 'translate(0, -3px) rotate(0deg) scale(1)' },
-                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg) scale(1)' }
+                    { offset: 0,    opacity: 0, transform: 'translate(' + sway + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: soft },
+                    { offset: 0.15, opacity: 1 },
+                    { offset: 0.4,  transform: 'translate(' + (-sway * 0.6) + 'px,' + (-height * 0.45) + 'px) rotate(' + (-tilt * 0.6) + 'deg)', easing: soft },
+                    { offset: 0.7,  transform: 'translate(' + (sway * 0.25) + 'px,' + (-height * 0.1) + 'px) rotate(' + (tilt * 0.3) + 'deg)', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+                    { offset: 0.87, transform: 'translate(0, 2px) rotate(' + (-tilt * 0.08) + 'deg)', easing: soft },
+                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg)' }
                 ], {
-                    duration: 1150,
+                    duration: 1600,
                     delay: delay,
                     fill: 'both'
                 });
