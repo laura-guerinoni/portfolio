@@ -267,7 +267,7 @@
         }
 
         .window {
-            max-width: 1040px;
+            max-width: 860px;
             margin: 0 auto;
             border-radius: 18px;
             background: #fff;
@@ -442,20 +442,22 @@
             cursor: none;
         }
 
-        .tile.w7 { grid-column: span 7; }
-        .tile.w5 { grid-column: span 5; }
+        .tile.w6 { grid-column: span 6; }
         .tile.w12 { grid-column: span 12; }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .tile img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            aspect-ratio: 4 / 3.4;
+            height: auto;
+            max-height: 78vh;
+            object-fit: contain;
             transition: transform 0.8s var(--ease-out);
         }
-
-        .tile.w12 img { aspect-ratio: 16 / 9; }
 
         .tile:hover img { transform: scale(1.035); }
 
@@ -623,11 +625,20 @@
             .glance { grid-template-columns: 1fr; padding: 4vh 0 8vh; }
             .process { grid-template-columns: 1fr; gap: 0; }
             .process-nav { display: none; }
-            .tile.w7, .tile.w5 { grid-column: span 12; }
+            .tile.w6 { grid-column: span 12; }
             .step p { font-size: 17px; }
             .next-inner { padding: 32px; flex-direction: column; align-items: flex-start; }
         }
     
+        /* the frame hugs the video's own shape (portrait or landscape) */
+        .window { width: fit-content; }
+
+        .window video {
+            width: auto;
+            max-width: 100%;
+            max-height: 70vh;
+        }
+
         /* ---------- contact rail: always one click away ---------- */
         .contact-rail {
             position: fixed;
@@ -836,11 +847,11 @@
                     <h2 class="reveal">Research and findings</h2>
                     <p class="reveal">When evaluating the current Enjoy app, my colleagues and I carried out an expert heuristic evaluation, followed by a moderated usability test, to observe how the users completed a set of carefully chosen tasks. The <span class="kw" data-target="tile-data">collected data</span> was cleaned, organized, and clusterized in order to map it and extrapolate the main insights. Based on them, I formulated the <span class="kw" data-target="tile-requirements">redesign requirements</span> to follow in the following stage of the project.</p>
                     <div class="bento">
-                        <figure class="tile w5 reveal" id="tile-data">
+                        <figure class="tile w12 reveal" id="tile-data">
                             <img src="assets/Enjoy_collected_data.png" alt="Collected data" loading="lazy">
                             <figcaption>Collected data</figcaption>
                         </figure>
-                        <figure class="tile w7 reveal" id="tile-requirements" style="--delay: 0.12s">
+                        <figure class="tile w12 reveal" id="tile-requirements" style="--delay: 0.12s">
                             <img src="assets/Enjoy_redesign_requirements.png" alt="Redesign requirements" loading="lazy">
                             <figcaption>Redesign requirements</figcaption>
                         </figure>
@@ -852,15 +863,15 @@
                     <h2 class="reveal">Prototyping and testing</h2>
                     <p class="reveal">After a closed card sorting and a Tree Test paved the path to an improved <span class="kw" data-target="tile-ia">information architecture</span>, a lo-fi prototype was designed. Through iterative user testing (moderated and <span class="kw" data-target="tile-heatmap">heatmap testing</span>), the <span class="kw" data-target="tile-system">design system</span> was polished and small changes led to the final prototype version.</p>
                     <div class="bento">
-                        <figure class="tile w7 reveal" id="tile-ia">
+                        <figure class="tile w6 reveal" id="tile-ia">
                             <img src="assets/Enjoy_information_architecture.png" alt="Information architecture" loading="lazy">
                             <figcaption>Information architecture</figcaption>
                         </figure>
-                        <figure class="tile w5 reveal" id="tile-heatmap" style="--delay: 0.12s">
+                        <figure class="tile w12 reveal" id="tile-heatmap" style="--delay: 0.12s">
                             <img src="assets/Enjoy_heatmap_testing.png" alt="Heatmap testing" loading="lazy">
                             <figcaption>Heatmap testing</figcaption>
                         </figure>
-                        <figure class="tile w12 reveal" id="tile-system">
+                        <figure class="tile w6 reveal" id="tile-system">
                             <img src="assets/Enjoy_design_system.png" alt="Design system" loading="lazy">
                             <figcaption>Design system</figcaption>
                         </figure>
@@ -872,11 +883,11 @@
                     <h2 class="reveal">Results and retrospective</h2>
                     <p class="reveal">Ultimately, a <span class="kw" data-target="tile-comparison">design comparison</span> between the old and new version of the app was made, in which it is evident that the new one addresses and solves many of the initial issues. Speaking of <span class="kw" data-target="tile-kpis">KPIs</span>, the average completion time per task decreased by 66%, and the success rate raised to 100% from the original 85%.</p>
                     <div class="bento">
-                        <figure class="tile w5 reveal" id="tile-comparison">
+                        <figure class="tile w12 reveal" id="tile-comparison">
                             <img src="assets/Enjoy_design_comparison.png" alt="Design comparison" loading="lazy">
                             <figcaption>Design comparison</figcaption>
                         </figure>
-                        <figure class="tile w7 reveal" id="tile-kpis" style="--delay: 0.12s">
+                        <figure class="tile w12 reveal" id="tile-kpis" style="--delay: 0.12s">
                             <img src="assets/Enjoy_KPIs.png" alt="KPIs" loading="lazy">
                             <figcaption>KPIs</figcaption>
                         </figure>

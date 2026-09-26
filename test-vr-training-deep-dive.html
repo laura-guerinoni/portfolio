@@ -267,7 +267,7 @@
         }
 
         .window {
-            max-width: 1040px;
+            max-width: 860px;
             margin: 0 auto;
             border-radius: 18px;
             background: #fff;
@@ -442,20 +442,22 @@
             cursor: none;
         }
 
-        .tile.w7 { grid-column: span 7; }
-        .tile.w5 { grid-column: span 5; }
+        .tile.w6 { grid-column: span 6; }
         .tile.w12 { grid-column: span 12; }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .tile img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            aspect-ratio: 4 / 3.4;
+            height: auto;
+            max-height: 78vh;
+            object-fit: contain;
             transition: transform 0.8s var(--ease-out);
         }
-
-        .tile.w12 img { aspect-ratio: 16 / 9; }
 
         .tile:hover img { transform: scale(1.035); }
 
@@ -623,11 +625,20 @@
             .glance { grid-template-columns: 1fr; padding: 4vh 0 8vh; }
             .process { grid-template-columns: 1fr; gap: 0; }
             .process-nav { display: none; }
-            .tile.w7, .tile.w5 { grid-column: span 12; }
+            .tile.w6 { grid-column: span 12; }
             .step p { font-size: 17px; }
             .next-inner { padding: 32px; flex-direction: column; align-items: flex-start; }
         }
     
+        /* the frame hugs the video's own shape (portrait or landscape) */
+        .window { width: fit-content; }
+
+        .window video {
+            width: auto;
+            max-width: 100%;
+            max-height: 70vh;
+        }
+
         /* ---------- contact rail: always one click away ---------- */
         .contact-rail {
             position: fixed;
@@ -767,6 +778,7 @@
                 </div>
 
                 <dl class="facts reveal" style="--delay: 0.7s">
+                    <div class="fact"><dt class="label">Type</dt><dd>Case study</dd></div>
                     <div class="fact"><dt class="label">Year</dt><dd>2022</dd></div>
                     <div class="fact">
                         <dt class="label">Scope</dt>
@@ -848,11 +860,11 @@
                     <h2 class="reveal">Concept definition</h2>
                     <p class="reveal">The accumulated knowledge represented a solid base to define the <span class="kw" data-target="tile-concept">concept</span> and the main goals of the application. After that, more research helped with the <span class="kw" data-target="tile-specs">specifications</span> and the delineation of the <span class="kw" data-target="tile-ia">information architecture</span>.</p>
                     <div class="bento">
-                        <figure class="tile w7 reveal" id="tile-concept">
+                        <figure class="tile w12 reveal" id="tile-concept">
                             <img src="assets/vr_concept.png" alt="Concept" loading="lazy">
                             <figcaption>Concept</figcaption>
                         </figure>
-                        <figure class="tile w5 reveal" id="tile-specs" style="--delay: 0.12s">
+                        <figure class="tile w12 reveal" id="tile-specs" style="--delay: 0.12s">
                             <img src="assets/vr_specifications.png" alt="Specifications" loading="lazy">
                             <figcaption>Specifications</figcaption>
                         </figure>

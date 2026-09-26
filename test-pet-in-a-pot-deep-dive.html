@@ -267,7 +267,7 @@
         }
 
         .window {
-            max-width: 1040px;
+            max-width: 860px;
             margin: 0 auto;
             border-radius: 18px;
             background: #fff;
@@ -442,20 +442,22 @@
             cursor: none;
         }
 
-        .tile.w7 { grid-column: span 7; }
-        .tile.w5 { grid-column: span 5; }
+        .tile.w6 { grid-column: span 6; }
         .tile.w12 { grid-column: span 12; }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .tile img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            aspect-ratio: 4 / 3.4;
+            height: auto;
+            max-height: 78vh;
+            object-fit: contain;
             transition: transform 0.8s var(--ease-out);
         }
-
-        .tile.w12 img { aspect-ratio: 16 / 9; }
 
         .tile:hover img { transform: scale(1.035); }
 
@@ -623,11 +625,20 @@
             .glance { grid-template-columns: 1fr; padding: 4vh 0 8vh; }
             .process { grid-template-columns: 1fr; gap: 0; }
             .process-nav { display: none; }
-            .tile.w7, .tile.w5 { grid-column: span 12; }
+            .tile.w6 { grid-column: span 12; }
             .step p { font-size: 17px; }
             .next-inner { padding: 32px; flex-direction: column; align-items: flex-start; }
         }
     
+        /* the frame hugs the video's own shape (portrait or landscape) */
+        .window { width: fit-content; }
+
+        .window video {
+            width: auto;
+            max-width: 100%;
+            max-height: 70vh;
+        }
+
         /* ---------- contact rail: always one click away ---------- */
         .contact-rail {
             position: fixed;
@@ -834,11 +845,11 @@
                     <h2 class="reveal">Project definition</h2>
                     <p class="reveal">The concept of Pet in a Pot arose from my own personal experience with a small basil plant my mother gifted me. Since I don't have a green thumb, I began to ponder the potential of an interactive vase that could make plant care more fun and manageable. A <span class="kw" data-target="tile-swot">SWOT analysis</span> and the creation of <span class="kw" data-target="tile-personas">personas</span> revealed the potential for Pet in a Pot to evolve into a brand offering a variety of plants with unique needs, each of which could be recognized and communicated by the interactive vase.</p>
                     <div class="bento">
-                        <figure class="tile w5 reveal" id="tile-swot">
+                        <figure class="tile w12 reveal" id="tile-swot">
                             <img src="assets/Pip_SWOT_analysis.png" alt="SWOT analysis" loading="lazy">
                             <figcaption>SWOT analysis</figcaption>
                         </figure>
-                        <figure class="tile w7 reveal" id="tile-personas" style="--delay: 0.12s">
+                        <figure class="tile w12 reveal" id="tile-personas" style="--delay: 0.12s">
                             <img src="assets/Pip_personas.png" alt="Personas" loading="lazy">
                             <figcaption>Personas</figcaption>
                         </figure>
@@ -850,11 +861,11 @@
                     <h2 class="reveal">Physical prototype</h2>
                     <p class="reveal">With the necessary <span class="kw" data-target="tile-hardware">hardware components</span> in hand, I set to work defining the <span class="kw" data-target="tile-circuit">circuit and code architecture</span>, as well as the Arduino program that stores sensor data on soil moisture, temperature, air humidity and luminosity, and uses this data to determine which set of eyes (happy, sad, or desperate) to display when the user checks in on the plant.</p>
                     <div class="bento">
-                        <figure class="tile w7 reveal" id="tile-hardware">
+                        <figure class="tile w6 reveal" id="tile-hardware">
                             <img src="assets/Pip_hardware_components.png" alt="Hardware components" loading="lazy">
                             <figcaption>Hardware components</figcaption>
                         </figure>
-                        <figure class="tile w5 reveal" id="tile-circuit" style="--delay: 0.12s">
+                        <figure class="tile w6 reveal" id="tile-circuit" style="--delay: 0.12s">
                             <img src="assets/Pip_circuit_and_code_architecture.png" alt="Circuit and code architecture" loading="lazy">
                             <figcaption>Circuit and code architecture</figcaption>
                         </figure>

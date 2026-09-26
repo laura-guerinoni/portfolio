@@ -558,6 +558,98 @@
     }
 }
 
+
+        /* ============================================================
+           DEEP-DIVE VIBE (TEST) — details borrowed from the new
+           deep-dive pages: framed project videos that settle flat,
+           a round arrow on "View project deep-dive", and a soft
+           drifting glow behind the intro.
+           ============================================================ */
+        .project-content { perspective: 1600px; }
+
+        .project-gif {
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.05);
+            transform-origin: center top;
+            rotate: x calc(16deg * (1 - var(--settle, 1)));
+            scale: calc(0.95 + 0.05 * var(--settle, 1));
+        }
+
+        .project-gif::before {
+            content: '';
+            display: block;
+            height: 34px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            background:
+                radial-gradient(circle, rgba(0, 0, 0, 0.12) 5px, transparent 6px) 16px 50% / 18px 18px no-repeat,
+                radial-gradient(circle, rgba(0, 0, 0, 0.12) 5px, transparent 6px) 34px 50% / 18px 18px no-repeat,
+                radial-gradient(circle, rgba(0, 0, 0, 0.12) 5px, transparent 6px) 52px 50% / 18px 18px no-repeat;
+        }
+
+        .project-gif video { border-radius: 0 !important; }
+
+        .deep-dive-link {
+            gap: 14px;
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .deep-dive-link svg {
+            width: 40px;
+            height: 40px;
+            margin-left: 0;
+            padding: 11px;
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .deep-dive-link:hover svg { transform: translateX(6px) rotate(-45deg); }
+
+        .hero-glow {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hero-glow span {
+            position: absolute;
+            width: 42vw;
+            height: 42vw;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+        }
+
+        .hero-glow span:nth-child(1) {
+            background: #ECDBFF;
+            top: -12vw;
+            right: -6vw;
+            animation: glow-a 18s ease-in-out infinite alternate;
+        }
+
+        .hero-glow span:nth-child(2) {
+            background: #CFF5E2;
+            bottom: -16vw;
+            left: 12vw;
+            animation: glow-b 22s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-a { to { transform: translate(-10vw, 8vw) scale(1.1); } }
+        @keyframes glow-b { to { transform: translate(12vw, -6vw) scale(0.9); } }
+
+        .hero-sticky { isolation: isolate; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-glow span { animation: none; }
+            .project-gif { rotate: none; scale: none; }
+        }
+
         /* ============================================================
            CONTACT RAIL (TEST) — email + LinkedIn on the right, styled
            like the left menu buttons; label slides out on hover.
@@ -683,6 +775,7 @@
 
     <div class="hero-scroll">
     <div class="hero-sticky">
+    <div class="hero-glow" aria-hidden="true"><span></span><span></span></div>
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
@@ -1105,6 +1198,28 @@
             });
         });
         
+        // DEEP-DIVE VIBE (TEST): project videos tilt back and settle flat
+        // as they rise into view (same as the deep-dive pages).
+        (function() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const frames = Array.from(document.querySelectorAll('.project-gif'));
+            let ticking = false;
+            function settle() {
+                ticking = false;
+                const vh = window.innerHeight;
+                frames.forEach(function(f) {
+                    const top = f.getBoundingClientRect().top;
+                    if (top > vh * 1.2 || top < -vh) return;
+                    const t = Math.min(1, Math.max(0, (vh - top) / (vh * 0.6)));
+                    f.style.setProperty('--settle', t.toFixed(3));
+                });
+            }
+            window.addEventListener('scroll', function() {
+                if (!ticking) { ticking = true; requestAnimationFrame(settle); }
+            }, { passive: true });
+            settle();
+        })();
+
         // CONTACT RAIL (TEST): copy email with the same notification as the button
         document.getElementById('contact-email').addEventListener('click', function() {
             navigator.clipboard.writeText('lau.guerinoni@gmail.com').then(function() {
