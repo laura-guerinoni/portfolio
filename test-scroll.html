@@ -117,7 +117,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 6.6s infinite;
+            animation: ticker-roll 4.2s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -139,10 +139,10 @@
             text-decoration-skip-ink: none; /* one continuous line under g/p/y */
         }
 
-        /* 6.6s cycle: each state holds ~2.5s, then a 0.8s roll. */
+        /* 4.2s cycle: each phrase holds 1.5s, then a 0.6s roll (Bain → WithLess → Bain…). */
         @keyframes ticker-roll {
-            0%, 37.9%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            50%, 87.9%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            0%, 35.7%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 85.7%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
             100%        { transform: translateY(calc(var(--tick-h, 1.6em) * -2)); }
         }
 
@@ -241,6 +241,36 @@
         .tw-fast .section-icon {
             transition-duration: 0.4s;
             transition-delay: 0s;
+        }
+
+        /* Description: each word rises into place out of a soft blur,
+           one after another (--d per word, set in JS). */
+        .tw-word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.6em);
+            filter: blur(8px);
+        }
+
+        .is-revealed .tw-word {
+            opacity: 1;
+            transform: none;
+            filter: blur(0);
+            transition: opacity 0.7s ease,
+                        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 0.7s ease;
+            transition-delay: var(--d);
+        }
+
+        .tw-fast .is-revealed .tw-word {
+            transition-delay: calc(var(--d) * 0.2);
+        }
+
+        .tw-done .tw-word {
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
+            transition: none !important;
         }
 
         .skills-tags.chips-ready .skill-tag {
@@ -1089,7 +1119,7 @@
             if (section._rushed) return;
             section._rushed = true;
             section.querySelectorAll('.is-revealed').forEach(function(el) {
-                if (el.querySelector('.tw-char')) el.classList.add('tw-done');
+                if (el.querySelector('.tw-char, .tw-word')) el.classList.add('tw-done');
             });
             section.classList.add('tw-fast');
             if (!section._headerAt) revealHeader(section.querySelector('.section-header'));
@@ -1219,6 +1249,32 @@
             return t;
         }
 
+        // Wrap every word in a span with its own delay (--d).
+        function revealWords(el, start, step) {
+            let t = start;
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(function(node) {
+                const frag = document.createDocumentFragment();
+                node.textContent.split(/(\s+)/).forEach(function(part) {
+                    if (!part) return;
+                    if (/^\s+$/.test(part)) {
+                        frag.appendChild(document.createTextNode(part));
+                        return;
+                    }
+                    const span = document.createElement('span');
+                    span.className = 'tw-word';
+                    span.textContent = part;
+                    span.style.setProperty('--d', t.toFixed(3) + 's');
+                    frag.appendChild(span);
+                    t += step;
+                });
+                node.parentNode.replaceChild(frag, node);
+            });
+            return t;
+        }
+
         function setupTypewriter() {
             if (prefersReducedMotion) return;
             document.querySelectorAll('.project-section').forEach(function(section) {
@@ -1232,8 +1288,8 @@
                 // remember when the subtitle finishes, so chips and text can follow it
                 if (subtitle) section._subEnd = typeText(subtitle, t + 0.1, 0.018);
                 else section._subEnd = t;
-                // the description types quickly on its own when it scrolls in
-                if (text) typeText(text, 0.1, 0.006);
+                // the description rises in word by word, at a calm reading rhythm
+                if (text) revealWords(text, 0.05, 0.045);
             });
         }
 
