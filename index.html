@@ -116,7 +116,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 8s infinite;
+            animation: ticker-roll 14s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -137,10 +137,13 @@
             text-decoration-color: var(--ticker-lilac);
         }
 
+        /* 14s cycle: each state holds ~6.2s (time to read both hero
+           sentences, ~23 words at ~230 wpm, plus a beat to orient),
+           then a 0.8s roll. */
         @keyframes ticker-roll {
-            0%, 38%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            48%, 88%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            98%, 100% { transform: translateY(-3.2em); }
+            0%, 44.3%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 94.3%  { transform: translateY(-1.6em);  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            100%        { transform: translateY(-3.2em); }
         }
 
         @media (prefers-reduced-motion: reduce) {
