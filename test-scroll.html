@@ -260,10 +260,10 @@
         }
 
         /* ============================================================
-           HERO SCROLL TEST — the hero pins in place while you scroll,
-           and the sentence under the headline swaps in place: sentence
-           one's words drift up and out one by one while sentence two's
-           words rise into the same spot. Always exactly one sentence.
+           HERO SCROLL TEST — the hero pins in place while you scroll.
+           Sentence one starts black and sentence two gray; scrolling
+           fades sentence one to gray while sentence two comes to life
+           word by word.
            ============================================================ */
         .hero-scroll {
             position: absolute;
@@ -283,40 +283,13 @@
             margin-top: 190vh;
         }
 
-        /* Both sentences share one grid cell: only one is ever visible */
-        .hero-lines {
-            display: grid;
-        }
-
-        .hero-lines > p {
-            grid-area: 1 / 1;
-        }
-
-        /* One sentence at a time, so the hero can be bigger */
-        .hero-sticky .main-content {
-            max-width: 760px;
-        }
-
-        .hero-sticky h1 {
-            font-size: 64px;
-            margin-bottom: 40px;
-        }
-
-        .hero-lines > p {
-            font-size: 40px;
-            line-height: 1.4;
-            --tick-h: 1.4em;
-            max-width: none;
-            margin-bottom: 8px;
-        }
-
         .reveal-word {
             display: inline-block;
-            will-change: opacity, transform, filter;
+            opacity: 0.25; /* gray until scroll brings it to life */
         }
 
-        #hero-line-2 .reveal-word {
-            opacity: 0;
+        #hero-line-1 .reveal-word {
+            opacity: 1;
         }
 
 @media (max-width: 768px) {
@@ -329,24 +302,8 @@
         margin-top: 0;
     }
 
-    .hero-lines {
-        display: block;
-    }
-
-    .hero-sticky h1 {
-        font-size: 36px;
-        margin-bottom: 24px;
-    }
-
-    .hero-lines > p {
-        font-size: 20px;
-        margin-bottom: 30px;
-    }
-
     .reveal-word {
         opacity: 1 !important;
-        transform: none !important;
-        filter: none !important;
     }
 
     body {
@@ -547,7 +504,6 @@
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
-        <div class="hero-lines">
         <p id="hero-line-1">I shape digital products, with experience in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
@@ -565,7 +521,6 @@
                     <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
                 </span>
             </span></p>
-        </div>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">
@@ -1115,6 +1070,8 @@
             return clamp01((p - start) / 0.25);
         }
 
+        const GRAY = 0.25;
+
         function setupHeroLineReveal() {
             const line1 = document.getElementById('hero-line-1');
             const line2 = document.getElementById('hero-line-2');
@@ -1122,30 +1079,18 @@
             const words1 = splitWords(line1);
             const words2 = splitWords(line2);
 
-            function setWord(word, visible, direction) {
-                // visible: 1 = fully shown, 0 = gone (drifted by `direction`)
-                const off = 1 - visible;
-                word.style.opacity = visible.toFixed(3);
-                word.style.transform = 'translateY(' + (direction * 12 * off).toFixed(1) + 'px)';
-                word.style.filter = off > 0.001 ? 'blur(' + (5 * off).toFixed(1) + 'px)' : 'none';
-            }
-
             let ticking = false;
             function update() {
                 ticking = false;
                 const vh = window.innerHeight;
-                // swap happens between 0.1 and 0.7 screens of scroll
+                // happens between 0.1 and 0.7 screens of scroll
                 const p = clamp01((window.scrollY - vh * 0.1) / (vh * 0.6));
-                const out = clamp01(p / 0.6);            // sentence one leaves in the first 60%
-                const inn = clamp01((p - 0.4) / 0.6);    // sentence two arrives in the last 60%
-                line1.style.pointerEvents = p < 0.5 ? 'auto' : 'none';
-                line2.style.pointerEvents = p < 0.5 ? 'none' : 'auto';
-
-                words1.forEach(function(word, i) {
-                    setWord(word, 1 - inkAmount(out, i, words1.length), -1);   // drift up
+                const fade = clamp01(p / 0.35); // sentence one steps back early
+                words1.forEach(function(word) {
+                    word.style.opacity = (1 - (1 - GRAY) * fade).toFixed(3);
                 });
                 words2.forEach(function(word, i) {
-                    setWord(word, inkAmount(inn, i, words2.length), 1);        // rise from below
+                    word.style.opacity = (GRAY + (1 - GRAY) * inkAmount(p, i, words2.length)).toFixed(3);
                 });
             }
             window.addEventListener('scroll', function() {
