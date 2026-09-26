@@ -138,17 +138,26 @@
             white-space: nowrap;
         }
 
-        /* .swap: the two words differ in length, so the slot resizes
-           between them (widths measured in JS as --w1 / --w2), and the
-           rest of the sentence glides along. Same 8s cycle as above, so
-           every morph on the page changes together. */
-        .morphing-tag.swap {
-            width: var(--w1, auto);
-            animation: swap-width 8s infinite ease-in-out;
+        /* .highlight-both: neither phrase is the "plain" one (current vs
+           previous job), so both sit on the lilac highlight. Both phrases
+           share one grid cell, so the slot is always as wide as the
+           longer one — the shorter gets extra lilac on the right and the
+           text after it never moves. */
+        .morphing-tag.highlight-both {
+            display: inline-grid;
         }
 
-        /* .highlight-both: neither word is the "plain" one (e.g. current
-           vs previous job), so both states sit on the lilac highlight. */
+        .highlight-both .word-primary,
+        .highlight-both .word-alt-wrap {
+            grid-area: 1 / 1;
+        }
+
+        .highlight-both .word-alt-wrap {
+            position: relative;
+            inset: auto;
+            margin: 0.06em 0;
+        }
+
         .morphing-tag.highlight-both::before {
             content: '';
             position: absolute;
@@ -162,11 +171,6 @@
             color: #333;
             font-weight: 500;
             font-style: italic;
-        }
-
-        @keyframes swap-width {
-            0%, 10%, 90%, 100% { width: var(--w1); }
-            25%, 75% { width: var(--w2); }
         }
 
         @keyframes morph-fade-primary {
@@ -486,9 +490,7 @@
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
         <p>I design digital products, with experience in
-            <span class="morphing-tag swap highlight-both"><span class="word-primary">fintech</span><span class="word-alt-wrap"><span class="word-alt">consulting</span></span></span>
-            at
-            <span class="morphing-tag swap highlight-both"><span class="word-primary">Withless</span><span class="word-alt-wrap"><span class="word-alt">Bain&nbsp;&amp;&nbsp;Company</span></span></span>.</p>
+            <span class="morphing-tag highlight-both"><span class="word-primary">fintech at Withless</span><span class="word-alt-wrap"><span class="word-alt">consulting at Bain&nbsp;&amp;&nbsp;Company</span></span></span>.</p>
 
         <p>I think design is a conversation, I make sure it speaks the
             <span class="morphing-tag">
@@ -1009,15 +1011,6 @@
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
 
-        // Measure both words of each resizing morph slot.
-        function measureSwaps() {
-            document.querySelectorAll('.morphing-tag.swap').forEach(function(tag) {
-                tag.style.setProperty('--w1', tag.querySelector('.word-primary').getBoundingClientRect().width + 'px');
-                tag.style.setProperty('--w2', tag.querySelector('.word-alt').getBoundingClientRect().width + 'px');
-            });
-        }
-        document.fonts.ready.then(measureSwaps);
-        window.addEventListener('resize', measureSwaps);
     </script>
 </body>
 </html>
