@@ -557,6 +557,75 @@
         padding: 9px 18px; /* Proportionally reduced */
     }
 }
+
+        /* ============================================================
+           CONTACT RAIL (TEST) — email + LinkedIn on the right, styled
+           like the left menu buttons; label slides out on hover.
+           ============================================================ */
+        .contact-rail {
+            position: fixed;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .contact-btn {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            height: 48px;
+            padding: 0 13px;
+            border: 0;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            text-decoration: none;
+            font: 500 16px 'Inter', sans-serif;
+            cursor: pointer;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .contact-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+        .contact-btn .contact-label {
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            opacity: 0;
+            transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .contact-btn:hover,
+        .contact-btn:focus-visible {
+            background: #ECDBFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .contact-btn:hover .contact-label,
+        .contact-btn:focus-visible .contact-label {
+            max-width: 260px;
+            opacity: 1;
+            margin-right: 10px;
+        }
+
+@media (max-width: 768px) {
+    .contact-rail {
+        top: auto;
+        bottom: 16px;
+        right: 16px;
+        transform: none;
+        flex-direction: row;
+        gap: 10px;
+    }
+    .contact-btn .contact-label { display: none; }
+}
     </style>
 </head>
 <body>
@@ -597,6 +666,17 @@
             <span class="icon-text">Pet in a Pot</span>
         </a>
     </div>
+
+    <nav class="contact-rail" aria-label="Contact">
+        <button type="button" class="contact-btn" id="contact-email" aria-label="Copy email address">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.4"/><path d="M3.6 6.6L12 12.6L20.4 6.6"/></svg>
+            <span class="contact-label">lau.guerinoni@gmail.com</span>
+        </button>
+        <a class="contact-btn" href="https://www.linkedin.com/in/laura-guerinoni-48290021b/" target="_blank" rel="noopener" aria-label="LinkedIn profile">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3v-11zm6.5 0h3.8v1.5h.06c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.77 2.5 4.77 5.75v5.7h-4v-5.05c0-1.2-.02-2.75-1.7-2.75-1.7 0-1.96 1.3-1.96 2.66v5.14h-4v-11z"/></svg>
+            <span class="contact-label">LinkedIn</span>
+        </a>
+    </nav>
 
     <!-- Invisible anchor point at the top of the page -->
     <div id="main-anchor"></div>
@@ -768,7 +848,7 @@
                         <video autoplay loop muted playsinline src="assets/Inviso.mp4" alt="Lite-Tone Project Demo"></video>
                     </div>
                     
-                    <a href="inviso-deep-dive.html" class="deep-dive-link">
+                    <a href="test-inviso-deep-dive.html" class="deep-dive-link">
                         View project deep-dive
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -814,7 +894,7 @@
                         <video autoplay loop muted playsinline src="assets/Enjoy.mp4" alt="Lite-Tone Project Demo"></video>
                     </div>
                     
-                    <a href="enjoy-deep-dive.html" class="deep-dive-link">
+                    <a href="test-enjoy-deep-dive.html" class="deep-dive-link">
                         View project deep-dive
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -859,7 +939,7 @@
 
                     </div>
                     
-                    <a href="vr-training-deep-dive.html" class="deep-dive-link">
+                    <a href="test-vr-training-deep-dive.html" class="deep-dive-link">
                         View project deep-dive
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -899,7 +979,7 @@
                         <video autoplay loop muted playsinline src="assets/pet-in-a-pot.mp4" alt="Lite-Tone Project Demo"></video>
                     </div>
                     
-                    <a href="pet-in-a-pot-deep-dive.html" class="deep-dive-link">
+                    <a href="test-pet-in-a-pot-deep-dive.html" class="deep-dive-link">
                         View project deep-dive
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -1025,6 +1105,16 @@
             });
         });
         
+        // CONTACT RAIL (TEST): copy email with the same notification as the button
+        document.getElementById('contact-email').addEventListener('click', function() {
+            navigator.clipboard.writeText('lau.guerinoni@gmail.com').then(function() {
+                const notification = document.getElementById('notification');
+                document.getElementById('notification-text').textContent = 'Email copied';
+                notification.classList.add('show');
+                setTimeout(function() { notification.classList.remove('show'); }, 3000);
+            });
+        });
+
         // Improved smooth scrolling for anchor links with perfect alignment
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
