@@ -261,17 +261,17 @@
         }
 
         /* ============================================================
-           HERO SCROLL TEST — the hero pins in place while you scroll.
-           Only "Hey, I'm Laura." starts black. Step 1: sentence one
-           inks in word by word. Step 2: sentence two inks in while
-           sentence one fades back to gray — never both black at once.
+           HERO SCROLL TEST — the hero pins in place while you scroll,
+           and the sentence under the headline swaps in place: sentence
+           one's words drift up and out one by one while sentence two's
+           words rise into the same spot. Always exactly one sentence.
            ============================================================ */
         .hero-scroll {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 240vh;
+            height: 190vh;
         }
 
         .hero-sticky {
@@ -281,11 +281,25 @@
         }
 
         .projects-container {
-            margin-top: 240vh;
+            margin-top: 190vh;
+        }
+
+        /* Both sentences share one grid cell: only one is ever visible */
+        .hero-lines {
+            display: grid;
+        }
+
+        .hero-lines > p {
+            grid-area: 1 / 1;
         }
 
         .reveal-word {
-            opacity: 0.12;
+            display: inline-block;
+            will-change: opacity, transform, filter;
+        }
+
+        #hero-line-2 .reveal-word {
+            opacity: 0;
         }
 
 @media (max-width: 768px) {
@@ -298,8 +312,14 @@
         margin-top: 0;
     }
 
+    .hero-lines {
+        display: block;
+    }
+
     .reveal-word {
         opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
     }
 
     body {
@@ -500,6 +520,7 @@
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
+        <div class="hero-lines">
         <p id="hero-line-1">I design digital products, with experience in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
@@ -510,6 +531,7 @@
             </span></p>
 
         <p id="hero-line-2">Design is a conversation. I make sure it speaks the human language.</p>
+        </div>
         
         <div class="buttons">
             <button class="button primary-button" id="copyEmailBtn">
@@ -1024,9 +1046,6 @@
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
 
         // HERO SCROLL TEST — see the matching block in <style>.
-        const GHOST = 0.12;   // not read yet
-        const READ = 0.28;    // already read, stepped back
-
         // Wrap each word (and the ticker, as one unit) in .reveal-word.
         function splitWords(line) {
             const words = [];
@@ -1069,21 +1088,30 @@
             const words1 = splitWords(line1);
             const words2 = splitWords(line2);
 
+            function setWord(word, visible, direction) {
+                // visible: 1 = fully shown, 0 = gone (drifted by `direction`)
+                const off = 1 - visible;
+                word.style.opacity = visible.toFixed(3);
+                word.style.transform = 'translateY(' + (direction * 12 * off).toFixed(1) + 'px)';
+                word.style.filter = off > 0.001 ? 'blur(' + (5 * off).toFixed(1) + 'px)' : 'none';
+            }
+
             let ticking = false;
             function update() {
                 ticking = false;
                 const vh = window.innerHeight;
-                const y = window.scrollY;
-                const step1 = clamp01(y / (vh * 0.5));                  // 0 → 0.5 screens
-                const step2 = clamp01((y - vh * 0.7) / (vh * 0.5));     // 0.7 → 1.2 screens
-                const fadeBack = clamp01(step2 / 0.35);                 // line 1 steps back early in step 2
+                // swap happens between 0.1 and 0.7 screens of scroll
+                const p = clamp01((window.scrollY - vh * 0.1) / (vh * 0.6));
+                const out = clamp01(p / 0.6);            // sentence one leaves in the first 60%
+                const inn = clamp01((p - 0.4) / 0.6);    // sentence two arrives in the last 60%
+                line1.style.pointerEvents = p < 0.5 ? 'auto' : 'none';
+                line2.style.pointerEvents = p < 0.5 ? 'none' : 'auto';
 
                 words1.forEach(function(word, i) {
-                    const inked = GHOST + (1 - GHOST) * inkAmount(step1, i, words1.length);
-                    word.style.opacity = (inked + (READ - inked) * fadeBack).toFixed(3);
+                    setWord(word, 1 - inkAmount(out, i, words1.length), -1);   // drift up
                 });
                 words2.forEach(function(word, i) {
-                    word.style.opacity = (GHOST + (1 - GHOST) * inkAmount(step2, i, words2.length)).toFixed(3);
+                    setWord(word, inkAmount(inn, i, words2.length), 1);        // rise from below
                 });
             }
             window.addEventListener('scroll', function() {
@@ -1091,6 +1119,7 @@
             }, { passive: true });
             update();
         }
+
         document.addEventListener('DOMContentLoaded', setupHeroLineReveal);
 
     </script>
