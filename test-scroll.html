@@ -201,6 +201,31 @@
         }
 
         /* Chips wait hidden until they rain in (JS adds .chips-ready) */
+        /* TYPEWRITER TEST — title, year, subtitle and description are
+           typed out letter by letter instead of fading in. The text
+           keeps its full space from the start (letters are only
+           invisible), so nothing shifts while typing. */
+        .js-reveal .project-title,
+        .js-reveal .project-year-tag,
+        .js-reveal .project-subtitle,
+        .js-reveal .project-content > p {
+            opacity: 1;
+            transform: none;
+            filter: none;
+            transition: none;
+        }
+
+        .tw-char {
+            opacity: 0;
+        }
+
+        .is-revealed .tw-char,
+        .tw-char.is-revealed {
+            opacity: 1;
+            transition: opacity 0.08s linear;
+            transition-delay: var(--d);
+        }
+
         .skills-tags.chips-ready .skill-tag {
             display: inline-block;
             opacity: 0;
@@ -314,28 +339,6 @@
 
         /* A gray sentence holds still on its first phrase; the roll
            (re)starts only when the sentence is in focus. */
-        /* LOGO TEST — company names shown as monochrome logos, sized to
-           the text's capital height and sitting on the baseline. The
-           lilac underline is drawn as a background so it runs under
-           the logo too. */
-        .ticker-logo {
-            height: 1.05em; /* Bain: letters are ~half the logo height (the circle mark is taller) */
-            width: auto;
-            vertical-align: -0.2em;
-            margin-left: 0.08em;
-        }
-
-        .ticker-logo--withless {
-            vertical-align: baseline;
-            height: 0.57em; /* WithLess letters = Bain "B" height (17/31 of 1.05em) */
-        }
-
-        #hero-line-1 .ticker-text {
-            text-decoration: none;
-            background: linear-gradient(var(--ticker-lilac), var(--ticker-lilac)) no-repeat left calc(100% - 0.02em) / 100% 3px;
-            padding-bottom: 0.18em;
-        }
-
         .ticker.is-idle .ticker-track {
             animation: none;
         }
@@ -559,9 +562,9 @@
         <p id="hero-line-1">I shape digital products, with expertise<br class="line-break"> in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
-                    <span class="ticker-item"><span class="ticker-text">consulting at <img class="ticker-logo" src="assets/logo_bain.svg" alt="Bain &amp; Company"></span>.</span>
-                    <span class="ticker-item"><span class="ticker-text">fintech at <img class="ticker-logo ticker-logo--withless" src="assets/logo_withless.svg" alt="WithLess"></span>.</span>
-                    <span class="ticker-item"><span class="ticker-text">consulting at <img class="ticker-logo" src="assets/logo_bain.svg" alt="Bain &amp; Company"></span>.</span>
+                    <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
+                    <span class="ticker-item"><span class="ticker-text">fintech at Withless</span>.</span>
+                    <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
                 </span>
             </span></p>
 
@@ -1049,7 +1052,14 @@
 
         function setupSectionReveals() {
             setupPageColor();
-            const reveal = function(el) { el.classList.add('is-revealed'); };
+            const reveal = function(el) {
+                el.classList.add('is-revealed');
+                // TYPEWRITER TEST: start the subtitle with its header
+                if (el.classList.contains('section-header')) {
+                    const sub = el.closest('.project-content-wrapper').querySelector('.project-subtitle');
+                    if (sub) sub.classList.add('is-revealed');
+                }
+            };
             onceVisible(document.querySelectorAll('.section-header, .project-subtitle, .project-content > p, .project-gif'), reveal);
 
             if (prefersReducedMotion || !Element.prototype.animate) return; // chips just stay visible
@@ -1084,7 +1094,57 @@
             });
         }
 
+        document.addEventListener('DOMContentLoaded', setupTypewriter);
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
+
+        // TYPEWRITER TEST — wrap every letter in a span with its own
+        // delay (--d). Returns when the last letter appears (seconds).
+        function typeText(el, start, step) {
+            let t = start;
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(function(node) {
+                const frag = document.createDocumentFragment();
+                node.textContent.split(/(\s+)/).forEach(function(part) {
+                    if (!part) return;
+                    if (/^\s+$/.test(part)) {                 // keep spaces as text so lines wrap normally
+                        frag.appendChild(document.createTextNode(part));
+                        t += step;
+                        return;
+                    }
+                    Array.from(part).forEach(function(ch) {
+                        const span = document.createElement('span');
+                        span.className = 'tw-char';
+                        span.textContent = ch;
+                        span.style.setProperty('--d', t.toFixed(3) + 's');
+                        frag.appendChild(span);
+                        t += step;
+                    });
+                });
+                node.parentNode.replaceChild(frag, node);
+            });
+            return t;
+        }
+
+        function setupTypewriter() {
+            if (prefersReducedMotion) return;
+            document.querySelectorAll('.project-section').forEach(function(section) {
+                const title = section.querySelector('.project-title');
+                const year = section.querySelector('.project-year-tag');
+                const subtitle = section.querySelector('.project-subtitle');
+                const text = section.querySelector('.project-content > p');
+                // title → year → subtitle play as one sequence when the header shows
+                let t = title ? typeText(title, 0.15, 0.03) : 0.15;
+                if (year) t = typeText(year, t + 0.05, 0.03);
+                if (subtitle) {
+                    typeText(subtitle, t + 0.1, 0.018);
+                    subtitle.classList.add('tw-follows-header');
+                }
+                // the description types quickly on its own when it scrolls in
+                if (text) typeText(text, 0.1, 0.006);
+            });
+        }
 
         // HERO SCROLL — see the matching block in <style>.
         // Wrap each word (and the ticker, as one unit) in .reveal-word.
