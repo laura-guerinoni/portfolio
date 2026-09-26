@@ -9,21 +9,23 @@
     <link rel="icon" href="assets/laura.png" type="image/png">
     <style>
         /* ============================================================
-           LAINE DEEP-DIVE (TEST) — same content as laine-deep-dive.html,
-           redesigned as a scroll-driven case study:
-           hero → growing video → scroll-lit overview → sticky process
-           nav with inline research artefacts → next project.
+           LAINE DEEP-DIVE (TEST v2) — same content as
+           laine-deep-dive.html, as an editorial case study:
+           hero spread + facts → at a glance → framed video that
+           settles flat → scroll-lit overview → sticky process with a
+           filling progress line → bento artefacts → next project.
            ============================================================ */
 
         :root {
             --ink: #333;
-            --ink-soft: rgba(51, 51, 51, 0.62);
+            --ink-soft: rgba(51, 51, 51, 0.6);
             --line: rgba(51, 51, 51, 0.12);
-            --mint: #E5FFF1;          /* Laine section color on the homepage */
-            --mint-deep: #C9F5DF;
+            --mint: #E5FFF1;          /* Laine color on the homepage */
+            --mint-deep: #BDF3D8;
             --lilac: #ECDBFF;         /* site accent */
-            --card: #fff;
+            --lilac-deep: #D9BFFF;
             --shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * { box-sizing: border-box; }
@@ -37,11 +39,25 @@
             font-family: 'Inter', sans-serif;
             font-weight: 350;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         img, video { display: block; max-width: 100%; }
 
-        /* ---------- reading progress + top bar ---------- */
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-soft);
+        }
+
+        /* ---------- progress + floating top bar ---------- */
         .progress {
             position: fixed;
             inset: 0 0 auto 0;
@@ -59,7 +75,6 @@
             right: 16px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             z-index: 50;
             pointer-events: none;
         }
@@ -71,7 +86,7 @@
             gap: 8px;
             padding: 10px 16px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.72);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.06);
@@ -85,15 +100,65 @@
         a.pill:hover { transform: translateY(-2px); background: #fff; }
         .pill img { width: 18px; height: 18px; }
 
-        /* ---------- hero ---------- */
+        /* the right pill only appears once you've scrolled past the hero */
+        .pill--context {
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
+        }
+
+        .scrolled .pill--context { opacity: 1; transform: none; }
+
+        /* ---------- hero: editorial spread ---------- */
         .hero {
+            position: relative;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 120px 40px 80px;
+            align-items: center;
+            padding: 120px 0 80px;
+            isolation: isolate;
+        }
+
+        /* soft drifting glow behind the hero */
+        .glow {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .glow span {
+            position: absolute;
+            width: 46vw;
+            height: 46vw;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.75;
+        }
+
+        .glow span:nth-child(1) {
+            background: var(--mint-deep);
+            top: -10vw;
+            right: -8vw;
+            animation: drift-a 18s ease-in-out infinite alternate;
+        }
+
+        .glow span:nth-child(2) {
+            background: var(--lilac);
+            bottom: -18vw;
+            left: 20vw;
+            animation: drift-b 22s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift-a { to { transform: translate(-10vw, 8vw) scale(1.1); } }
+        @keyframes drift-b { to { transform: translate(12vw, -6vw) scale(0.9); } }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+            gap: 72px;
+            align-items: end;
         }
 
         .eyebrow {
@@ -116,118 +181,122 @@
 
         .app-icon img { width: 28px; height: 28px; }
 
-        .eyebrow .year { color: var(--ink-soft); font-weight: 400; }
-
         h1 {
-            font-size: clamp(44px, 7.2vw, 96px);
-            line-height: 1.02;
-            letter-spacing: -0.035em;
+            font-size: clamp(46px, 5.4vw, 80px);
+            line-height: 1;
+            letter-spacing: -0.04em;
             font-weight: 500;
-            margin: 36px 0 28px;
+            margin: 32px 0 24px;
         }
 
         .hero-sub {
-            font-size: clamp(20px, 2vw, 26px);
-            line-height: 1.4;
-            max-width: 640px;
-            margin: 0 0 56px;
+            font-size: clamp(19px, 1.7vw, 23px);
+            line-height: 1.45;
             color: var(--ink-soft);
+            margin: 0;
+            max-width: 520px;
         }
 
         .facts {
+            margin: 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .fact {
+            display: grid;
+            grid-template-columns: 96px minmax(0, 1fr);
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .fact dt { margin: 0; padding-top: 2px; }
+
+        .fact dd {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .fact dd.scope {
+            font-weight: 400;
+            columns: 2;
+            column-gap: 16px;
+        }
+
+        .fact dd.scope span { display: block; break-inside: avoid; }
+
+        /* ---------- at a glance ---------- */
+        .glance {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 24px;
-            border-top: 1px solid var(--line);
-            padding-top: 24px;
-            max-width: 880px;
+            gap: 20px;
+            padding: 8vh 0 12vh;
         }
 
-        .fact-label {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--ink-soft);
-            margin-bottom: 8px;
+        .glance-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
-        .fact-value { font-size: 17px; font-weight: 500; line-height: 1.4; }
+        .glance-card .label { margin-bottom: 14px; }
 
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 28px;
-        }
-
-        .chip {
-            background: rgba(0, 0, 0, 0.06);
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 14px;
+        .glance-card p {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
             font-weight: 400;
         }
 
-        .scroll-cue {
-            margin-top: 64px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: var(--ink-soft);
-        }
-
-        .scroll-cue span {
-            width: 1px;
-            height: 36px;
-            background: var(--ink);
-            transform-origin: top;
-            animation: cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-        }
-
-        @keyframes cue {
-            0% { transform: scaleY(0); opacity: 1; }
-            60% { transform: scaleY(1); opacity: 1; }
-            100% { transform: scaleY(1); opacity: 0; }
-        }
-
-        /* ---------- video that grows as you scroll ---------- */
+        /* ---------- framed video that settles flat ---------- */
         .showcase {
-            padding: 0 0 18vh;
+            perspective: 1600px;
+            padding-bottom: 16vh;
         }
 
-        .showcase-frame {
-            width: calc(62% + 38% * var(--grow, 0));
-            max-width: 1400px;
+        .window {
+            max-width: 1040px;
             margin: 0 auto;
-            border-radius: calc(28px - 14px * var(--grow, 0));
-            overflow: hidden;
-            box-shadow: var(--shadow);
+            border-radius: 18px;
             background: #fff;
-            will-change: width;
+            box-shadow: 0 30px 80px rgba(20, 60, 40, 0.18), 0 8px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transform-origin: center top;
+            transform: rotateX(calc(18deg * (1 - var(--settle, 1)))) scale(calc(0.94 + 0.06 * var(--settle, 1)));
+            will-change: transform;
         }
 
-        /* ---------- overview lit word by word on scroll ---------- */
-        .overview {
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 6vh 40px 18vh;
+        .window-bar {
+            display: flex;
+            gap: 7px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
 
-        .section-label {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--ink-soft);
-            margin-bottom: 24px;
+        .window-bar i {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.12);
         }
+
+        /* ---------- overview, lit word by word on scroll ---------- */
+        .overview { padding: 0 0 18vh; }
+
+        .overview .label { margin-bottom: 24px; }
 
         .overview p {
-            font-size: clamp(26px, 3.2vw, 42px);
+            font-size: clamp(26px, 3.1vw, 42px);
             line-height: 1.3;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.02em;
             font-weight: 400;
             margin: 0;
+            max-width: 1040px;
         }
 
         .lit-word { opacity: 0.18; transition: opacity 0.25s linear; }
@@ -235,12 +304,10 @@
 
         /* ---------- process: sticky nav + steps ---------- */
         .process {
-            max-width: 1240px;
-            margin: 0 auto;
-            padding: 0 40px 16vh;
             display: grid;
-            grid-template-columns: 280px minmax(0, 1fr);
-            gap: 64px;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 72px;
+            padding-bottom: 14vh;
         }
 
         .process-nav {
@@ -249,57 +316,86 @@
             align-self: start;
         }
 
+        .process-nav .label { margin-bottom: 18px; }
+
         .process-nav ol {
+            position: relative;
             list-style: none;
             margin: 0;
             padding: 0;
-            border-left: 1px solid var(--line);
         }
 
-        .process-nav li a {
+        /* track + fill that grows as you read through the steps */
+        .process-nav ol::before,
+        .process-nav ol::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .process-nav ol::before { background: var(--line); }
+
+        .process-nav ol::after {
+            background: var(--ink);
+            transform-origin: top;
+            transform: scaleY(var(--fill, 0));
+        }
+
+        .process-nav a {
             display: block;
-            padding: 12px 0 12px 20px;
-            margin-left: -1px;
-            border-left: 2px solid transparent;
+            padding: 12px 0 12px 22px;
             color: var(--ink-soft);
             text-decoration: none;
             font-size: 16px;
             line-height: 1.35;
-            transition: color 0.3s ease, border-color 0.3s ease;
+            transition: color 0.3s ease;
         }
 
-        .process-nav li a .num {
+        .process-nav a .num {
             display: block;
-            font-size: 13px;
-            letter-spacing: 0.06em;
-            margin-bottom: 2px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            margin-bottom: 3px;
         }
 
-        .process-nav li a.active {
-            color: var(--ink);
-            border-left-color: var(--ink);
-            font-weight: 500;
-        }
+        .process-nav a.active { color: var(--ink); font-weight: 500; }
 
         .step {
-            padding-bottom: 14vh;
+            padding-bottom: 12vh;
             scroll-margin-top: 110px;
         }
 
-        .step-num {
-            font-size: clamp(64px, 9vw, 128px);
-            line-height: 0.9;
+        .step-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 8px;
+            border-radius: 999px;
+            background: var(--lilac);
+            font-size: 13px;
             font-weight: 500;
-            letter-spacing: -0.05em;
-            color: transparent;
-            -webkit-text-stroke: 1.5px rgba(51, 51, 51, 0.35);
-            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+            margin-bottom: 22px;
+        }
+
+        .step-tag b {
+            display: grid;
+            place-items: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            font-size: 11px;
         }
 
         .step h2 {
-            font-size: clamp(28px, 3vw, 40px);
-            line-height: 1.15;
-            letter-spacing: -0.02em;
+            font-size: clamp(30px, 3.2vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
             font-weight: 500;
             margin: 0 0 24px;
         }
@@ -308,10 +404,10 @@
             font-size: 19px;
             line-height: 1.75;
             max-width: 680px;
-            margin: 0 0 40px;
+            margin: 0 0 44px;
         }
 
-        /* keywords in the text point at the artefact cards below */
+        /* keywords point at their artefact */
         .kw {
             font-weight: 500;
             background: linear-gradient(var(--lilac), var(--lilac)) no-repeat left 88% / 100% 0.35em;
@@ -322,58 +418,94 @@
 
         .kw:hover { background-size: 100% 88%; }
 
-        .artefacts {
+        /* ---------- bento artefacts ---------- */
+        .bento {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
         }
 
-        .artefacts.single { grid-template-columns: 1fr; }
-
-        .card {
+        .tile {
+            position: relative;
             margin: 0;
-            background: var(--card);
-            border-radius: 18px;
-            padding: 14px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
             box-shadow: var(--shadow);
-            cursor: zoom-in;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+            cursor: none;
         }
 
-        .card:hover { transform: translateY(-4px) rotate(-0.4deg); }
+        .tile.w7 { grid-column: span 7; }
+        .tile.w5 { grid-column: span 5; }
+        .tile.w12 { grid-column: span 12; }
 
-        .card.flash { animation: flash 1.2s ease; }
+        .tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            aspect-ratio: 4 / 3.4;
+            transition: transform 0.8s var(--ease-out);
+        }
+
+        .tile.w12 img { aspect-ratio: 16 / 9; }
+
+        .tile:hover img { transform: scale(1.035); }
+
+        .tile figcaption {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s ease, transform 0.3s var(--ease-out);
+        }
+
+        .tile:hover figcaption { opacity: 1; transform: none; }
+
+        .tile.flash { animation: flash 1.2s ease; }
 
         @keyframes flash {
             0%, 100% { box-shadow: var(--shadow); }
-            30% { box-shadow: 0 0 0 4px var(--lilac), var(--shadow); }
+            30% { box-shadow: 0 0 0 4px var(--lilac-deep), var(--shadow); }
         }
 
-        .card img {
-            width: 100%;
-            border-radius: 10px;
-            background: #f4f4f4;
-        }
-
-        .card figcaption {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 4px 2px;
-            font-size: 15px;
+        /* cursor bubble that follows the mouse over artefacts */
+        .cursor {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 72px;
+            height: 72px;
+            margin: -36px 0 0 -36px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
             font-weight: 500;
+            pointer-events: none;
+            z-index: 80;
+            transform: translate(var(--x, -100px), var(--y, -100px)) scale(0);
+            transition: transform 0.25s var(--ease-out);
         }
 
-        .card figcaption span { color: var(--ink-soft); font-weight: 400; font-size: 13px; }
+        .cursor.show { transform: translate(var(--x), var(--y)) scale(1); }
 
         /* ---------- next project ---------- */
         .next {
             display: block;
-            margin: 0 auto;
-            max-width: 1240px;
-            padding: 0 40px 80px;
             text-decoration: none;
             color: var(--ink);
+            padding-bottom: 80px;
         }
 
         .next-inner {
@@ -384,17 +516,15 @@
             justify-content: space-between;
             align-items: flex-end;
             gap: 24px;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.4s var(--ease-out);
         }
 
         .next:hover .next-inner { transform: scale(1.01); }
 
-        .next-label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); }
-
         .next-title {
             font-size: clamp(40px, 6vw, 80px);
             font-weight: 500;
-            letter-spacing: -0.035em;
+            letter-spacing: -0.04em;
             line-height: 1;
             margin-top: 12px;
         }
@@ -410,7 +540,7 @@
             display: grid;
             place-items: center;
             flex-shrink: 0;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.4s var(--ease-out);
         }
 
         .next:hover .next-arrow { transform: translateX(8px) rotate(-45deg); }
@@ -439,195 +569,214 @@
             max-height: 92vh;
             border-radius: 14px;
             transform: scale(0.96);
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.35s var(--ease-out);
         }
 
         .lightbox.open img { transform: none; }
 
-        /* ---------- reveal on scroll ---------- */
+        /* ---------- reveals ---------- */
         .js .reveal {
             opacity: 0;
             transform: translateY(28px);
             filter: blur(6px);
-            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
-                        transform 1s cubic-bezier(0.16, 1, 0.3, 1),
-                        filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 1s var(--ease-out), transform 1s var(--ease-out), filter 1s var(--ease-out);
             transition-delay: var(--delay, 0s);
         }
 
         .js .reveal.in { opacity: 1; transform: none; filter: none; }
 
-        /* headline words rise out of a blur (same as the homepage) */
         .h-word {
             display: inline-block;
             opacity: 0;
             transform: translateY(0.35em);
             filter: blur(10px);
-            animation: word-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: word-in 1s var(--ease-out) forwards;
             animation-delay: var(--d);
         }
 
-        @keyframes word-in {
-            to { opacity: 1; transform: none; filter: blur(0); }
-        }
+        @keyframes word-in { to { opacity: 1; transform: none; filter: blur(0); } }
 
         @media (prefers-reduced-motion: reduce) {
             .js .reveal, .h-word { opacity: 1; transform: none; filter: none; animation: none; transition: none; }
             .lit-word { opacity: 1; }
-            .showcase-frame { width: 100%; }
-            .scroll-cue span { animation: none; }
+            .window { transform: none; }
+            .glow span { animation: none; }
+        }
+
+        /* ---------- touch devices: no custom cursor ---------- */
+        @media (hover: none) {
+            .tile { cursor: pointer; }
+            .tile figcaption { opacity: 1; transform: none; }
+            .cursor { display: none; }
         }
 
         /* ---------- phones ---------- */
         @media (max-width: 860px) {
-            .hero { padding: 110px 20px 60px; }
-            .facts { grid-template-columns: 1fr; gap: 16px; }
-            .showcase-frame { width: calc(88% + 12% * var(--grow, 0)); }
-            .overview { padding: 4vh 20px 12vh; }
-            .process { grid-template-columns: 1fr; padding: 0 20px 10vh; gap: 0; }
+            .wrap { padding: 0 20px; }
+            .hero { padding: 100px 0 40px; min-height: auto; }
+            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+            .glance { grid-template-columns: 1fr; padding: 4vh 0 8vh; }
+            .process { grid-template-columns: 1fr; gap: 0; }
             .process-nav { display: none; }
-            .artefacts { grid-template-columns: 1fr; }
+            .tile.w7, .tile.w5 { grid-column: span 12; }
             .step p { font-size: 17px; }
-            .next { padding: 0 20px 40px; }
             .next-inner { padding: 32px; flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
     <div class="progress" id="progress"></div>
+    <div class="cursor" id="cursor">View</div>
 
     <div class="topbar">
         <a href="test-scroll.html#laine" class="pill">
             <img src="assets/back.svg" alt="">
             All projects
         </a>
-        <span class="pill">Laine · 2024–2025</span>
+        <span class="pill pill--context">Laine · 2024–2025</span>
     </div>
 
     <!-- HERO -->
     <header class="hero">
-        <div class="eyebrow reveal">
-            <div class="app-icon"><img src="assets/logo_laine.svg" alt=""></div>
-            Laine <span class="year">(2024–2025)</span>
-        </div>
+        <div class="glow" aria-hidden="true"><span></span><span></span></div>
+        <div class="wrap">
+            <div class="hero-grid">
+                <div>
+                    <div class="eyebrow reveal">
+                        <div class="app-icon"><img src="assets/logo_laine.svg" alt=""></div>
+                        Laine
+                    </div>
+                    <h1 id="headline">Intelligent growth, automated success</h1>
+                    <p class="hero-sub reveal" style="--delay: 0.5s">AI-powered marketing SaaS at Bain &amp; Company</p>
+                </div>
 
-        <h1 id="headline">Intelligent growth, automated success</h1>
-
-        <p class="hero-sub reveal" style="--delay: 0.5s">AI-powered marketing SaaS at Bain &amp; Company</p>
-
-        <div class="facts reveal" style="--delay: 0.65s">
-            <div>
-                <div class="fact-label">Role</div>
-                <div class="fact-value">UX/UI Designer</div>
+                <dl class="facts reveal" style="--delay: 0.7s">
+                    <div class="fact"><dt class="label">Role</dt><dd>UX/UI Designer</dd></div>
+                    <div class="fact"><dt class="label">Company</dt><dd>Bain &amp; Company, startup incubator</dd></div>
+                    <div class="fact"><dt class="label">Year</dt><dd>2024–2025</dd></div>
+                    <div class="fact">
+                        <dt class="label">Scope</dt>
+                        <dd class="scope">
+                            <span>Research &amp; Development</span>
+                            <span>Branding</span>
+                            <span>Information architecture</span>
+                            <span>UI</span>
+                            <span>Prototyping</span>
+                            <span>Supervising devs</span>
+                            <span>User testing</span>
+                            <span>Webflow website</span>
+                        </dd>
+                    </div>
+                </dl>
             </div>
-            <div>
-                <div class="fact-label">Context</div>
-                <div class="fact-value">Bain &amp; Company's startup incubator</div>
-            </div>
-            <div>
-                <div class="fact-label">Year</div>
-                <div class="fact-value">2024–2025</div>
-            </div>
         </div>
-
-        <div class="chips reveal" style="--delay: 0.8s">
-            <span class="chip">Research &amp; Development</span>
-            <span class="chip">Branding</span>
-            <span class="chip">Information architecture</span>
-            <span class="chip">UI</span>
-            <span class="chip">Prototyping</span>
-            <span class="chip">Supervising devs</span>
-            <span class="chip">User testing</span>
-            <span class="chip">Webflow website</span>
-        </div>
-
-        <div class="scroll-cue reveal" style="--delay: 1s"><span></span>Scroll</div>
     </header>
 
+    <div class="wrap">
+        <!-- AT A GLANCE (all wording from the existing case study) -->
+        <section class="glance" aria-label="At a glance">
+            <div class="glance-card reveal">
+                <div class="label">Challenge</div>
+                <p>Businesses struggle to action marketing growth strategies that actually work.</p>
+            </div>
+            <div class="glance-card reveal" style="--delay: 0.1s">
+                <div class="label">Approach</div>
+                <p>Research-led structure, revisited again and again with marketing experts and user feedback.</p>
+            </div>
+            <div class="glance-card reveal" style="--delay: 0.2s">
+                <div class="label">What it does</div>
+                <p>Real-time, actionable insights across marketing, profitability, sales and customer lifecycle.</p>
+            </div>
+        </section>
+    </div>
+
     <!-- VIDEO -->
-    <section class="showcase">
-        <div class="showcase-frame" id="showcase">
+    <section class="showcase wrap">
+        <div class="window" id="window">
+            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
             <video autoplay loop muted playsinline preload="metadata" src="assets/laine.mp4" aria-label="Laine product demo"></video>
         </div>
     </section>
 
-    <!-- OVERVIEW -->
-    <section class="overview">
-        <div class="section-label reveal">Overview</div>
-        <p id="overview-text">This AI-driven B2B platform helps businesses optimize growth strategies. Developed in Bain &amp; Company's startup incubator, it delivers real-time, actionable insights across marketing, profitability, sales, and customer lifecycle. Unlike traditional tools, Laine automates implementation and continuously refines strategies to drive business growth.</p>
-    </section>
+    <main class="wrap">
+        <!-- OVERVIEW -->
+        <section class="overview">
+            <div class="label reveal">Overview</div>
+            <p id="overview-text">This AI-driven B2B platform helps businesses optimize growth strategies. Developed in Bain &amp; Company's startup incubator, it delivers real-time, actionable insights across marketing, profitability, sales, and customer lifecycle. Unlike traditional tools, Laine automates implementation and continuously refines strategies to drive business growth.</p>
+        </section>
 
-    <!-- PROCESS -->
-    <section class="process">
-        <nav class="process-nav" aria-label="Process">
-            <div class="section-label">Process</div>
-            <ol>
-                <li><a href="#step1" class="active"><span class="num">01</span>Project definition</a></li>
-                <li><a href="#step2"><span class="num">02</span>Information architecture &amp; task flows</a></li>
-                <li><a href="#step3"><span class="num">03</span>UI &amp; prototyping</a></li>
-            </ol>
-        </nav>
+        <!-- PROCESS -->
+        <section class="process">
+            <nav class="process-nav" aria-label="Process">
+                <div class="label">Process</div>
+                <ol id="process-list">
+                    <li><a href="#step1" class="active"><span class="num">01</span>Project definition</a></li>
+                    <li><a href="#step2"><span class="num">02</span>Information architecture &amp; task flows</a></li>
+                    <li><a href="#step3"><span class="num">03</span>UI &amp; prototyping</a></li>
+                </ol>
+            </nav>
 
-        <div class="steps">
-            <article class="step" id="step1">
-                <div class="step-num reveal">01</div>
-                <h2 class="reveal">Project definition</h2>
-                <p class="reveal">The concept of Laine arose from the complex challenges faced by businesses in actioning marketing growth strategies that actually work. Through initial context analysis and research, I explored the limitations of traditional marketing analytics. A <span class="kw" data-target="card-swot">SWOT analysis</span> alongside a <span class="kw" data-target="card-audience">target audience analysis</span> revealed the potential for an intelligent marketing platform that could make strategic insights more actionable and manageable.</p>
-                <div class="artefacts">
-                    <figure class="card reveal" id="card-swot">
-                        <img src="assets/laine_SWOT_analysis.png" alt="SWOT analysis" loading="lazy">
-                        <figcaption>SWOT analysis <span>Click to enlarge</span></figcaption>
-                    </figure>
-                    <figure class="card reveal" id="card-audience" style="--delay: 0.12s">
-                        <img src="assets/laine_target_audience_analysis.png" alt="Target audience analysis" loading="lazy">
-                        <figcaption>Target audience analysis <span>Click to enlarge</span></figcaption>
-                    </figure>
-                </div>
-            </article>
+            <div class="steps">
+                <article class="step" id="step1">
+                    <div class="step-tag reveal"><b>1</b>Step one</div>
+                    <h2 class="reveal">Project definition</h2>
+                    <p class="reveal">The concept of Laine arose from the complex challenges faced by businesses in actioning marketing growth strategies that actually work. Through initial context analysis and research, I explored the limitations of traditional marketing analytics. A <span class="kw" data-target="tile-swot">SWOT analysis</span> alongside a <span class="kw" data-target="tile-audience">target audience analysis</span> revealed the potential for an intelligent marketing platform that could make strategic insights more actionable and manageable.</p>
+                    <div class="bento">
+                        <figure class="tile w5 reveal" id="tile-swot">
+                            <img src="assets/laine_SWOT_analysis.png" alt="SWOT analysis" loading="lazy">
+                            <figcaption>SWOT analysis</figcaption>
+                        </figure>
+                        <figure class="tile w7 reveal" id="tile-audience" style="--delay: 0.12s">
+                            <img src="assets/laine_target_audience_analysis.png" alt="Target audience analysis" loading="lazy">
+                            <figcaption>Target audience analysis</figcaption>
+                        </figure>
+                    </div>
+                </article>
 
-            <article class="step" id="step2">
-                <div class="step-num reveal">02</div>
-                <h2 class="reveal">Information architecture &amp; task flows</h2>
-                <p class="reveal"><span class="kw" data-target="card-ia">Information architecture</span> and <span class="kw" data-target="card-flows">task flows</span> were not one-time activities; rather they were revisited several times throughout the iterative process of expanding the platform based on user feedback. Thanks to input from marketing experts, I structured hierarchies that could effectively communicate strategic recommendations. The process involved breaking down intricate marketing metrics into clear, digestible visuals that would resonate with target users.</p>
-                <div class="artefacts">
-                    <figure class="card reveal" id="card-ia">
-                        <img src="assets/laine_information_architecture.png" alt="Information architecture" loading="lazy">
-                        <figcaption>Information architecture <span>Click to enlarge</span></figcaption>
-                    </figure>
-                    <figure class="card reveal" id="card-flows" style="--delay: 0.12s">
-                        <img src="assets/laine_task_flows.png" alt="Task flows" loading="lazy">
-                        <figcaption>Task flows <span>Click to enlarge</span></figcaption>
-                    </figure>
-                </div>
-            </article>
+                <article class="step" id="step2">
+                    <div class="step-tag reveal"><b>2</b>Step two</div>
+                    <h2 class="reveal">Information architecture &amp; task flows</h2>
+                    <p class="reveal"><span class="kw" data-target="tile-ia">Information architecture</span> and <span class="kw" data-target="tile-flows">task flows</span> were not one-time activities; rather they were revisited several times throughout the iterative process of expanding the platform based on user feedback. Thanks to input from marketing experts, I structured hierarchies that could effectively communicate strategic recommendations. The process involved breaking down intricate marketing metrics into clear, digestible visuals that would resonate with target users.</p>
+                    <div class="bento">
+                        <figure class="tile w7 reveal" id="tile-ia">
+                            <img src="assets/laine_information_architecture.png" alt="Information architecture" loading="lazy">
+                            <figcaption>Information architecture</figcaption>
+                        </figure>
+                        <figure class="tile w5 reveal" id="tile-flows" style="--delay: 0.12s">
+                            <img src="assets/laine_task_flows.png" alt="Task flows" loading="lazy">
+                            <figcaption>Task flows</figcaption>
+                        </figure>
+                    </div>
+                </article>
 
-            <article class="step" id="step3">
-                <div class="step-num reveal">03</div>
-                <h2 class="reveal">UI &amp; prototyping</h2>
-                <p class="reveal">Starting with low-fidelity wireframes and progressively moving to <span class="kw" data-target="card-hifi">high-fidelity wireframes</span> and demo prototypes, I iterated through multiple versions of the interface to match user needs in the best way possible. User testing played a critical role in refining the interface, ensuring that the AI-driven insights could be trusted, easily understood and acted upon.</p>
-                <div class="artefacts single">
-                    <figure class="card reveal" id="card-hifi">
-                        <img src="assets/laine_high-fidelity_wireframes.png" alt="High-fidelity wireframes" loading="lazy">
-                        <figcaption>High-fidelity wireframes <span>Click to enlarge</span></figcaption>
-                    </figure>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <!-- NEXT PROJECT -->
-    <a href="inviso-deep-dive.html" class="next reveal">
-        <div class="next-inner">
-            <div>
-                <div class="next-label">Next project</div>
-                <div class="next-title">Inviso</div>
-                <div class="next-sub">Design of an AI data visualization tool</div>
+                <article class="step" id="step3">
+                    <div class="step-tag reveal"><b>3</b>Step three</div>
+                    <h2 class="reveal">UI &amp; prototyping</h2>
+                    <p class="reveal">Starting with low-fidelity wireframes and progressively moving to <span class="kw" data-target="tile-hifi">high-fidelity wireframes</span> and demo prototypes, I iterated through multiple versions of the interface to match user needs in the best way possible. User testing played a critical role in refining the interface, ensuring that the AI-driven insights could be trusted, easily understood and acted upon.</p>
+                    <div class="bento">
+                        <figure class="tile w12 reveal" id="tile-hifi">
+                            <img src="assets/laine_high-fidelity_wireframes.png" alt="High-fidelity wireframes" loading="lazy">
+                            <figcaption>High-fidelity wireframes</figcaption>
+                        </figure>
+                    </div>
+                </article>
             </div>
-            <div class="next-arrow" aria-hidden="true">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </section>
+
+        <!-- NEXT PROJECT -->
+        <a href="inviso-deep-dive.html" class="next reveal">
+            <div class="next-inner">
+                <div>
+                    <div class="label">Next project</div>
+                    <div class="next-title">Inviso</div>
+                    <div class="next-sub">Design of an AI data visualization tool</div>
+                </div>
+                <div class="next-arrow" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
+    </main>
 
     <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged image">
         <img alt="">
@@ -637,16 +786,15 @@
         document.documentElement.classList.add('js');
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Headline: split into words that rise out of a blur, one by one.
+        // Headline words rise out of a blur, one by one (same as the homepage).
         (function() {
             const h = document.getElementById('headline');
-            const words = h.textContent.trim().split(/\s+/);
-            h.innerHTML = words.map(function(w, i) {
+            h.innerHTML = h.textContent.trim().split(/\s+/).map(function(w, i) {
                 return '<span class="h-word" style="--d:' + (0.15 + i * 0.09).toFixed(2) + 's">' + w + '</span>';
             }).join(' ');
         })();
 
-        // Generic reveal on scroll.
+        // Reveal on scroll.
         const revealObserver = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
@@ -657,16 +805,16 @@
         }, { rootMargin: '0px 0px -12% 0px' });
         document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
 
-        // Overview: split into words that light up as you scroll through it.
+        // Overview words light up as you scroll through them.
         const overview = document.getElementById('overview-text');
-        const litWords = (function() {
-            const words = overview.textContent.trim().split(/\s+/);
-            overview.innerHTML = words.map(function(w) { return '<span class="lit-word">' + w + '</span>'; }).join(' ');
-            return Array.from(overview.querySelectorAll('.lit-word'));
-        })();
+        overview.innerHTML = overview.textContent.trim().split(/\s+/).map(function(w) {
+            return '<span class="lit-word">' + w + '</span>';
+        }).join(' ');
+        const litWords = Array.from(overview.querySelectorAll('.lit-word'));
 
-        const showcase = document.getElementById('showcase');
+        const win = document.getElementById('window');
         const progressBar = document.getElementById('progress');
+        const processList = document.getElementById('process-list');
         const navLinks = Array.from(document.querySelectorAll('.process-nav a'));
         const steps = navLinks.map(function(a) { return document.querySelector(a.getAttribute('href')); });
 
@@ -674,30 +822,31 @@
         function onScroll() {
             ticking = false;
             const vh = window.innerHeight;
+            const y = window.scrollY;
             const doc = document.documentElement;
+            const clamp = function(x) { return Math.min(1, Math.max(0, x)); };
 
-            // reading progress
-            progressBar.style.transform = 'scaleX(' + (window.scrollY / Math.max(1, doc.scrollHeight - vh)).toFixed(4) + ')';
+            progressBar.style.transform = 'scaleX(' + (y / Math.max(1, doc.scrollHeight - vh)).toFixed(4) + ')';
+            document.body.classList.toggle('scrolled', y > vh * 0.6);
 
-            // video grows from inset to full width while it travels up the screen
+            // video window tilts back in 3D and settles flat as it rises into view
             if (!reduceMotion) {
-                const r = showcase.getBoundingClientRect();
-                const grow = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.9)));
-                showcase.style.setProperty('--grow', grow.toFixed(3));
+                const r = win.getBoundingClientRect();
+                win.style.setProperty('--settle', clamp((vh - r.top) / (vh * 0.65)).toFixed(3));
             }
 
-            // overview words light up between 85% and 35% of the screen height
+            // overview words light up between 85% and ~35% of the screen
             const o = overview.getBoundingClientRect();
-            const p = Math.min(1, Math.max(0, (vh * 0.85 - o.top) / (o.height + vh * 0.5)));
-            const lit = Math.round(p * litWords.length);
+            const lit = Math.round(clamp((vh * 0.85 - o.top) / (o.height + vh * 0.5)) * litWords.length);
             litWords.forEach(function(w, i) { w.classList.toggle('on', reduceMotion || i < lit); });
 
-            // process nav: highlight the step crossing the upper third
+            // process nav: active step + line that fills as you read
             let current = 0;
-            steps.forEach(function(step, i) {
-                if (step.getBoundingClientRect().top < vh * 0.4) current = i;
-            });
+            steps.forEach(function(step, i) { if (step.getBoundingClientRect().top < vh * 0.4) current = i; });
             navLinks.forEach(function(a, i) { a.classList.toggle('active', i === current); });
+            const first = steps[0].getBoundingClientRect();
+            const last = steps[steps.length - 1].getBoundingClientRect();
+            processList.style.setProperty('--fill', clamp((vh * 0.4 - first.top) / (last.bottom - first.top)).toFixed(3));
         }
         window.addEventListener('scroll', function() {
             if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
@@ -705,26 +854,38 @@
         window.addEventListener('resize', onScroll);
         onScroll();
 
-        // Keywords in the text scroll to (and flash) their artefact card.
+        // Keywords jump to (and flash) their artefact.
         document.querySelectorAll('.kw').forEach(function(kw) {
             kw.addEventListener('click', function() {
-                const card = document.getElementById(kw.dataset.target);
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                card.classList.remove('flash');
-                void card.offsetWidth;
-                card.classList.add('flash');
+                const tile = document.getElementById(kw.dataset.target);
+                tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                tile.classList.remove('flash');
+                void tile.offsetWidth;
+                tile.classList.add('flash');
             });
         });
 
-        // Lightbox for artefact cards.
+        // "View" bubble follows the mouse over artefacts.
+        const cursor = document.getElementById('cursor');
+        document.querySelectorAll('.tile').forEach(function(tile) {
+            tile.addEventListener('mouseenter', function() { cursor.classList.add('show'); });
+            tile.addEventListener('mouseleave', function() { cursor.classList.remove('show'); });
+        });
+        window.addEventListener('mousemove', function(e) {
+            cursor.style.setProperty('--x', e.clientX + 'px');
+            cursor.style.setProperty('--y', e.clientY + 'px');
+        }, { passive: true });
+
+        // Lightbox.
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = lightbox.querySelector('img');
-        document.querySelectorAll('.card').forEach(function(card) {
-            card.addEventListener('click', function() {
-                const img = card.querySelector('img');
+        document.querySelectorAll('.tile').forEach(function(tile) {
+            tile.addEventListener('click', function() {
+                const img = tile.querySelector('img');
                 lightboxImg.src = img.src;
                 lightboxImg.alt = img.alt;
                 lightbox.classList.add('open');
+                cursor.classList.remove('show');
             });
         });
         function closeLightbox() { lightbox.classList.remove('open'); }
