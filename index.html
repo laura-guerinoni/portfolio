@@ -273,10 +273,10 @@
         }
 
         /* ============================================================
-           HERO SCROLL — the hero pins in place while you scroll.
-           Sentence one starts black and sentence two gray; scrolling
-           fades sentence one to gray while sentence two comes to life
-           word by word.
+           HERO SCROLL — the hero pins in place for a short scroll.
+           Sentence one is the default (black), sentence two gray.
+           Scrolling down switches focus to sentence two (word by word);
+           scrolling up anywhere near the hero switches back.
            ============================================================ */
         .hero-scroll {
             position: absolute;
@@ -298,11 +298,17 @@
 
         .reveal-word {
             display: inline-block;
-            opacity: 0.25; /* gray until scroll brings it to life */
+            transition: opacity 0.45s ease;
         }
 
-        #hero-line-1 .reveal-word {
+        #hero-line-2 .reveal-word,
+        .hero-state-2 #hero-line-1 .reveal-word {
+            opacity: 0.25; /* gray = not in focus */
+        }
+
+        .hero-state-2 #hero-line-2 .reveal-word {
             opacity: 1;
+            transition-delay: calc(var(--i) * 45ms + 0.1s); /* comes to life word by word */
         }
 
         /* A gray sentence holds still on its first phrase; the roll
@@ -1085,45 +1091,47 @@
             return words;
         }
 
-        const clamp01 = function(x) { return Math.min(1, Math.max(0, x)); };
-
-        // How far word i of n has inked in, for step progress p (0..1).
-        function inkAmount(p, i, n) {
-            const start = (i / n) * 0.75;
-            return clamp01((p - start) / 0.25);
-        }
-
-        const GRAY = 0.25;
-
         function setupHeroLineReveal() {
+            const main = document.getElementById('main');
             const line1 = document.getElementById('hero-line-1');
             const line2 = document.getElementById('hero-line-2');
             if (!line1 || !line2) return;
-            const words1 = splitWords(line1);
-            const words2 = splitWords(line2);
+            splitWords(line1);
+            splitWords(line2).forEach(function(word, i) {
+                word.style.setProperty('--i', i);
+            });
             const ticker1 = line1.querySelector('.ticker');
             const ticker2 = line2.querySelector('.ticker');
 
+            // Phones: no pinned hero, both sentences stay fully visible and roll.
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                if (ticker2) ticker2.classList.remove('is-idle');
+                return;
+            }
+
+            function setState(second) {
+                main.classList.toggle('hero-state-2', second);
+                if (ticker1) ticker1.classList.toggle('is-idle', second);
+                if (ticker2) ticker2.classList.toggle('is-idle', !second);
+            }
+
+            let lastY = window.scrollY;
             let ticking = false;
             function update() {
                 ticking = false;
+                const y = window.scrollY;
                 const vh = window.innerHeight;
-                // happens between 0.1 and 0.7 screens of scroll
-                const p = clamp01((window.scrollY - vh * 0.1) / (vh * 0.6));
-                const fade = clamp01(p / 0.35); // sentence one steps back early
-                words1.forEach(function(word) {
-                    word.style.opacity = (1 - (1 - GRAY) * fade).toFixed(3);
-                });
-                words2.forEach(function(word, i) {
-                    word.style.opacity = (GRAY + (1 - GRAY) * inkAmount(p, i, words2.length)).toFixed(3);
-                });
-                if (ticker1) ticker1.classList.toggle('is-idle', fade > 0.5);
-                if (ticker2) ticker2.classList.toggle('is-idle', parseFloat(ticker2.style.opacity) < 0.6);
+                if (y < vh * 0.05 || y < lastY) {
+                    setState(false);                 // default, and whenever scrolling up
+                } else if (y > lastY && y > vh * 0.1) {
+                    setState(true);                  // scrolling down past a small threshold
+                }
+                lastY = y;
             }
             window.addEventListener('scroll', function() {
                 if (!ticking) { ticking = true; requestAnimationFrame(update); }
             }, { passive: true });
-            update();
+            setState(false);
         }
 
         document.addEventListener('DOMContentLoaded', setupHeroLineReveal);
