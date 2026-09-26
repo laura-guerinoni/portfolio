@@ -715,15 +715,19 @@
         }
 
         @media (max-width: 860px) {
+            /* phones: contact buttons sit top-right, level with "All projects",
+               so they never cover the text being read */
             .contact-rail {
-                top: auto;
-                bottom: 16px;
+                top: 16px;
+                bottom: auto;
                 right: 16px;
                 transform: none;
                 flex-direction: row;
-                gap: 10px;
+                gap: 8px;
             }
+            .contact-btn { height: 44px; padding: 0 11px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
             .contact-btn .contact-label { display: none; }
+            .pill--context { display: none; }
         }
 
         /* ---------- glow: just a pinch of lilac, near the contact rail ---------- */
@@ -851,8 +855,27 @@
         /* arrows turn in place (no sliding into the padding) */
         .next:hover .next-arrow { transform: rotate(-45deg); }
 
+        /* space under the video (the .wrap padding rules would otherwise reset it) */
+        .showcase.wrap { padding-bottom: 16vh; }
+
         @media (max-width: 860px) {
-            .next-inner { flex-direction: row; flex-wrap: wrap; }
+            .showcase.wrap { padding-bottom: 10vh; }
+
+            /* next project: one compact row on phones */
+            .next-inner {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 16px;
+                padding: 20px;
+                border-radius: 22px;
+            }
+            .next-icon { width: 56px; height: 56px; border-radius: 16px; }
+            .next-icon img { width: 30px; height: 30px; }
+            .next-title { font-size: 28px; margin-top: 4px; }
+            .next-sub { font-size: 14px; margin-top: 4px; }
+            .next-arrow { width: 44px; height: 44px; }
+            .next-arrow svg { width: 20px; height: 20px; }
             .sticker { width: 56px; height: 56px; top: -18px; left: -12px; border-radius: 16px; }
             .sticker img { width: 30px; height: 30px; }
         }

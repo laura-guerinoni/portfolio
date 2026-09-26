@@ -702,14 +702,18 @@
         }
 
 @media (max-width: 768px) {
+    /* phones: top-right of the page, scrolling away with it (never covers text) */
     .contact-rail {
-        top: auto;
-        bottom: 16px;
+        position: absolute;
+        top: 16px;
+        bottom: auto;
         right: 16px;
         transform: none;
         flex-direction: row;
-        gap: 10px;
+        gap: 8px;
     }
+    .contact-btn { height: 44px; padding: 0 11px; }
+    .sidebar { padding-top: 84px; } /* room under the contact buttons */
     .contact-btn .contact-label { display: none; }
 }
     </style>
