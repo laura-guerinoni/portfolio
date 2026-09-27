@@ -389,7 +389,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 190vh;
+            height: 230vh;
         }
 
         .hero-sticky {
@@ -399,7 +399,7 @@
         }
 
         .projects-container {
-            margin-top: 190vh;
+            margin-top: 230vh;
         }
 
         .reveal-word {
@@ -419,6 +419,8 @@
         #hero-line-2 .reveal-word.on { opacity: 1; }
         #hero-line-2 .reveal-word { transition: opacity 0.2s linear, color 0.3s ease; }
         #hero-line-2 .reveal-word.hot { color: #8B5FD6; transition: opacity 0.2s linear, color 0.1s ease; }
+        #hero-line-1 .reveal-word { transition: opacity 0.45s ease, color 0.3s ease; }
+        #hero-line-1 .reveal-word.hot { color: #8B5FD6; transition: opacity 0.45s ease, color 0.1s ease; }
 
         /* the rolling phrase joins the highlight too */
         #main .reveal-word .ticker-item { color: inherit; }
@@ -1671,21 +1673,30 @@
                 if (ticker2) ticker2.classList.toggle('is-idle', !second);
             }
 
-            // Scrolling down: the photo pops out first; then the second
-            // sentence lights up word by word with the scroll (1-2 lilac words
-            // at the reading front). Scrolling up brings the first sentence
-            // straight back; scrolling down again continues from there.
+            // Scrolling down: the photo pops out first; then a lilac reading
+            // front (1-2 words) sweeps through the first sentence; then the
+            // first sentence steps back to gray while the second lights up
+            // word by word with the same front. All driven by the scroll.
+            // Scrolling up brings the first sentence straight back; scrolling
+            // down again continues from there.
+            const words1 = Array.from(line1.querySelectorAll('.reveal-word'));
             const words2 = Array.from(line2.querySelectorAll('.reveal-word'));
-            const PX_PER_WORD = 26;                      // similar pace to the descriptions
-            let base = null;                             // scroll position where lighting starts
+            const total = words1.length + words2.length;
+            const PX_PER_WORD = 26;
+            let base = null;                             // scroll position where the reading starts
 
             function paint(t) {
-                const lit = Math.round(t * words2.length);
-                words2.forEach(function(w, i) {
-                    w.classList.toggle('on', i < lit);
-                    w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
+                const lit = Math.round(t * total);
+                const reading = t > 0 && t < 1;
+                words1.forEach(function(w, i) {
+                    w.classList.toggle('hot', reading && lit <= words1.length && i < lit && i >= lit - 2);
                 });
-                setState(lit > 0);
+                const lit2 = Math.max(0, lit - words1.length);
+                words2.forEach(function(w, i) {
+                    w.classList.toggle('on', i < lit2);
+                    w.classList.toggle('hot', reading && i < lit2 && i >= lit2 - 2);
+                });
+                setState(lit2 > 0);
             }
 
             let lastY = window.scrollY;
@@ -1704,7 +1715,7 @@
                 } else if (y > lastY) {                  // scrolling down
                     main.classList.add('hero-photo');
                     if (base === null) base = Math.max(y, vh * 0.12);
-                    paint(Math.min(1, Math.max(0, (y - base) / (words2.length * PX_PER_WORD))));
+                    paint(Math.min(1, Math.max(0, (y - base) / (total * PX_PER_WORD))));
                 }
                 lastY = y;
             }
