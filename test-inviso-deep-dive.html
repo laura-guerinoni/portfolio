@@ -315,9 +315,15 @@
             max-width: 1040px;
         }
 
-        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, color 0.3s ease; }
+        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, background-color 0.25s ease, box-shadow 0.25s ease; }
         .lit-word.on { opacity: 1; }
-        .lit-word.on.hot { color: var(--hot); transition: opacity 0.2s linear, color 0.1s ease; }
+        /* reading front: the brand lilac behind the words, like a highlighter */
+        .lit-word { border-radius: 4px; }
+        .lit-word.on.hot {
+            background-color: var(--lilac);
+            box-shadow: 0 0 0 3px var(--lilac);
+            transition: opacity 0.2s linear, background-color 0.12s ease, box-shadow 0.12s ease;
+        }
 
         /* the overview pins while scrolling lights it up, then the page moves on */
         /* sticky only moves within the parent's content box, so the pin

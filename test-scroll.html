@@ -417,9 +417,9 @@
            the reading front in lilac, like the project descriptions. */
         #hero-line-2 .reveal-word.on { opacity: 1; }
         #hero-line-2 .reveal-word { transition: opacity 0.2s linear, color 0.3s ease; }
-        #hero-line-2 .reveal-word.hot { color: #8B5FD6; transition: opacity 0.2s linear, color 0.1s ease; }
+
         #hero-line-1 .reveal-word { transition: opacity 0.45s ease, color 0.3s ease; }
-        #hero-line-1 .reveal-word.hot { color: #8B5FD6; transition: opacity 0.45s ease, color 0.1s ease; }
+
 
         /* while the intro is being read, the rolling phrases follow the
            scroll (--roll: 0 = first phrase, 1 = second) instead of auto-rolling */
@@ -436,7 +436,7 @@
            deep-dive overview; the reading front glows lilac for a moment */
         .lit-word { opacity: 0.2; transition: opacity 0.2s linear, color 0.3s ease; }
         .lit-word.on { opacity: 1; }
-        .lit-word.on.hot { color: #8B5FD6; transition: opacity 0.2s linear, color 0.1s ease; }
+
 
         @media (prefers-reduced-motion: reduce) {
             .reveal-word { animation: none !important; }
@@ -819,6 +819,26 @@
     .sidebar { padding-top: 84px; } /* room under the contact buttons */
     .contact-btn .contact-label { display: none; }
 }
+
+
+        /* READING MARKER (TEST) — the words at the reading front get the
+           brand lilac behind them, like a highlighter; text stays dark.
+           box-shadow extends the marker without shifting the layout. */
+        #hero-line-1 .reveal-word,
+        #hero-line-2 .reveal-word,
+        .lit-word {
+            border-radius: 4px;
+            transition: opacity 0.2s linear, background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        #hero-line-1 .reveal-word.hot,
+        #hero-line-2 .reveal-word.hot,
+        .lit-word.on.hot {
+            color: inherit;
+            background-color: #ECDBFF;
+            box-shadow: 0 0 0 3px #ECDBFF;
+            transition: opacity 0.2s linear, background-color 0.12s ease, box-shadow 0.12s ease;
+        }
 
         /* ============================================================
            COHESION (TEST) — one small system for every surface on the page:
