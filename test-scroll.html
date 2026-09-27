@@ -412,30 +412,15 @@
             opacity: 0.25; /* gray = not in focus */
         }
 
-        .hero-state-2 #hero-line-2 .reveal-word {
-            opacity: 1;
-            transition-delay: calc(var(--i) * 70ms + 0.1s); /* comes to life word by word */
-        }
 
-        /* READING HIGHLIGHT (TEST) — the sentence coming into focus glows
-           in a deeper lilac word by word, then settles to ink. */
-        /* a narrow sweep: each word is lilac only briefly, so just one or
-           two words glow at any moment */
-        @keyframes word-hot {
-            0%   { color: #333; }
-            4%   { color: #8B5FD6; }
-            11%  { color: #8B5FD6; }
-            17%  { color: #333; }
-            100% { color: #333; }
-        }
+        /* READING HIGHLIGHT (TEST) — the second sentence lights up word by
+           word with the scroll (driven in JS), with only the 1-2 words at
+           the reading front in lilac, like the project descriptions. */
+        #hero-line-2 .reveal-word.on { opacity: 1; }
+        #hero-line-2 .reveal-word { transition: opacity 0.2s linear, color 0.3s ease; }
+        #hero-line-2 .reveal-word.hot { color: #8B5FD6; transition: opacity 0.2s linear, color 0.1s ease; }
 
-        .hero-state-2 #hero-line-2 .reveal-word,
-        #main:not(.hero-state-2) #hero-line-1 .reveal-word {
-            animation: word-hot 0.8s linear both;
-            animation-delay: calc(var(--i) * 70ms + 0.1s);
-        }
-
-        /* the rolling phrases join the sweep too */
+        /* the rolling phrase joins the highlight too */
         #main .reveal-word .ticker-item { color: inherit; }
 
         /* project descriptions light up with the scroll, like the
@@ -1686,14 +1671,21 @@
                 if (ticker2) ticker2.classList.toggle('is-idle', !second);
             }
 
-            // Scrolling down: the photo pops out first; the sentences switch
-            // afterwards (at least PHOTO_LEAD ms later), never both at once.
-            const PHOTO_LEAD = 550;
-            let photoAt = 0;
-            let pending = null;
-            function setPhoto(on) {
-                if (on && !main.classList.contains('hero-photo')) photoAt = performance.now();
-                main.classList.toggle('hero-photo', on);
+            // Scrolling down: the photo pops out first; then the second
+            // sentence lights up word by word with the scroll (1-2 lilac words
+            // at the reading front). Scrolling up brings the first sentence
+            // straight back; scrolling down again continues from there.
+            const words2 = Array.from(line2.querySelectorAll('.reveal-word'));
+            const PX_PER_WORD = 26;                      // similar pace to the descriptions
+            let base = null;                             // scroll position where lighting starts
+
+            function paint(t) {
+                const lit = Math.round(t * words2.length);
+                words2.forEach(function(w, i) {
+                    w.classList.toggle('on', i < lit);
+                    w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
+                });
+                setState(lit > 0);
             }
 
             let lastY = window.scrollY;
@@ -1702,19 +1694,17 @@
                 ticking = false;
                 const y = window.scrollY;
                 const vh = window.innerHeight;
-                if (y < vh * 0.03) {                 // back at the top: everything resets
-                    clearTimeout(pending); pending = null;
-                    setState(false);
-                    setPhoto(false);
-                } else if (y < lastY) {              // scrolling up: first sentence again
-                    clearTimeout(pending); pending = null;
-                    setState(false);
-                } else if (y > lastY) {              // scrolling down
-                    setPhoto(true);
-                    if (y > vh * 0.12 && !main.classList.contains('hero-state-2') && !pending) {
-                        const wait = Math.max(0, photoAt + PHOTO_LEAD - performance.now());
-                        pending = setTimeout(function() { pending = null; setState(true); }, wait);
-                    }
+                if (y < vh * 0.03) {                     // back at the top: everything resets
+                    main.classList.remove('hero-photo');
+                    base = null;
+                    paint(0);
+                } else if (y < lastY) {                  // scrolling up: first sentence again
+                    base = null;
+                    paint(0);
+                } else if (y > lastY) {                  // scrolling down
+                    main.classList.add('hero-photo');
+                    if (base === null) base = Math.max(y, vh * 0.12);
+                    paint(Math.min(1, Math.max(0, (y - base) / (words2.length * PX_PER_WORD))));
                 }
                 lastY = y;
             }
