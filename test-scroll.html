@@ -177,14 +177,14 @@
         .js-reveal .project-content > p,
         .js-reveal .project-gif {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(28px);
             filter: blur(6px);
             transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
                         transform 1s cubic-bezier(0.16, 1, 0.3, 1),
                         filter 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .js-reveal .section-icon { transform: translateY(24px) scale(0.7); }
+        .js-reveal .section-icon { transform: translateY(28px) scale(0.7); }
         .js-reveal .project-title { transition-delay: 0.08s; }
         .js-reveal .project-year-tag { display: inline-block; transition-delay: 0.16s; }
         .js-reveal .project-subtitle { transition-delay: 0.24s; }
@@ -201,18 +201,41 @@
         }
 
         /* Chips wait hidden until they rain in (JS adds .chips-ready) */
-        /* TYPEWRITER TEST — title, year, subtitle and description are
-           typed out letter by letter instead of fading in. The text
-           keeps its full space from the start (letters are only
-           invisible), so nothing shifts while typing. */
-        .js-reveal .project-title,
-        .js-reveal .project-year-tag,
-        .js-reveal .project-subtitle,
-        .js-reveal .project-content > p {
-            opacity: 1;
-            transform: none;
-            filter: none;
-            transition: none;
+        /* DEEP-DIVE TEXT (TEST) — project text uses the deep-dive
+           typography and appears the same way: each block rises out of
+           a soft blur (the rules above), no typewriter. */
+        .project-section .project-title {
+            font-size: clamp(30px, 3.2vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .project-section .project-year-tag {
+            margin-top: 0;
+            align-self: center;
+            font-size: 16px;
+            color: rgba(51, 51, 51, 0.6);
+        }
+
+        .project-section .project-subtitle {
+            margin-top: 14px;
+            font-size: clamp(19px, 1.7vw, 23px);
+            line-height: 1.45;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 0.6);
+        }
+
+        .project-section .project-content-wrapper .project-content > p {
+            font-size: 19px !important;
+            line-height: 1.75;
+            font-weight: 350;
+            max-width: 680px;
+        }
+
+        @media (max-width: 768px) {
+            .project-section .project-content-wrapper .project-content > p { font-size: 17px !important; }
         }
 
         .tw-char {
@@ -1287,7 +1310,7 @@
             (section._waiters = section._waiters || []).push(once);
             if (section._rushed) { once(); return; }
             const go = function() {
-                const doneAt = section._headerAt + ((section._subEnd || 0) + extra) * 1000;
+                const doneAt = section._headerAt + ((section._subEnd === undefined ? 0.55 : section._subEnd) + extra) * 1000;
                 setTimeout(once, Math.max(0, doneAt - performance.now()));
             };
             if (section._headerAt) go();
@@ -1397,7 +1420,6 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', setupTypewriter);
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
 
         // TYPEWRITER TEST — wrap every letter in a span with its own
