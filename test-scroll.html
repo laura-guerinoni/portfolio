@@ -717,54 +717,32 @@
         .project-section .project-content { margin-left: 68px; }
 
         /* ============================================================
-           CHIPS (TEST) — frosted glass pills with a dot in the project's
-           logo color; the falling animation is unchanged.
+           CHIPS (TEST) — white stickers: they fall in as before, then
+           rest at a small random tilt (--rest, set in JS) like dropped
+           stickers. Hover straightens them.
            ============================================================ */
-        #lite-tone     { --accent: #4DB6C8; }
-        #laine         { --accent: #B983F2; }
-        #inviso        { --accent: #7B8CCC; }
-        #enjoy         { --accent: #D23A55; }
-        #vr-training   { --accent: #5E6470; }
-        #pet-in-a-pot  { --accent: #8FB58A; }
-
         .project-section .skill-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 13px 7px 11px;
+            display: inline-block;
+            padding: 7px 13px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.55);
-            border: 1px solid rgba(51, 51, 51, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: #fff;
+            border: 1px solid rgba(51, 51, 51, 0.08);
             color: #333;
             font-size: 13px;
             font-weight: 500;
             letter-spacing: 0.01em;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-            transition: background-color 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-
-        .project-section .skill-tag::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent, #333);
-            flex-shrink: 0;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            transform: rotate(var(--rest, 0deg));
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
         }
 
         .project-section .skill-tag:hover {
-            background: #fff;
-            border-color: rgba(51, 51, 51, 0.14);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            transform: rotate(0deg) scale(1.05) !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
-        .project-section .skill-tag:hover::before { transform: scale(1.5); }
-
-        .project-section .skills-tags { gap: 8px; }
-        .project-section .skills-tags.chips-ready .skill-tag { display: inline-flex; }
+        .project-section .skills-tags { gap: 10px; }
+        .project-section .skills-tags.chips-ready .skill-tag { display: inline-block; }
 
         /* ============================================================
            CONTACT RAIL (TEST) — email + LinkedIn on the right, styled
@@ -1469,6 +1447,15 @@
         // lights the text word by word; only the 1-2 words at the reading
         // front are lilac. Once it's fully lit, the page moves on.
         // Phones: no pinning, the text just lights up as it scrolls by.
+        // CHIPS (TEST): each chip gets a small, stable resting tilt (-3..3deg)
+        function setupChipTilts() {
+            document.querySelectorAll('.project-section .skill-tag').forEach(function(chip, i) {
+                const r = Math.sin(i * 12.9898 + 4.1414) * 43758.5453;
+                const tilt = ((r - Math.floor(r)) * 6 - 3).toFixed(2);
+                chip.style.setProperty('--rest', tilt + 'deg');
+            });
+        }
+
         function setupDescriptionLighting() {
             const pinning = !prefersReducedMotion && !window.matchMedia('(max-width: 768px)').matches;
             const items = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
@@ -1558,6 +1545,7 @@
         }
 
         function setupSectionReveals() {
+            setupChipTilts();
             setupPageColor();
             setupDescriptionLighting();
             const reveal = function(el) { el.classList.add('is-revealed'); };
@@ -1592,22 +1580,25 @@
             const chips = row.querySelectorAll('.skill-tag');
             const pace = fast ? 0.4 : 1; // quicker rain when catching up with fast scrolling
             chips.forEach(function(chip, i) {
+                const rest = parseFloat(chip.style.getPropertyValue('--rest')) || 0;
                 const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
                 const drift = (Math.random() - 0.5) * 90;
                 const height = 220 + Math.random() * 120;
                 const delay = (i * 110 + Math.random() * 80) * pace;
 
-                chip.animate([
+                const anim = chip.animate([
                     { offset: 0,    opacity: 0, transform: 'translate(' + drift + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' },
                     { offset: 0.12, opacity: 1 },
                     { offset: 0.55, opacity: 1, transform: 'translate(' + (drift * 0.08) + 'px, -22px) rotate(' + (-tilt * 0.2) + 'deg)', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-                    { offset: 0.85, opacity: 1, transform: 'translate(0, 1px) rotate(' + (tilt * 0.04) + 'deg)', easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
-                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg)' }
+                    { offset: 0.85, opacity: 1, transform: 'translate(0, 1px) rotate(' + (rest + tilt * 0.04) + 'deg)', easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
+                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(' + rest + 'deg)' }
                 ], {
                     duration: fast ? 800 : 1300,
                     delay: delay,
                     fill: 'both'
                 });
+                // once landed, hand the chip back to CSS so hover can straighten it
+                anim.onfinish = function() { chip.style.opacity = '1'; anim.cancel(); };
             });
         }
 
