@@ -414,29 +414,35 @@
 
         .hero-state-2 #hero-line-2 .reveal-word {
             opacity: 1;
-            transition-delay: calc(var(--i) * 45ms + 0.1s); /* comes to life word by word */
+            transition-delay: calc(var(--i) * 70ms + 0.1s); /* comes to life word by word */
         }
 
         /* READING HIGHLIGHT (TEST) — the sentence coming into focus glows
            in a deeper lilac word by word, then settles to ink. */
+        /* a narrow sweep: each word is lilac only briefly, so just one or
+           two words glow at any moment */
         @keyframes word-hot {
             0%   { color: #333; }
-            20%  { color: #8B5FD6; }
-            60%  { color: #8B5FD6; }
+            4%   { color: #8B5FD6; }
+            11%  { color: #8B5FD6; }
+            17%  { color: #333; }
             100% { color: #333; }
         }
 
         .hero-state-2 #hero-line-2 .reveal-word,
         #main:not(.hero-state-2) #hero-line-1 .reveal-word {
-            animation: word-hot 1.3s ease both;
-            animation-delay: calc(var(--i) * 45ms + 0.1s);
+            animation: word-hot 0.8s linear both;
+            animation-delay: calc(var(--i) * 70ms + 0.1s);
         }
+
+        /* the rolling phrases join the sweep too */
+        #main .reveal-word .ticker-item { color: inherit; }
 
         /* project descriptions light up with the scroll, like the
            deep-dive overview; the reading front glows lilac for a moment */
-        .lit-word { opacity: 0.2; transition: opacity 0.25s linear, color 0.8s ease; }
+        .lit-word { opacity: 0.2; transition: opacity 0.2s linear, color 0.3s ease; }
         .lit-word.on { opacity: 1; }
-        .lit-word.on.hot { color: #8B5FD6; transition: opacity 0.25s linear, color 0.15s ease; }
+        .lit-word.on.hot { color: #8B5FD6; transition: opacity 0.2s linear, color 0.1s ease; }
 
         @media (prefers-reduced-motion: reduce) {
             .reveal-word { animation: none !important; }
@@ -1403,20 +1409,14 @@
             });
         }
 
-        // READING HIGHLIGHT (TEST): project descriptions light up word by
-        // word as you scroll; a word that just lit up glows lilac briefly.
-        function setLit(w, on) {
-            if (on && !w.classList.contains('on')) {
-                w.classList.add('on', 'hot');
-                clearTimeout(w._hot);
-                w._hot = setTimeout(function() { w.classList.remove('hot'); }, 900);
-            } else if (!on && w.classList.contains('on')) {
-                w.classList.remove('on', 'hot');
-            }
-        }
-
+        // READING HIGHLIGHT (TEST): when a project description reaches the
+        // reading position, the project holds still (sticky) while scrolling
+        // lights the text word by word; only the 1-2 words at the reading
+        // front are lilac. Once it's fully lit, the page moves on.
+        // Phones: no pinning, the text just lights up as it scrolls by.
         function setupDescriptionLighting() {
-            const paras = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
+            const pinning = !prefersReducedMotion && !window.matchMedia('(max-width: 768px)').matches;
+            const items = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
                 const words = p.textContent.trim().split(/\s+/);
                 p.textContent = '';
                 const spans = words.map(function(w, i) {
@@ -1427,27 +1427,78 @@
                     if (i < words.length - 1) p.appendChild(document.createTextNode(' '));
                     return span;
                 });
-                return { p: p, spans: spans };
+                return {
+                    p: p,
+                    spans: spans,
+                    section: p.closest('.project-section'),
+                    wrapper: p.closest('.project-content-wrapper'),
+                    pin: Math.max(420, spans.length * 14)
+                };
             });
             if (prefersReducedMotion) {
-                paras.forEach(function(x) { x.spans.forEach(function(w) { w.classList.add('on'); }); });
+                items.forEach(function(x) { x.spans.forEach(function(w) { w.classList.add('on'); }); });
                 return;
             }
+
+            function layout() {
+                if (!pinning) return;
+                const vh = window.innerHeight;
+                items.forEach(function(x) {
+                    x.wrapper.style.position = 'relative';
+                    x.wrapper.style.top = '0px';
+                    x.section.style.height = '';
+                    const offset = x.p.getBoundingClientRect().top - x.wrapper.getBoundingClientRect().top;
+                    x.stickyTop = vh * 0.38 - offset;          // description sits at 38% of the screen
+                    x.wrapper.style.position = 'sticky';
+                    x.wrapper.style.alignSelf = 'flex-start';
+                    x.wrapper.style.top = x.stickyTop + 'px';
+                    // sticky only moves inside the parent's content box, so the
+                    // pin distance is added to the section's height (not padding)
+                    const cs = getComputedStyle(x.section);
+                    x.section.style.alignItems = 'flex-start';
+                    x.section.style.height = (parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) +
+                        x.wrapper.offsetHeight + x.pin) + 'px';
+                });
+            }
+
             let ticking = false;
             function update() {
                 ticking = false;
                 const vh = window.innerHeight;
-                paras.forEach(function(x) {
-                    const r = x.p.getBoundingClientRect();
-                    if (r.top > vh || r.bottom < -vh) return;
-                    const t = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+                items.forEach(function(x) {
+                    const r = x.section.getBoundingClientRect();
+                    if (r.top > vh || r.bottom < 0) return;
+                    let t;
+                    if (pinning) {
+                        const padTop = parseFloat(getComputedStyle(x.section).paddingTop);
+                        t = (x.stickyTop - (r.top + padTop)) / x.pin;
+                    } else {
+                        const pr = x.p.getBoundingClientRect();
+                        t = (vh * 0.8 - pr.top) / (pr.height + vh * 0.3);
+                    }
+                    t = Math.min(1, Math.max(0, t));
                     const lit = Math.round(t * x.spans.length);
-                    x.spans.forEach(function(w, i) { setLit(w, i < lit); });
+                    x.spans.forEach(function(w, i) {
+                        w.classList.toggle('on', i < lit);
+                        w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
+                    });
                 });
             }
+            document.fonts.ready.then(function() { layout(); update(); });
+            // re-measure when a project's content changes size (e.g. its video loads)
+            if (pinning && 'ResizeObserver' in window) {
+                let pending = null;
+                const ro = new ResizeObserver(function() {
+                    cancelAnimationFrame(pending);
+                    pending = requestAnimationFrame(function() { layout(); update(); });
+                });
+                items.forEach(function(x) { ro.observe(x.wrapper); });
+            }
+            window.addEventListener('resize', function() { layout(); update(); });
             window.addEventListener('scroll', function() {
                 if (!ticking) { ticking = true; requestAnimationFrame(update); }
             }, { passive: true });
+            layout();
             update();
         }
 

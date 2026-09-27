@@ -307,9 +307,15 @@
             max-width: 1040px;
         }
 
-        .lit-word { opacity: 0.18; transition: opacity 0.25s linear, color 0.8s ease; }
+        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, color 0.3s ease; }
         .lit-word.on { opacity: 1; }
-        .lit-word.on.hot { color: var(--hot); transition: opacity 0.25s linear, color 0.15s ease; }
+        .lit-word.on.hot { color: var(--hot); transition: opacity 0.2s linear, color 0.1s ease; }
+
+        /* the overview pins while scrolling lights it up, then the page moves on */
+        /* sticky only moves within the parent's content box, so the pin
+           distance is an empty block after the text (not padding) */
+        .overview-pin { position: sticky; top: 22vh; }
+        .overview::after { content: ''; display: block; height: var(--pin, 0px); }
 
         /* ---------- process: sticky nav + steps ---------- */
         .process {
@@ -984,8 +990,10 @@
     <main class="wrap">
         <!-- OVERVIEW -->
         <section class="overview">
-            <div class="label reveal">Overview</div>
-            <p id="overview-text">Pet in a Pot is a plant brand with an innovative product: an interactive vase connected to an app teaching people plant care by monitoring conditions and needs. The vase detects people and communicates through cute eyes. The app sends reminders. Its mission educates on proper plant care while raising environmental awareness.</p>
+            <div class="overview-pin">
+                <div class="label reveal">Overview</div>
+                <p id="overview-text">Pet in a Pot is a plant brand with an innovative product: an interactive vase connected to an app teaching people plant care by monitoring conditions and needs. The vase detects people and communicates through cute eyes. The app sends reminders. Its mission educates on proper plant care while raising environmental awareness.</p>
+            </div>
         </section>
 
         <!-- PROCESS -->
@@ -1130,10 +1138,17 @@
                 win.style.setProperty('--settle', clamp((vh - r.top) / (vh * 0.65)).toFixed(3));
             }
 
-            // overview words light up between 85% and ~35% of the screen
-            const o = overview.getBoundingClientRect();
-            const lit = Math.round(clamp((vh * 0.85 - o.top) / (o.height + vh * 0.5)) * litWords.length);
-            litWords.forEach(function(w, i) { setLit(w, reduceMotion || i < lit); });
+            // overview: pinned at 22% of the screen while scrolling lights it
+            // word by word; only the 1-2 words at the reading front are lilac
+            const stage = overview.closest('.overview');
+            const pin = Math.max(420, litWords.length * 14);
+            stage.style.setProperty('--pin', pin + 'px');
+            const t = reduceMotion ? 1 : clamp((vh * 0.22 - stage.getBoundingClientRect().top) / pin);
+            const lit = Math.round(t * litWords.length);
+            litWords.forEach(function(w, i) {
+                w.classList.toggle('on', i < lit);
+                w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
+            });
 
             // process nav: active step + line that fills as you read
             let current = 0;
