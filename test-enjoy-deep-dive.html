@@ -24,6 +24,7 @@
             --glow: #BDF3D8;          /* deeper tint of the project color */
             --lilac: #ECDBFF;         /* site accent */
             --lilac-deep: #D9BFFF;
+            --hot: #8B5FD6;           /* deeper lilac for the reading highlight */
             --shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
             --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -306,8 +307,9 @@
             max-width: 1040px;
         }
 
-        .lit-word { opacity: 0.18; transition: opacity 0.25s linear; }
+        .lit-word { opacity: 0.18; transition: opacity 0.25s linear, color 0.8s ease; }
         .lit-word.on { opacity: 1; }
+        .lit-word.on.hot { color: var(--hot); transition: opacity 0.25s linear, color 0.15s ease; }
 
         /* ---------- process: sticky nav + steps ---------- */
         .process {
@@ -1104,6 +1106,17 @@
         }).join(' ');
         const litWords = Array.from(overview.querySelectorAll('.lit-word'));
 
+        // A word that just lit up glows in the accent color for a moment.
+        function setLit(w, on) {
+            if (on && !w.classList.contains('on')) {
+                w.classList.add('on', 'hot');
+                clearTimeout(w._hot);
+                w._hot = setTimeout(function() { w.classList.remove('hot'); }, 900);
+            } else if (!on && w.classList.contains('on')) {
+                w.classList.remove('on', 'hot');
+            }
+        }
+
         const win = document.getElementById('window');
         const progressBar = document.getElementById('progress');
         const processList = document.getElementById('process-list');
@@ -1130,7 +1143,7 @@
             // overview words light up between 85% and ~35% of the screen
             const o = overview.getBoundingClientRect();
             const lit = Math.round(clamp((vh * 0.85 - o.top) / (o.height + vh * 0.5)) * litWords.length);
-            litWords.forEach(function(w, i) { w.classList.toggle('on', reduceMotion || i < lit); });
+            litWords.forEach(function(w, i) { setLit(w, reduceMotion || i < lit); });
 
             // process nav: active step + line that fills as you read
             let current = 0;

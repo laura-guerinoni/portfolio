@@ -417,6 +417,32 @@
             transition-delay: calc(var(--i) * 45ms + 0.1s); /* comes to life word by word */
         }
 
+        /* READING HIGHLIGHT (TEST) — the sentence coming into focus glows
+           in a deeper lilac word by word, then settles to ink. */
+        @keyframes word-hot {
+            0%   { color: #333; }
+            20%  { color: #8B5FD6; }
+            60%  { color: #8B5FD6; }
+            100% { color: #333; }
+        }
+
+        .hero-state-2 #hero-line-2 .reveal-word,
+        #main:not(.hero-state-2) #hero-line-1 .reveal-word {
+            animation: word-hot 1.3s ease both;
+            animation-delay: calc(var(--i) * 45ms + 0.1s);
+        }
+
+        /* project descriptions light up with the scroll, like the
+           deep-dive overview; the reading front glows lilac for a moment */
+        .lit-word { opacity: 0.2; transition: opacity 0.25s linear, color 0.8s ease; }
+        .lit-word.on { opacity: 1; }
+        .lit-word.on.hot { color: #8B5FD6; transition: opacity 0.25s linear, color 0.15s ease; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-word { animation: none !important; }
+            .lit-word { opacity: 1; }
+        }
+
         /* A gray sentence holds still on its first phrase; the roll
            (re)starts only when the sentence is in focus. */
         .ticker.is-idle .ticker-track {
@@ -1377,8 +1403,57 @@
             });
         }
 
+        // READING HIGHLIGHT (TEST): project descriptions light up word by
+        // word as you scroll; a word that just lit up glows lilac briefly.
+        function setLit(w, on) {
+            if (on && !w.classList.contains('on')) {
+                w.classList.add('on', 'hot');
+                clearTimeout(w._hot);
+                w._hot = setTimeout(function() { w.classList.remove('hot'); }, 900);
+            } else if (!on && w.classList.contains('on')) {
+                w.classList.remove('on', 'hot');
+            }
+        }
+
+        function setupDescriptionLighting() {
+            const paras = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
+                const words = p.textContent.trim().split(/\s+/);
+                p.textContent = '';
+                const spans = words.map(function(w, i) {
+                    const span = document.createElement('span');
+                    span.className = 'lit-word';
+                    span.textContent = w;
+                    p.appendChild(span);
+                    if (i < words.length - 1) p.appendChild(document.createTextNode(' '));
+                    return span;
+                });
+                return { p: p, spans: spans };
+            });
+            if (prefersReducedMotion) {
+                paras.forEach(function(x) { x.spans.forEach(function(w) { w.classList.add('on'); }); });
+                return;
+            }
+            let ticking = false;
+            function update() {
+                ticking = false;
+                const vh = window.innerHeight;
+                paras.forEach(function(x) {
+                    const r = x.p.getBoundingClientRect();
+                    if (r.top > vh || r.bottom < -vh) return;
+                    const t = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+                    const lit = Math.round(t * x.spans.length);
+                    x.spans.forEach(function(w, i) { setLit(w, i < lit); });
+                });
+            }
+            window.addEventListener('scroll', function() {
+                if (!ticking) { ticking = true; requestAnimationFrame(update); }
+            }, { passive: true });
+            update();
+        }
+
         function setupSectionReveals() {
             setupPageColor();
+            setupDescriptionLighting();
             const reveal = function(el) { el.classList.add('is-revealed'); };
 
             // Header: title → year → subtitle type out as one sequence.
@@ -1539,7 +1614,9 @@
             const line1 = document.getElementById('hero-line-1');
             const line2 = document.getElementById('hero-line-2');
             if (!line1 || !line2) return;
-            splitWords(line1);
+            splitWords(line1).forEach(function(word, i) {
+                word.style.setProperty('--i', i);
+            });
             splitWords(line2).forEach(function(word, i) {
                 word.style.setProperty('--i', i);
             });
