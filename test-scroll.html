@@ -821,23 +821,20 @@
 }
 
 
-        /* READING MARKER (TEST) — the words at the reading front get the
-           brand lilac behind them, like a highlighter; text stays dark.
-           box-shadow extends the marker without shifting the layout. */
+        /* READING HIGHLIGHT (TEST) — the words at the reading front turn
+           "dark lilac": the brand lilac's exact hue at text strength, so
+           the site has one accent family (pale for fills, dark for text). */
         #hero-line-1 .reveal-word,
         #hero-line-2 .reveal-word,
         .lit-word {
-            border-radius: 4px;
-            transition: opacity 0.2s linear, background-color 0.25s ease, box-shadow 0.25s ease;
+            transition: opacity 0.2s linear, color 0.3s ease;
         }
 
         #hero-line-1 .reveal-word.hot,
         #hero-line-2 .reveal-word.hot,
         .lit-word.on.hot {
-            color: inherit;
-            background-color: #ECDBFF;
-            box-shadow: 0 0 0 3px #ECDBFF;
-            transition: opacity 0.2s linear, background-color 0.12s ease, box-shadow 0.12s ease;
+            color: #9150D0;
+            transition: opacity 0.2s linear, color 0.1s ease;
         }
 
         /* ============================================================

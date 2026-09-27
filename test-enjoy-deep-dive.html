@@ -24,7 +24,7 @@
             --glow: #BDF3D8;          /* deeper tint of the project color */
             --lilac: #ECDBFF;         /* site accent */
             --lilac-deep: #D9BFFF;
-            --hot: #8B5FD6;           /* deeper lilac for the reading highlight */
+            --hot: #9150D0;           /* dark lilac: brand lilac hue at text strength */
             --shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
             --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -315,15 +315,10 @@
             max-width: 1040px;
         }
 
-        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, background-color 0.25s ease, box-shadow 0.25s ease; }
+        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, color 0.3s ease; }
         .lit-word.on { opacity: 1; }
-        /* reading front: the brand lilac behind the words, like a highlighter */
-        .lit-word { border-radius: 4px; }
-        .lit-word.on.hot {
-            background-color: var(--lilac);
-            box-shadow: 0 0 0 3px var(--lilac);
-            transition: opacity 0.2s linear, background-color 0.12s ease, box-shadow 0.12s ease;
-        }
+        /* reading front: "dark lilac" text, the brand lilac's hue at text strength */
+        .lit-word.on.hot { color: var(--hot); transition: opacity 0.2s linear, color 0.1s ease; }
 
         /* the overview pins while scrolling lights it up, then the page moves on */
         /* sticky only moves within the parent's content box, so the pin
