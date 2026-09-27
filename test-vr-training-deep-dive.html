@@ -227,13 +227,38 @@
             font-weight: 400;
         }
 
+        /* scope chips: frosted glass pills with a dot in the project's
+           logo color (same as the homepage chips) */
         .fact dd.scope span {
-            background: rgba(0, 0, 0, 0.06);
-            padding: 5px 11px;
-            border-radius: 16px;
-            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(51, 51, 51, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
             line-height: 1.4;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: background-color 0.25s ease, box-shadow 0.25s ease;
         }
+
+        .fact dd.scope span::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent, #333);
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .fact dd.scope span:hover { background: #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); }
+        .fact dd.scope span:hover::before { transform: scale(1.5); }
 
         /* ---------- at a glance ---------- */
         .glance {
@@ -904,7 +929,7 @@
         .step-list li { margin-bottom: 8px; }
     </style>
 </head>
-<body style="--page: #F5F5F5; --glow: #E2E2E2;">
+<body style="--page: #F5F5F5; --glow: #E2E2E2; --accent: #5E6470;">
     <div class="progress" id="progress"></div>
     <div class="cursor" id="cursor">View</div>
 
