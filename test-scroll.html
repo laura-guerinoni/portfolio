@@ -717,9 +717,8 @@
         .project-section .project-content { margin-left: 68px; }
 
         /* ============================================================
-           CHIPS (TEST) — white stickers: they fall in as before, then
-           rest at a small random tilt (--rest, set in JS) like dropped
-           stickers. Hover straightens them.
+           CHIPS (TEST) — white stickers: they fall in as before and land
+           straight; hovering one gives it a small playful tilt.
            ============================================================ */
         .project-section .skill-tag {
             display: inline-block;
@@ -736,9 +735,14 @@
             transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
         }
 
+        /* straight at rest; a small playful tilt only on hover */
         .project-section .skill-tag:hover {
-            transform: rotate(0deg) scale(1.05) !important;
+            transform: rotate(-3deg) scale(1.05) !important;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-section .skill-tag:nth-child(even):hover {
+            transform: rotate(3deg) scale(1.05) !important;
         }
 
         .project-section .skills-tags { gap: 10px; }
@@ -1447,15 +1451,6 @@
         // lights the text word by word; only the 1-2 words at the reading
         // front are lilac. Once it's fully lit, the page moves on.
         // Phones: no pinning, the text just lights up as it scrolls by.
-        // CHIPS (TEST): each chip gets a small, stable resting tilt (-3..3deg)
-        function setupChipTilts() {
-            document.querySelectorAll('.project-section .skill-tag').forEach(function(chip, i) {
-                const r = Math.sin(i * 12.9898 + 4.1414) * 43758.5453;
-                const tilt = ((r - Math.floor(r)) * 6 - 3).toFixed(2);
-                chip.style.setProperty('--rest', tilt + 'deg');
-            });
-        }
-
         function setupDescriptionLighting() {
             const pinning = !prefersReducedMotion && !window.matchMedia('(max-width: 768px)').matches;
             const items = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
@@ -1545,7 +1540,6 @@
         }
 
         function setupSectionReveals() {
-            setupChipTilts();
             setupPageColor();
             setupDescriptionLighting();
             const reveal = function(el) { el.classList.add('is-revealed'); };
@@ -1580,7 +1574,7 @@
             const chips = row.querySelectorAll('.skill-tag');
             const pace = fast ? 0.4 : 1; // quicker rain when catching up with fast scrolling
             chips.forEach(function(chip, i) {
-                const rest = parseFloat(chip.style.getPropertyValue('--rest')) || 0;
+                const rest = 0;                               // chips land straight
                 const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
                 const drift = (Math.random() - 0.5) * 90;
                 const height = 220 + Math.random() * 120;

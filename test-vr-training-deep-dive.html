@@ -227,8 +227,8 @@
             font-weight: 400;
         }
 
-        /* scope chips: white stickers like the homepage chips, kept
-           straight here so the facts panel stays tidy */
+        /* scope chips: white stickers like the homepage chips — straight
+           at rest, a small playful tilt on hover */
         .fact dd.scope span {
             display: inline-block;
             padding: 6px 12px;
@@ -243,7 +243,8 @@
             transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
         }
 
-        .fact dd.scope span:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
+        .fact dd.scope span:hover { transform: rotate(-3deg) scale(1.05); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
+        .fact dd.scope span:nth-child(even):hover { transform: rotate(3deg) scale(1.05); }
 
         /* ---------- at a glance ---------- */
         .glance {
