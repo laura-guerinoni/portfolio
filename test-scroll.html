@@ -7,7 +7,6 @@
     <meta name="robots" content="noindex">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@350;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="assets/laura.png" type="image/png">
     <style>
         /* Add these styles to reduce spacing and handle new elements */
@@ -820,6 +819,59 @@
     .sidebar { padding-top: 84px; } /* room under the contact buttons */
     .contact-btn .contact-label { display: none; }
 }
+
+        /* ============================================================
+           COHESION (TEST) — one small system for every surface on the page:
+           - shadows: hairline (chips), resting (white controls),
+             floating (large media); hover = one step deeper
+           - corners: 12px square controls, pills, 16px media
+           - no outlines; nothing lifts on hover (shadow only)
+           ============================================================ */
+        :root {
+            --shadow-hairline: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 10px 26px rgba(0, 0, 0, 0.08);
+            --shadow-float: 0 2px 6px rgba(0, 0, 0, 0.04), 0 24px 60px rgba(0, 0, 0, 0.1);
+            --radius-control: 12px;
+            --radius-media: 16px;
+        }
+
+        /* left menu (desktop) */
+        @media (min-width: 769px) {
+            html body .sidebar .icon { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+            html body .sidebar .icon:hover { box-shadow: var(--shadow-hover); transform: none; }
+            html body .sidebar .icon.active { box-shadow: var(--shadow-hover); transform: scale(1.18); }
+        }
+
+        /* project logo tiles */
+        html body .project-section .section-icon { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+
+        /* chips: frosted, no outline, hairline shadow */
+        html body .project-section .skill-tag {
+            border: 0;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-hairline);
+        }
+
+        /* white pills and buttons share the resting shadow */
+        html body .deep-dive-link { box-shadow: var(--shadow-rest); }
+        html body .deep-dive-link:hover { box-shadow: var(--shadow-hover); }
+
+        html body .contact-btn { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+        html body .contact-btn:hover,
+        html body .contact-btn:focus-visible { box-shadow: var(--shadow-hover); }
+
+        html body .buttons .button { border-radius: var(--radius-control); }
+        html body .buttons .secondary-button { border: 0; background: #fff; box-shadow: var(--shadow-rest); }
+        html body .buttons .primary-button { box-shadow: var(--shadow-rest); }
+        html body .buttons .button:hover { transform: none; box-shadow: var(--shadow-hover); }
+
+        /* large media float */
+        html body .project-gif { border-radius: var(--radius-media); box-shadow: var(--shadow-float); }
+        html body .project-gif video { border-radius: var(--radius-media); }
+        html body .laura-hover-photo { box-shadow: var(--shadow-float); }
+
+        html body .notification { border-radius: var(--radius-control); box-shadow: var(--shadow-hover); }
     </style>
 </head>
 <body>
