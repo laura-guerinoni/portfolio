@@ -212,12 +212,22 @@
             margin: 0;
         }
 
+        /* the year sits inside the title, right after its last word,
+           so long titles that wrap keep it close */
         .project-section .project-year-tag {
-            margin-top: 0;
-            align-self: center;
+            display: inline-block;
+            margin: 0 0 0 6px;
             font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0;
             color: rgba(51, 51, 51, 0.6);
+            white-space: nowrap;
+            vertical-align: 0.35em;
         }
+
+        /* icon lines up with the title's first line */
+        .project-section .section-header { align-items: flex-start; }
+        .project-section .section-icon { margin-top: calc((clamp(30px, 3.2vw, 44px) * 1.1 - 40px) / 2); }
 
         .project-section .project-subtitle {
             margin-top: 14px;
@@ -853,7 +863,7 @@
             <div class="section-icon lite-tone-icon">
                 <img src="assets/logo_lite_tone.svg" alt="Lite-Tone Icon">
             </div>
-            <h2 class="project-title">Lite-Tone</h2> <span class="project-year-tag"> (2025) </span></h2>
+            <h2 class="project-title">Lite-Tone <span class="project-year-tag">(2025)</span></h2>
         </div>
         <h3 class="project-subtitle">Optimizing software spend with financial SaaS</h3>
         <div class="project-content">
@@ -892,7 +902,7 @@
                     <div class="section-icon laine-icon">
                         <img src="assets/logo_laine.svg" alt="Laine Icon">
                     </div>
-                    <h2 class="project-title">Laine</h2> <span class="project-year-tag"> (2024-2025) </span></h2>
+                    <h2 class="project-title">Laine <span class="project-year-tag">(2024-2025)</span></h2>
                     
                     </div>
                     <h3 class="project-subtitle">AI-powered marketing SaaS at Bain & Company</h3>
@@ -939,7 +949,7 @@
                     <div class="section-icon inviso-icon">
                         <img src="assets/logo_inviso.svg" alt="Inviso Icon">
                     </div>
-                    <h2 class="project-title">Inviso</h2> <span class="project-year-tag"> (2023) </span></h2>
+                    <h2 class="project-title">Inviso <span class="project-year-tag">(2023)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Design of an AI data visualization tool</h3>
                 <div class="project-content">
@@ -979,7 +989,7 @@
                     <div class="section-icon enjoy-icon">
                         <img src="assets/logo_enjoy.svg" alt="Enjoy Icon">
                     </div>
-                    <h2 class="project-title">Enjoy</h2> <span class="project-year-tag"> (2023) </span></h2>
+                    <h2 class="project-title">Enjoy <span class="project-year-tag">(2023)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Redesigning the Italian car sharing experience</h3>
 
@@ -1025,7 +1035,7 @@
                     <div class="section-icon vr-icon">
                         <img src="assets/logo_vr.svg" alt="VR Training Icon">
                     </div>
-                    <h2 class="project-title">VR Biofeedback Training</h2> <span class="project-year-tag"> (2022) </span></h2>
+                    <h2 class="project-title">VR Biofeedback Training <span class="project-year-tag">(2022)</span></h2>
 
                 </div>
                 <h3 class="project-subtitle">Maximising shooting athletes trainings</h3>
@@ -1070,7 +1080,7 @@
                     <div class="section-icon pip-icon">
                         <img src="assets/logo_pip.svg" alt="Pet in a Pot Icon">
                     </div>
-                    <h2 class="project-title">Pet in a Pot</h2> <span class="project-year-tag"> (2022) </span></h2>
+                    <h2 class="project-title">Pet in a Pot <span class="project-year-tag">(2022)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Designing an IoT plant vase and mobile app</h3>
                 <div class="project-content">
