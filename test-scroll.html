@@ -830,10 +830,23 @@
             transition: opacity 0.2s linear, color 0.3s ease;
         }
 
+        /* the intro is "you": dark lilac */
         #hero-line-1 .reveal-word.hot,
-        #hero-line-2 .reveal-word.hot,
-        .lit-word.on.hot {
+        #hero-line-2 .reveal-word.hot {
             color: #9150D0;
+            transition: opacity 0.2s linear, color 0.1s ease;
+        }
+
+        /* each project reads in a deep shade of its own color */
+        #lite-tone     { --hot: #1C6E91; }
+        #laine         { --hot: #1F7A52; }
+        #inviso        { --hot: #3D56A0; }
+        #enjoy         { --hot: #B8323F; }
+        #vr-training   { --hot: #465A78; }
+        #pet-in-a-pot  { --hot: #4A7A44; }
+
+        .lit-word.on.hot {
+            color: var(--hot, #9150D0);
             transition: opacity 0.2s linear, color 0.1s ease;
         }
 
@@ -858,6 +871,7 @@
             html body .sidebar .icon { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
             html body .sidebar .icon:hover { box-shadow: var(--shadow-hover); transform: none; }
             html body .sidebar .icon.active { box-shadow: var(--shadow-hover); transform: scale(1.18); }
+            html body .sidebar #vr-training-icon:hover { width: 172px; } /* longer label */
         }
 
         /* project logo tiles */
@@ -921,7 +935,7 @@
         <a href="#vr-training" class="icon chat-icon" id="vr-training-icon">
             <span class="icon-letter">
                 <img src="assets/logo_vr.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
-            <span class="icon-text">VR Training</span>
+            <span class="icon-text">VR Biofeedback</span>
         </a>
         <a href="#pet-in-a-pot" class="icon other-icon" id="pet-in-a-pot-icon">
             <span class="icon-letter">
@@ -1175,7 +1189,7 @@
                     <div class="section-icon vr-icon">
                         <img src="assets/logo_vr.svg" alt="VR Training Icon">
                     </div>
-                    <h2 class="project-title">VR Biofeedback Training <span class="project-year-tag">(2022)</span></h2>
+                    <h2 class="project-title">VR Biofeedback <span class="project-year-tag">(2022)</span></h2>
 
                 </div>
                 <h3 class="project-subtitle">Maximising shooting athletes trainings</h3>
