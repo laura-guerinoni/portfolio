@@ -3,744 +3,1264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+    <title>Laine — Laura Guerinoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@350;400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" href="assets/laura.png" type="image/png">
     <style>
+        /* ============================================================
+           DEEP-DIVE — same content as the live
+           deep-dive page, as an editorial case study:
+           hero spread + facts → at a glance → framed video that
+           settles flat → scroll-lit overview → sticky process with a
+           filling progress line → bento artefacts → next project.
+           ============================================================ */
+
+        :root {
+            --ink: #333;
+            --ink-soft: rgba(51, 51, 51, 0.6);
+            --line: rgba(51, 51, 51, 0.12);
+            --page: #E5FFF1;          /* project color (set per page) */
+            --glow: #BDF3D8;          /* deeper tint of the project color */
+            --lilac: #ECDBFF;         /* site accent */
+            --lilac-deep: #D9BFFF;
+            --hot: #9150D0;           /* dark lilac: brand lilac hue at text strength */
+            --shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background-color: #E5FFF1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 40px;
-            height: 100%;
-            max-height: 100vh;
-            box-sizing: border-box;
-            width: 100%;
-        }
-        .left {
-            width: 43%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* Changed to space-between */
-        }
-
-        .left-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex-grow: 1;
-        }
-
-        /* New header container styles */
-        .header-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px; /* Reduced spacing */
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;    
-            background-color: #fff;
-            margin-right: 15px;
-        }
-
-        .logo img {
-            height: 24px;
-            width: 24px;
-        }
-
-        /* Adjust h2 margin when in the header */
-        .header-container h2 {
-            margin: 0;
-        }
-
-        .author {
-            display: flex;
-            align-items: center;
-        }
-        .author p {
-            font-size: 16px;
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-        .author img {
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            margin-left: 5px;
-        }
-        
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            margin-top: 62px;
-            transition: opacity 0.2s;
-            opacity: 0.7;
-        }
-
-        .back-link:hover {
-            opacity: 1;
-        }
-        
-        .back-link img {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-        }
-        
-        .back-link p {
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .gif-container {
-            margin-top: 20px; /* Consistent spacing */
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-            border-radius: 8px;
-            max-width: 70%;
-            position: relative;
-        }
-        
-        .gif-placeholder {
-            width: 100%;
-            height: 200px;
-            background-color: rgba(0, 0, 0, 0.06);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            color: #666;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .right {
-            background: white;
-            padding: 24px 24px;
-            border-radius: 8px;
-            box-shadow: #333333 -5px 5px, 
-            rgba(51, 51, 51, 0.3) -10px 10px, 
-            rgba(51, 51, 51, 0.2) -15px 15px;
-            width: 57%;
-            height: 90%;
-            overflow-y: auto; /* Only show scrollbar when needed */
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .sections-wrapper {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section {
-            padding: 0px 30px;
-        }
-
-        .skill-tag {
-    background-color: #F2F2F2; /* ✅ Default light gray */
-    padding: 0px 38px 0px 12px;
-    border-radius: 16px;
-    font-size: 16px;
-    white-space: nowrap;
-    color: #333;
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    transition: background-color 0.2s ease; /* Smooth transition */
-}
-
-/* ✅ Add this hover effect */
-.skill-tag:hover {
-    background-color: #E0E0E0; /* Slightly darker gray */
-}
-
-        .skill-tag-icon {
-            position: absolute;
-            right: 13px; /* Icon on the right */
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-        }
-
-        .floating-image {
-            position: fixed;
-            display: none;
-            border-radius: 8px;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-            width: 500px;
-            max-width: 90vw;
-            z-index: 1000;
-            background-color: #ffffff; 
-            padding: 20px;
-            transition: all 0.2s ease;
-        }
-        
-        .floating-image-title {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            color: #333;
-            font-family: 'Inter', sans-serif;
-        }
-            
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-
-        h1 {
-            font-size: 40px;
-            font-weight: 600;
-            color: #333;
-            line-height: 1.4;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        h1 .tight-line {
-            line-height: 0.4;
-            display: block;
-        }
-
-
-        h2 {
-            font-size: 28px;
-            margin-bottom: 30px;
-            font-weight: 600;
-            color: #333;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        h3 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        h4 {
-            display: inline-flex;
-            align-items: center;
-            color: #333;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-        }
-
-        p {
-            font-size: 16px;
-            line-height: 1.8;
+            background: var(--page);
+            color: var(--ink);
             font-family: 'Inter', sans-serif;
             font-weight: 350;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        /* Pretty scrollbar styling */
-        .right::-webkit-scrollbar {
-            width: 6px; /* Slimmer scrollbar */
-        }
-        
-        .right::-webkit-scrollbar-track {
-            background: transparent; /* Transparent track */
-            margin: 4px 0; /* Add some margin */
-        }
-        
-        .right::-webkit-scrollbar-thumb {
-            background: #E0E0E0; 
-            border-radius: 10px; /* Rounded corners */
-        }
-        
-        .right::-webkit-scrollbar-thumb:hover {
-            background: rgba(51, 51, 51, 0.3); /* Darker on hover */
+        img, video { display: block; max-width: 100%; }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
         }
 
+        .label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-soft);
+        }
 
-                /* Mobile styles */
-                @media (max-width: 768px) {
-            body {
-                overflow: auto;
-                height: auto;
+        /* ---------- progress + floating top bar ---------- */
+        .progress {
+            position: fixed;
+            inset: 0 0 auto 0;
+            height: 3px;
+            background: var(--ink);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 60;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .pill {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.06);
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        a.pill:hover { transform: translateY(-2px); background: #fff; }
+        .pill img { width: 18px; height: 18px; }
+
+        /* the right pill only appears once you've scrolled past the hero */
+        .pill--context {
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
+        }
+
+        .scrolled .pill--context { opacity: 1; transform: none; }
+
+        /* ---------- hero: editorial spread ---------- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            isolation: isolate;
+        }
+
+        /* soft drifting glow behind the hero */
+        .glow {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .glow span {
+            position: absolute;
+            width: 46vw;
+            height: 46vw;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.75;
+        }
+
+        .glow span:nth-child(1) {
+            background: var(--glow);
+            top: -10vw;
+            right: -8vw;
+            animation: drift-a 18s ease-in-out infinite alternate;
+        }
+
+        .glow span:nth-child(2) {
+            background: var(--lilac);
+            bottom: -18vw;
+            left: 20vw;
+            animation: drift-b 22s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift-a { to { transform: translate(-10vw, 8vw) scale(1.1); } }
+        @keyframes drift-b { to { transform: translate(12vw, -6vw) scale(0.9); } }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+            gap: 72px;
+            align-items: end;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            display: grid;
+            place-items: center;
+        }
+
+        .app-icon img { width: 28px; height: 28px; }
+
+        h1 {
+            font-size: clamp(46px, 5.4vw, 80px);
+            line-height: 1;
+            letter-spacing: -0.04em;
+            font-weight: 500;
+            margin: 32px 0 24px;
+        }
+
+        .hero-sub {
+            font-size: clamp(19px, 1.7vw, 23px);
+            line-height: 1.45;
+            color: var(--ink-soft);
+            margin: 0;
+            max-width: 520px;
+        }
+
+        .facts {
+            margin: 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .fact {
+            display: grid;
+            grid-template-columns: 96px minmax(0, 1fr);
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .fact dt { margin: 0; padding-top: 2px; }
+
+        .fact dd {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .fact dd.scope {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-weight: 400;
+        }
+
+        /* scope chips: soft frosted pills like the homepage chips */
+        .fact dd.scope span {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(51, 51, 51, 0.07);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        /* ---------- at a glance ---------- */
+        .glance {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            padding: 8vh 0 12vh;
+        }
+
+        .glance-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .glance-card .label { margin-bottom: 14px; }
+
+        .glance-card p {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        /* ---------- framed video that settles flat ---------- */
+        .showcase {
+            perspective: 1600px;
+            padding-bottom: 16vh;
+        }
+
+        .window {
+            max-width: 860px;
+            margin: 0 auto;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.14), 0 8px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transform-origin: center top;
+            transform: rotateX(calc(18deg * (1 - var(--settle, 1)))) scale(calc(0.94 + 0.06 * var(--settle, 1)));
+            will-change: transform;
+        }
+
+        .window-bar {
+            display: flex;
+            gap: 7px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .window-bar i {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        /* ---------- overview, lit word by word on scroll ---------- */
+        .overview { padding: 0 0 18vh; }
+
+        .overview .label { margin-bottom: 24px; }
+
+        .overview p {
+            font-size: clamp(26px, 3.1vw, 42px);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            font-weight: 400;
+            margin: 0;
+            max-width: 1040px;
+        }
+
+        .lit-word { opacity: 0.18; transition: opacity 0.2s linear, color 0.3s ease; }
+        .lit-word.on { opacity: 1; }
+        /* reading front: "dark lilac" text, the brand lilac's hue at text strength */
+        .lit-word.on.hot { color: var(--hot); transition: opacity 0.2s linear, color 0.1s ease; }
+
+        /* the overview pins while scrolling lights it up, then the page moves on */
+        /* sticky only moves within the parent's content box, so the pin
+           distance is an empty block after the text (not padding) */
+        .overview-pin { position: sticky; top: 22vh; }
+        .overview::after { content: ''; display: block; height: var(--pin, 0px); }
+
+        /* ---------- process: sticky nav + steps ---------- */
+        .process {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 72px;
+            padding-bottom: 14vh;
+        }
+
+        .process-nav {
+            position: sticky;
+            top: 110px;
+            align-self: start;
+        }
+
+        .process-nav .label { margin-bottom: 18px; }
+
+        .process-nav ol {
+            position: relative;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* track + fill that grows as you read through the steps */
+        .process-nav ol::before,
+        .process-nav ol::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .process-nav ol::before { background: var(--line); }
+
+        .process-nav ol::after {
+            background: var(--ink);
+            transform-origin: top;
+            transform: scaleY(var(--fill, 0));
+        }
+
+        .process-nav a {
+            display: block;
+            padding: 12px 0 12px 22px;
+            color: var(--ink-soft);
+            text-decoration: none;
+            font-size: 16px;
+            line-height: 1.35;
+            transition: color 0.3s ease;
+        }
+
+        .process-nav a .num {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            margin-bottom: 3px;
+        }
+
+        .process-nav a.active { color: var(--ink); font-weight: 500; }
+
+        .step {
+            padding-bottom: 12vh;
+            scroll-margin-top: 110px;
+        }
+
+        .step-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 8px;
+            border-radius: 999px;
+            background: var(--lilac);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            margin-bottom: 22px;
+        }
+
+        .step-tag b {
+            display: grid;
+            place-items: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            font-size: 11px;
+        }
+
+        .step h2 {
+            font-size: clamp(30px, 3.2vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            font-weight: 500;
+            margin: 0 0 24px;
+        }
+
+        .step p {
+            font-size: 19px;
+            line-height: 1.75;
+            max-width: 680px;
+            margin: 0 0 44px;
+        }
+
+        /* keywords point at their artefact */
+        .kw {
+            font-weight: 500;
+            background: linear-gradient(var(--lilac), var(--lilac)) no-repeat left 88% / 100% 0.35em;
+            padding: 0 1px;
+            cursor: pointer;
+            transition: background-size 0.25s ease;
+        }
+
+        .kw:hover { background-size: 100% 88%; }
+
+        /* ---------- bento artefacts ---------- */
+        .bento {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .tile {
+            position: relative;
+            margin: 0;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: var(--shadow);
+            cursor: none;
+        }
+
+        .tile.w6 { grid-column: span 6; }
+        .tile.w12 { grid-column: span 12; }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tile img {
+            width: 100%;
+            height: auto;
+            max-height: 78vh;
+            object-fit: contain;
+            transition: transform 0.8s var(--ease-out);
+        }
+
+        .tile:hover img { transform: scale(1.035); }
+
+        .tile figcaption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 14px 18px;
+            background: var(--lilac);
+            color: var(--ink);
+            font-size: 15px;
+            font-weight: 500;
+            transform: translateY(101%);
+            transition: transform 0.35s var(--ease-out);
+        }
+
+        .tile:hover figcaption { transform: none; }
+
+        .tile.flash { animation: flash 1.2s ease; }
+
+        @keyframes flash {
+            0%, 100% { box-shadow: var(--shadow); }
+            30% { box-shadow: 0 0 0 4px var(--lilac-deep), var(--shadow); }
+        }
+
+        /* cursor bubble that follows the mouse over artefacts */
+        .cursor {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 72px;
+            height: 72px;
+            margin: -36px 0 0 -36px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 500;
+            pointer-events: none;
+            z-index: 80;
+            transform: translate(var(--x, -100px), var(--y, -100px)) scale(0);
+            transition: transform 0.25s var(--ease-out);
+        }
+
+        .cursor.show { transform: translate(var(--x), var(--y)) scale(1); }
+
+        /* ---------- next project ---------- */
+        .next {
+            display: block;
+            text-decoration: none;
+            color: var(--ink);
+            padding-bottom: 80px;
+        }
+
+        .next-inner {
+            border-radius: 28px;
+            background: #E3ECF5; /* Inviso color on the homepage */
+            padding: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+            transition: transform 0.4s var(--ease-out);
+        }
+
+        .next:hover .next-inner { transform: scale(1.01); }
+
+        .next-title {
+            font-size: clamp(40px, 6vw, 80px);
+            font-weight: 500;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-top: 12px;
+        }
+
+        .next-sub { font-size: 18px; margin-top: 14px; color: var(--ink-soft); }
+
+        .next-arrow {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: transform 0.4s var(--ease-out);
+        }
+
+        .next:hover .next-arrow { transform: translateX(8px) rotate(-45deg); }
+
+        /* ---------- lightbox ---------- */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 20, 20, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: grid;
+            place-items: center;
+            padding: 4vh 4vw;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+            cursor: zoom-out;
+        }
+
+        .lightbox.open { opacity: 1; pointer-events: auto; }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 92vh;
+            border-radius: 14px;
+            transform: scale(0.96);
+            transition: transform 0.35s var(--ease-out);
+        }
+
+        .lightbox.open img { transform: none; }
+
+        /* ---------- reveals ---------- */
+        .js .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(6px);
+            transition: opacity 1s var(--ease-out), transform 1s var(--ease-out), filter 1s var(--ease-out);
+            transition-delay: var(--delay, 0s);
+        }
+
+        .js .reveal.in { opacity: 1; transform: none; filter: none; }
+
+        .h-word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.35em);
+            filter: blur(10px);
+            animation: word-in 1s var(--ease-out) forwards;
+            animation-delay: var(--d);
+        }
+
+        @keyframes word-in { to { opacity: 1; transform: none; filter: blur(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .js .reveal, .h-word { opacity: 1; transform: none; filter: none; animation: none; transition: none; }
+            .lit-word { opacity: 1; }
+            .window { transform: none; }
+            .glow span { animation: none; }
+        }
+
+        /* ---------- touch devices: no custom cursor ---------- */
+        @media (hover: none) {
+            .tile { cursor: pointer; }
+            .tile figcaption { transform: none; }
+            .cursor { display: none; }
+        }
+
+        /* ---------- phones ---------- */
+        @media (max-width: 860px) {
+            .wrap { padding: 0 20px; }
+            .hero { padding: 100px 0 40px; min-height: auto; }
+            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+            .glance { grid-template-columns: 1fr; padding: 4vh 0 8vh; }
+            .process { grid-template-columns: 1fr; gap: 0; }
+            .process-nav { display: none; }
+            .tile.w6 { grid-column: span 12; }
+            .step p { font-size: 17px; }
+            .next-inner { padding: 32px; flex-direction: column; align-items: flex-start; }
+        }
+    
+        /* the frame hugs the video's own shape (portrait or landscape) */
+        .window { width: fit-content; }
+
+        .window video {
+            width: auto;
+            max-width: 100%;
+            max-height: 70vh;
+        }
+
+        /* ---------- contact rail: always one click away ---------- */
+        .contact-rail {
+            position: fixed;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 20px;
+            z-index: 70;
+        }
+
+        .contact-btn {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            height: 48px;
+            padding: 0 13px;
+            border: 0;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            text-decoration: none;
+            font: 500 15px 'Inter', sans-serif;
+            cursor: pointer;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .contact-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+        .contact-btn .contact-label {
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            opacity: 0;
+            transition: max-width 0.35s var(--ease-out), opacity 0.25s ease, margin 0.35s var(--ease-out);
+        }
+
+        .contact-btn:hover,
+        .contact-btn:focus-visible {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .contact-btn:hover .contact-label,
+        .contact-btn:focus-visible .contact-label {
+            max-width: 260px;
+            opacity: 1;
+            margin-right: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 32px;
+            transform: translate(-50%, 16px);
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s var(--ease-out);
+            z-index: 120;
+        }
+
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* keep content clear of the side rails on laptop widths */
+        @media (min-width: 861px) and (max-width: 1440px) {
+            .wrap { padding: 0 112px; }
+        }
+
+        @media (max-width: 860px) {
+            /* phones: contact buttons sit top-right, level with "All projects",
+               so they never cover the text being read */
+            .contact-rail {
+                top: 16px;
+                bottom: auto;
+                right: 16px;
+                transform: none;
+                flex-direction: row;
+                gap: 8px;
             }
-            
-            .container {
-                flex-direction: column;
+            .contact-btn { height: 44px; padding: 0 11px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+            .contact-btn .contact-label { display: none; }
+            .pill--context { display: none; }
+        }
+
+        /* ---------- glow: just a pinch of lilac, near the contact rail ---------- */
+        .glow span:nth-child(1) {
+            background: var(--lilac);
+            top: 18%;
+            right: -16vw;
+            left: auto;
+            bottom: auto;
+            width: 36vw;
+            height: 36vw;
+            opacity: 0.6;
+        }
+
+        /* ---------- artefacts: smaller, never cropped, sides in the image's own color ---------- */
+        .bento { grid-auto-flow: dense; }
+
+        .tile { background: #f4f4f4; }
+
+        .tile img { max-height: 58vh; }
+
+        /* ---------- video intro: a dropped "photo" that straightens, with a sticker ---------- */
+        .showcase { perspective: none; }
+
+        .window {
+            position: relative;
+            width: fit-content;
+            max-width: 860px;
+            margin: 0 auto;
+            background: none;
+            box-shadow: none;
+            overflow: visible;
+            border-radius: 24px;
+            transform-origin: center;
+            transform:
+                perspective(1400px)
+                rotateX(var(--ry, 0deg))
+                rotateY(var(--rx, 0deg))
+                translateY(calc(60px * (1 - var(--settle, 1))))
+                rotate(calc(-5deg * (1 - var(--settle, 1))))
+                scale(calc(0.9 + 0.1 * var(--settle, 1)));
+            transition: transform 0.25s ease-out;
+        }
+
+        .window video {
+            display: block;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16), 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .sticker {
+            position: absolute;
+            top: -26px;
+            left: -26px;
+            width: 76px;
+            height: 76px;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+            display: grid;
+            place-items: center;
+            transform: rotate(-10deg) scale(calc(0.4 + 0.6 * var(--settle, 1)));
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .sticker img { width: 42px; height: 42px; }
+
+        .window:hover .sticker { transform: rotate(6deg) scale(1.08); }
+
+        /* ---------- next project: white card, next project's icon and color ---------- */
+        .next-inner {
+            background: #fff;
+            padding: 36px 44px;
+            align-items: center;
+            gap: 28px;
+            box-shadow: var(--shadow);
+            transition: background-color 0.5s ease, transform 0.4s var(--ease-out);
+        }
+
+        .next:hover .next-inner { background: var(--next-color); transform: none; }
+
+        .next-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 22px;
+            background: var(--next-color);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transform: rotate(-6deg);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.5s ease;
+        }
+
+        .next-icon img { width: 46px; height: 46px; }
+
+        .next:hover .next-icon { transform: rotate(4deg) scale(1.05); background: #fff; }
+
+        .next-text { flex: 1; }
+
+        .next-title { font-size: clamp(36px, 4.6vw, 64px); }
+
+        .next-arrow { width: 56px; height: 56px; }
+
+        /* ---------- back button: same small dark arrow as the other links ---------- */
+        .pill-back { padding: 6px 18px 6px 6px; gap: 10px; }
+
+        .pill-back svg {
+            width: 28px;
+            height: 28px;
+            padding: 7px;
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: var(--ink);
+            color: #fff;
+            flex-shrink: 0;
+            transition: transform 0.4s var(--ease-out);
+        }
+
+        .pill-back:hover svg { transform: rotate(45deg); }
+
+        /* no lift on hover: a moving button flickers when the cursor sits on its edge */
+        a.pill:hover { transform: none; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08), 0 12px 28px rgba(0, 0, 0, 0.1); }
+
+        /* arrows turn in place (no sliding into the padding) */
+        .next:hover .next-arrow { transform: rotate(-45deg); }
+
+        /* space under the video (the .wrap padding rules would otherwise reset it) */
+        .showcase.wrap { padding-bottom: 16vh; }
+
+        @media (max-width: 860px) {
+            .showcase.wrap { padding-bottom: 10vh; }
+
+            /* next project: one compact row on phones */
+            .next-inner {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 16px;
                 padding: 20px;
-                height: auto;
-                max-height: none;
+                border-radius: 22px;
             }
-            
-            .left, .right {
-                width: 100%;
-                height: auto;
-                max-height: none;
-            }
-            
-            .left {
-                margin-bottom: 30px;
-            }
-            
-            .right {
-                box-shadow: #333333 -3px 3px, 
-                rgba(51, 51, 51, 0.3) -6px 6px, 
-                rgba(51, 51, 51, 0.2) -9px 9px;
-            }
-            
-            .gif-container {
-                max-width: 100%;
-            }
-            
-            h1 {
-                font-size: 32px;
-                margin-top: 20px;
-            }
-            
-            h2 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-            
-            h3 {
-                font-size: 20px;
-            }
-            
-            .section {
-                padding: 0px 15px;
-                margin-bottom: 20px;
-            }
-            
-            .skill-tag {
-                display: inline-block;
-                margin-bottom: 5px;
-                font-size: 14px;
-            }
-            
-            .floating-image {
-                width: 85vw;
-                left: 50% !important;
-                transform: translateX(-50%);
-            }
-            
-            .back-link {
-                margin-top: 30px;
-                margin-bottom: 20px;
-            }
-            
-            .gif-placeholder {
-                height: 150px;
-            }
+            .next-icon { width: 56px; height: 56px; border-radius: 16px; }
+            .next-icon img { width: 30px; height: 30px; }
+            .next-title { font-size: 28px; margin-top: 4px; }
+            .next-sub { font-size: 14px; margin-top: 4px; }
+            .next-arrow { width: 44px; height: 44px; }
+            .next-arrow svg { width: 20px; height: 20px; }
+            .sticker { width: 56px; height: 56px; top: -18px; left: -12px; border-radius: 16px; }
+            .sticker img { width: 30px; height: 30px; }
         }
-        
-        /* Additional mobile optimization */
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            p {
-                font-size: 14px;
-            }
-            
-            .section {
-                padding: 0px 10px;
-            }
-            
-            .skill-tag {
-                padding: 0px 34px 0px 10px;
-                font-size: 13px;
-            }
-            
-            .skill-tag-icon {
-                width: 14px;
-                height: 14px;
-            }
+
+        @media (prefers-reduced-motion: reduce) {
+            .window { transform: none; }
+            .sticker { transform: rotate(-10deg); }
         }
+
+        .step-list {
+            font-size: 19px;
+            line-height: 1.75;
+            max-width: 680px;
+            margin: -24px 0 28px;
+            padding-left: 22px;
+        }
+
+        .step-list li { margin-bottom: 8px; }
     </style>
 </head>
-<body>
-    
-    <div class="container">
-        <div class="left">
-            <div class="left-content">
-                <div class="header-container">
-                    <div class="logo">
-                        <img src="assets/logo_laine.svg" alt="Laine Logo">
+<body style="--page: #E5FFF1; --glow: #BDF3D8; --accent: #B983F2; --hot: #1F7A52;">
+    <div class="progress" id="progress"></div>
+    <div class="cursor" id="cursor">View</div>
+
+    <div class="topbar">
+        <a href="index.html#laine" class="pill pill-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            All projects
+        </a>
+        <span class="pill pill--context">Laine · 2024–2025</span>
+    </div>
+
+    <nav class="contact-rail" aria-label="Contact">
+        <button type="button" class="contact-btn" id="contact-email" aria-label="Copy email address">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.4"/><path d="M3.6 6.6L12 12.6L20.4 6.6"/></svg>
+            <span class="contact-label">lau.guerinoni@gmail.com</span>
+        </button>
+        <a class="contact-btn" href="https://www.linkedin.com/in/laura-guerinoni-48290021b/" target="_blank" rel="noopener" aria-label="LinkedIn profile">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3v-11zm6.5 0h3.8v1.5h.06c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.77 2.5 4.77 5.75v5.7h-4v-5.05c0-1.2-.02-2.75-1.7-2.75-1.7 0-1.96 1.3-1.96 2.66v5.14h-4v-11z"/></svg>
+            <span class="contact-label">LinkedIn</span>
+        </a>
+    </nav>
+    <div class="toast" id="toast" role="status">Email copied</div>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="glow" aria-hidden="true"><span></span></div>
+        <div class="wrap">
+            <div class="hero-grid">
+                <div>
+                    <div class="eyebrow reveal">
+                        <div class="app-icon"><img src="assets/logo_laine.svg" alt=""></div>
+                        Laine
                     </div>
-                    <h2>Laine</h2>
+                    <h1 id="headline">Intelligent growth, automated success</h1>
+                    <p class="hero-sub reveal" style="--delay: 0.5s">AI-powered marketing SaaS at Bain &amp; Company</p>
                 </div>
 
-                <h1>Intelligent growth, <br> automated success<span class="tight-line"></span></h1>
-
-                
-        
-                <div class="gif-container" id="gif-container">
-                    <video id="vr-video" autoplay loop muted playsinline style="max-width: 100%; border-radius: 8px; display: block;">
-                        <source src="assets/laine.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-           <!-- <div class="author">
-                <p>Designed by Laura <img src="assets/laura.png" alt="Laura"></p>
-            </div> -->
-
-            <a href="index.html" class="back-link">
-                <img src="assets/back.svg" alt="Back">
-                Back to other projects
-            </a>
-        </div>
-        <div class="right">
-            <div class="sections-wrapper">
-                <div class="section" id="section1">
-                    <h3>1. Project definition</h3>
-                    <p>The concept of Laine arose from the complex challenges faced by businesses in actioning marketing growth strategies that actually work. Through initial context analysis and research, I explored the limitations of traditional marketing analytics. A <span class="skill-tag" data-keyword="SWOT_analysis">SWOT analysis<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> alongiside a <span class="skill-tag" data-keyword="target_audience_analysis">target audience analysis<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> revealed the potential for an intelligent marketing platform that could make strategic insights more actionable and manageable.</p>
-                </div>
-                <div class="section" id="section2">
-                    <h3>2. Information architecture & task flows</h3>
-                    <p><span class="skill-tag" data-keyword="information_architecture">Information architecture<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> and <span class="skill-tag" data-keyword="task_flows">task flows<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> were not one-time activities; rather they were revisited several times throughout the iterative process of expanding the platform based on user feedback. Thanks to input from marketing experts, I structured hierarchies that could effectively communicate strategic recommendations. The process involved breaking down intricate marketing metrics into clear, digestible visuals that would resonate with target users.</p>
-                </div>
-                <div class="section" id="section3">
-                    <h3>3. UI & prototyping</h3>
-                    <p>Starting with low-fidelity wireframes and progressively moving to <span class="skill-tag" data-keyword="high-fidelity_wireframes">high-fidelity wireframes<img src="assets/glass.svg" alt="Icon" class="skill-tag-icon"></span> and demo prototypes, I iterated through multiple versions of the interface to match user needs in the best way possible. User testing played a critical role in refining the interface, ensuring that the AI-driven insights could be trusted, easily understood and acted upon.</p>
-                </div>
+                <dl class="facts reveal" style="--delay: 0.7s">
+                    <div class="fact"><dt class="label">Role</dt><dd>UX/UI Designer</dd></div>
+                    <div class="fact"><dt class="label">Company</dt><dd>Bain &amp; Company</dd></div>
+                    <div class="fact"><dt class="label">Year</dt><dd>2024–2025</dd></div>
+                    <div class="fact">
+                        <dt class="label">Scope</dt>
+                        <dd class="scope">
+                            <span>Research &amp; Development</span>
+                            <span>Branding</span>
+                            <span>Information architecture</span>
+                            <span>UI</span>
+                            <span>Prototyping</span>
+                            <span>Supervising devs</span>
+                            <span>User testing</span>
+                            <span>Webflow website</span>
+                        </dd>
+                    </div>
+                </dl>
             </div>
         </div>
+    </header>
+
+    <div class="wrap">
+        <!-- AT A GLANCE (wording from the existing case study) -->
+        <section class="glance" aria-label="At a glance">
+            <div class="glance-card reveal">
+                <div class="label">Challenge</div>
+                <p>Businesses struggle to action marketing growth strategies that actually work.</p>
+            </div>
+            <div class="glance-card reveal" style="--delay: 0.1s">
+                <div class="label">Approach</div>
+                <p>Research-led structure, revisited again and again with marketing experts and user feedback.</p>
+            </div>
+            <div class="glance-card reveal" style="--delay: 0.2s">
+                <div class="label">What it does</div>
+                <p>Real-time, actionable insights across marketing, profitability, sales and customer lifecycle.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIDEO -->
+    <section class="showcase wrap">
+        <div class="window" id="window">
+            <div class="sticker" aria-hidden="true"><img src="assets/logo_laine.svg" alt=""></div>
+            <video autoplay loop muted playsinline preload="metadata" src="assets/laine.mp4" aria-label="Laine demo"></video>
+        </div>
+    </section>
+
+    <main class="wrap">
+        <!-- OVERVIEW -->
+        <section class="overview">
+            <div class="overview-pin">
+                <div class="label reveal">Overview</div>
+                <p id="overview-text">This AI-driven B2B platform helps businesses optimize growth strategies. Developed in Bain &amp; Company's startup incubator, it delivers real-time, actionable insights across marketing, profitability, sales, and customer lifecycle. Unlike traditional tools, Laine automates implementation and continuously refines strategies to drive business growth.</p>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section class="process">
+            <nav class="process-nav" aria-label="Process">
+                <div class="label">Process</div>
+                <ol id="process-list">
+                    <li><a href="#step1" class="active"><span class="num">01</span>Project definition</a></li>
+                    <li><a href="#step2"><span class="num">02</span>Information architecture &amp; task flows</a></li>
+                    <li><a href="#step3"><span class="num">03</span>UI &amp; prototyping</a></li>
+                </ol>
+            </nav>
+
+            <div class="steps">
+                <article class="step" id="step1">
+                    <div class="step-tag reveal"><b>1</b>Step one</div>
+                    <h2 class="reveal">Project definition</h2>
+                    <p class="reveal">The concept of Laine arose from the complex challenges faced by businesses in actioning marketing growth strategies that actually work. Through initial context analysis and research, I explored the limitations of traditional marketing analytics. A <span class="kw" data-target="tile-swot">SWOT analysis</span> alongside a <span class="kw" data-target="tile-audience">target audience analysis</span> revealed the potential for an intelligent marketing platform that could make strategic insights more actionable and manageable.</p>
+                    <div class="bento">
+                        <figure class="tile w6 reveal" id="tile-swot">
+                            <img src="assets/laine_SWOT_analysis.png" alt="SWOT analysis" loading="lazy">
+                            <figcaption>SWOT analysis</figcaption>
+                        </figure>
+                        <figure class="tile w6 reveal" id="tile-audience" style="--delay: 0.12s">
+                            <img src="assets/laine_target_audience_analysis.png" alt="Target audience analysis" loading="lazy">
+                            <figcaption>Target audience analysis</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <article class="step" id="step2">
+                    <div class="step-tag reveal"><b>2</b>Step two</div>
+                    <h2 class="reveal">Information architecture &amp; task flows</h2>
+                    <p class="reveal"><span class="kw" data-target="tile-ia">Information architecture</span> and <span class="kw" data-target="tile-flows">task flows</span> were not one-time activities; rather they were revisited several times throughout the iterative process of expanding the platform based on user feedback. Thanks to input from marketing experts, I structured hierarchies that could effectively communicate strategic recommendations. The process involved breaking down intricate marketing metrics into clear, digestible visuals that would resonate with target users.</p>
+                    <div class="bento">
+                        <figure class="tile w6 reveal" id="tile-ia">
+                            <img src="assets/laine_information_architecture.png" alt="Information architecture" loading="lazy">
+                            <figcaption>Information architecture</figcaption>
+                        </figure>
+                        <figure class="tile w6 reveal" id="tile-flows" style="--delay: 0.12s">
+                            <img src="assets/laine_task_flows.png" alt="Task flows" loading="lazy">
+                            <figcaption>Task flows</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <article class="step" id="step3">
+                    <div class="step-tag reveal"><b>3</b>Step three</div>
+                    <h2 class="reveal">UI &amp; prototyping</h2>
+                    <p class="reveal">Starting with low-fidelity wireframes and progressively moving to <span class="kw" data-target="tile-hifi">high-fidelity wireframes</span> and demo prototypes, I iterated through multiple versions of the interface to match user needs in the best way possible. User testing played a critical role in refining the interface, ensuring that the AI-driven insights could be trusted, easily understood and acted upon.</p>
+                    <div class="bento">
+                        <figure class="tile w12 reveal" id="tile-hifi">
+                            <img src="assets/laine_high-fidelity_wireframes.png" alt="High-fidelity wireframes" loading="lazy">
+                            <figcaption>High-fidelity wireframes</figcaption>
+                        </figure>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- NEXT PROJECT -->
+        <a href="inviso-deep-dive.html" class="next reveal">
+            <div class="next-inner" style="--next-color: #E3ECF5;">
+                <div class="next-icon" aria-hidden="true"><img src="assets/logo_inviso.svg" alt=""></div>
+                <div class="next-text">
+                    <div class="label">Next project</div>
+                    <div class="next-title">Inviso</div>
+                    <div class="next-sub">Design of an AI data visualization tool</div>
+                </div>
+                <div class="next-arrow" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
+            </div>
+        </a>
+    </main>
+
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged image">
+        <img alt="">
     </div>
 
     <script>
-        // Event listener for page visibility changes
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                // Force a refresh when page becomes visible again
-                window.location.reload(true);
-            }
-        });
+        document.documentElement.classList.add('js');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        document.querySelectorAll('.skill-tag').forEach(tag => {
-            tag.addEventListener('mouseenter', function(e) {
-                const keyword = this.dataset.keyword;
-                const keywordTitle = keyword.replace(/_/g, ' ').split(' ').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ');
-                
-                // Remove any existing floating images
-                let existingImages = document.querySelectorAll('.floating-image');
-                existingImages.forEach(img => img.remove());
-                
-                // Create container
-                let container = document.createElement('div');
-                container.className = 'floating-image';
-                
-                // Create and add title
-                let title = document.createElement('div');
-                title.className = 'floating-image-title';
-                title.textContent = keywordTitle;
-                container.appendChild(title);
-                
-                // Create and add image
-                let img = document.createElement('img');
-                img.src = `assets/laine_${keyword}.png`;
-                img.style.width = '100%';
-                img.style.display = 'block';
-                container.appendChild(img);
-                
-                // Position the container
-                const tagRect = this.getBoundingClientRect();
-                const containerWidth = 500;
-                const containerHeight = container.offsetHeight;
-                const windowWidth = window.innerWidth;
-                const windowHeight = window.innerHeight;
-                
-                // Calculate horizontal position
-                let left = tagRect.left + tagRect.width / 2 - containerWidth / 2;
-                left = Math.max(10, Math.min(left, windowWidth - containerWidth - 10));
-                
-                // Calculate vertical position
-                let top = tagRect.bottom + 10;
-                if (top + containerHeight > windowHeight) {
-                    top = tagRect.top - containerHeight - 10;
+        // Headline words rise out of a blur, one by one (same as the homepage).
+        (function() {
+            const h = document.getElementById('headline');
+            h.innerHTML = h.textContent.trim().split(/\s+/).map(function(w, i) {
+                return '<span class="h-word" style="--d:' + (0.15 + i * 0.09).toFixed(2) + 's">' + w + '</span>';
+            }).join(' ');
+        })();
+
+        // Reveal on scroll.
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                    revealObserver.unobserve(entry.target);
                 }
-                
-                container.style.left = `${left}px`;
-                container.style.top = `${top}px`;
-                
-                document.body.appendChild(container);
-                container.style.display = 'block';
             });
-            
-            tag.addEventListener('mouseleave', function() {
-                let images = document.querySelectorAll('.floating-image');
-                images.forEach(img => img.remove());
-            });
-        });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
 
+        // Overview words light up as you scroll through them.
+        const overview = document.getElementById('overview-text');
+        overview.innerHTML = overview.textContent.trim().split(/\s+/).map(function(w) {
+            return '<span class="lit-word">' + w + '</span>';
+        }).join(' ');
+        const litWords = Array.from(overview.querySelectorAll('.lit-word'));
 
-        document.querySelectorAll('.skill-tag').forEach(tag => {
-    tag.addEventListener('mouseenter', function(e) {
-        const keyword = this.dataset.keyword;
-        const keywordTitle = keyword.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-
-        // Remove existing floating images
-        document.querySelectorAll('.floating-image').forEach(img => img.remove());
-
-        // Create floating image container
-        let container = document.createElement('div');
-        container.className = 'floating-image';
-
-        let title = document.createElement('div');
-        title.className = 'floating-image-title';
-        title.textContent = keywordTitle;
-        container.appendChild(title);
-
-        let img = document.createElement('img');
-        img.src = `assets/laine_${keyword}.png`
-        img.style.width = '100%';
-        img.style.display = 'block';
-        container.appendChild(img);
-
-        document.body.appendChild(container);
-        container.style.display = 'block';
-
-        // Positioning logic
-        const tagRect = this.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        let top = tagRect.bottom + 10;
-        let left = tagRect.left + (tagRect.width / 2) - (containerRect.width / 2);
-
-        // Prevent overflow at the bottom
-        if (top + containerRect.height > windowHeight) {
-            top = tagRect.top - containerRect.height - 10;
-        }
-
-        // Prevent overflow at the top
-        if (top < 0) {
-            top = tagRect.top + (tagRect.height / 2) - (containerRect.height / 2);
-            left = tagRect.right + 10;
-
-            // Prevent overflow on the right
-            if (left + containerRect.width > windowWidth) {
-                left = tagRect.left - containerRect.width - 10;
+        // A word that just lit up glows in the accent color for a moment.
+        function setLit(w, on) {
+            if (on && !w.classList.contains('on')) {
+                w.classList.add('on', 'hot');
+                clearTimeout(w._hot);
+                w._hot = setTimeout(function() { w.classList.remove('hot'); }, 900);
+            } else if (!on && w.classList.contains('on')) {
+                w.classList.remove('on', 'hot');
             }
         }
 
-        // Final adjustments to ensure it's inside the viewport
-        container.style.left = `${Math.max(10, Math.min(left, windowWidth - containerRect.width - 10))}px`;
-        container.style.top = `${Math.max(10, Math.min(top, windowHeight - containerRect.height - 10))}px`;
-    });
+        const win = document.getElementById('window');
+        const progressBar = document.getElementById('progress');
+        const processList = document.getElementById('process-list');
+        const navLinks = Array.from(document.querySelectorAll('.process-nav a'));
+        const steps = navLinks.map(function(a) { return document.querySelector(a.getAttribute('href')); });
 
-    tag.addEventListener('mouseleave', function() {
-        document.querySelectorAll('.floating-image').forEach(img => img.remove());
-    });
-});
+        let ticking = false;
+        function onScroll() {
+            ticking = false;
+            const vh = window.innerHeight;
+            const y = window.scrollY;
+            const doc = document.documentElement;
+            const clamp = function(x) { return Math.min(1, Math.max(0, x)); };
 
-// Add this code to the existing JavaScript section
-document.querySelectorAll('.skill-tag').forEach(tag => {
-    // Track if the tag is active
-    tag.isActive = false;
-    
-    // Add click event listener for mobile/touch devices
-    tag.addEventListener('click', function(e) {
-        const keyword = this.dataset.keyword;
-        
-        // If tag is already active, hide the image and reset
-        if (this.isActive) {
-            document.querySelectorAll('.floating-image').forEach(img => img.remove());
-            this.style.backgroundColor = '#F2F2F2'; // Reset to default color
-            this.isActive = false;
-        } else {
-            // First click - show the image and set active state
-            this.isActive = true;
-            this.style.backgroundColor = '#E0E0E0'; // Darker shade
-            
-            // Remove any existing floating images
-            document.querySelectorAll('.floating-image').forEach(img => img.remove());
-            
-            // Create and display the floating image (same as in mouseenter)
-            const keywordTitle = keyword.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-            
-            let container = document.createElement('div');
-            container.className = 'floating-image';
-            
-            let title = document.createElement('div');
-            title.className = 'floating-image-title';
-            title.textContent = keywordTitle;
-            container.appendChild(title);
-            
-            let img = document.createElement('img');
-            img.src = `assets/laine_${keyword}.png`;
-            img.style.width = '100%';
-            img.style.display = 'block';
-            container.appendChild(img);
-            
-            document.body.appendChild(container);
-            container.style.display = 'block';
-            
-            // Position the container for mobile
-            const tagRect = this.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            
-            // Mobile positioning logic
-            if (window.innerWidth <= 768) {
-                container.style.left = '50%';
-                container.style.transform = 'translateX(-50%)';
-                container.style.top = `${tagRect.bottom + 10}px`;
-                
-                // If it would go off the bottom, position it at the bottom of the viewport
-                if (tagRect.bottom + 10 + containerRect.height > windowHeight) {
-                    container.style.top = `${windowHeight - containerRect.height - 10}px`;
-                }
-            } else {
-                // For larger screens, use the existing positioning logic
-                let top = tagRect.bottom + 10;
-                let left = tagRect.left + (tagRect.width / 2) - (containerRect.width / 2);
-                
-                // Prevent overflow
-                if (top + containerRect.height > windowHeight) {
-                    top = tagRect.top - containerRect.height - 10;
-                }
-                
-                container.style.left = `${Math.max(10, Math.min(left, windowWidth - containerRect.width - 10))}px`;
-                container.style.top = `${Math.max(10, Math.min(top, windowHeight - containerRect.height - 10))}px`;
+            progressBar.style.transform = 'scaleX(' + (y / Math.max(1, doc.scrollHeight - vh)).toFixed(4) + ')';
+            document.body.classList.toggle('scrolled', y > vh * 0.6);
+
+            // video window tilts back in 3D and settles flat as it rises into view
+            if (!reduceMotion) {
+                const r = win.getBoundingClientRect();
+                win.style.setProperty('--settle', clamp((vh - r.top) / (vh * 0.65)).toFixed(3));
             }
-        }
-    });
-    
-    // Reset active state when clicking elsewhere
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.skill-tag') && !e.target.closest('.floating-image')) {
-            document.querySelectorAll('.skill-tag').forEach(t => {
-                t.isActive = false;
-                t.style.backgroundColor = '#F2F2F2'; // Reset to default color
+
+            // overview: pinned at 22% of the screen while scrolling lights it
+            // word by word; only the 1-2 words at the reading front are lilac
+            const stage = overview.closest('.overview');
+            const pin = Math.max(420, litWords.length * 14);
+            stage.style.setProperty('--pin', pin + 'px');
+            const t = reduceMotion ? 1 : clamp((vh * 0.22 - stage.getBoundingClientRect().top) / pin);
+            const lit = Math.round(t * litWords.length);
+            litWords.forEach(function(w, i) {
+                w.classList.toggle('on', i < lit);
+                w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
             });
-            document.querySelectorAll('.floating-image').forEach(img => img.remove());
+
+            // process nav: active step + line that fills as you read
+            let current = 0;
+            steps.forEach(function(step, i) { if (step.getBoundingClientRect().top < vh * 0.4) current = i; });
+            navLinks.forEach(function(a, i) { a.classList.toggle('active', i === current); });
+            const first = steps[0].getBoundingClientRect();
+            const last = steps[steps.length - 1].getBoundingClientRect();
+            processList.style.setProperty('--fill', clamp((vh * 0.4 - first.top) / (last.bottom - first.top)).toFixed(3));
         }
-    });
-});
+        window.addEventListener('scroll', function() {
+            if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+        }, { passive: true });
+        window.addEventListener('resize', onScroll);
+        onScroll();
 
-// Add this to your existing script
-document.addEventListener('DOMContentLoaded', function() {
-  // Preload all potential images
-  document.querySelectorAll('.skill-tag').forEach(tag => {
-    const keyword = tag.dataset.keyword;
-    const img = new Image();
-    img.src = `assets/laine_${keyword}.png`;
-  });
-});
+        // Keywords jump to (and flash) their artefact.
+        document.querySelectorAll('.kw').forEach(function(kw) {
+            kw.addEventListener('click', function() {
+                const tile = document.getElementById(kw.dataset.target);
+                tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                tile.classList.remove('flash');
+                void tile.offsetWidth;
+                tile.classList.add('flash');
+            });
+        });
 
+        // "View" bubble follows the mouse over artefacts.
+        const cursor = document.getElementById('cursor');
+        document.querySelectorAll('.tile').forEach(function(tile) {
+            tile.addEventListener('mouseenter', function() { cursor.classList.add('show'); });
+            tile.addEventListener('mouseleave', function() { cursor.classList.remove('show'); });
+        });
+        window.addEventListener('mousemove', function(e) {
+            cursor.style.setProperty('--x', e.clientX + 'px');
+            cursor.style.setProperty('--y', e.clientY + 'px');
+        }, { passive: true });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Get references to elements
-    const video = document.getElementById('vr-video');
-    const videoContainer = document.getElementById('gif-container');
+        // Lightbox.
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+        document.querySelectorAll('.tile').forEach(function(tile) {
+            tile.addEventListener('click', function() {
+                const img = tile.querySelector('img');
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt;
+                lightbox.classList.add('open');
+                cursor.classList.remove('show');
+            });
+        });
+        function closeLightbox() { lightbox.classList.remove('open'); }
+        lightbox.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
     
-    // Create a placeholder dynamically and insert it
-    const placeholder = document.createElement('div');
-    placeholder.id = 'video-placeholder';
-    placeholder.className = 'gif-placeholder';
-    placeholder.textContent = 'Loading video...';
-    videoContainer.insertBefore(placeholder, video);
-    
-    // Initially hide the video
-    video.style.display = 'none';
-    
-    // Set the source attribute empty initially
-    const videoSource = video.querySelector('source');
-    const originalSrc = videoSource.getAttribute('src');
-    videoSource.setAttribute('src', '');
-    
-    // Create an observer with options
-    const options = {
-        root: null,
-        rootMargin: '50px', // Load when within 50px of viewport
-        threshold: 0.1
-    };
-    
-    // Lazy load function
-    const lazyLoadVideo = function(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !video.getAttribute('data-loaded')) {
-                video.setAttribute('data-loaded', 'true');
-                
-                // Set the original source back
-                videoSource.setAttribute('src', originalSrc);
-                
-                // Load the video
-                video.load();
-                
-                // Once the video can play, hide the placeholder and show the video
-                video.addEventListener('canplay', function onCanPlay() {
-                    placeholder.style.display = 'none';
-                    video.style.display = 'block';
-                    // Remove the event listener to avoid multiple calls
-                    video.removeEventListener('canplay', onCanPlay);
-                });
-                
-                // Handle errors
-                video.addEventListener('error', function() {
-                    console.error('Error loading video');
-                    placeholder.textContent = 'Error loading video. Page will reload to try again.';
-                    // Optional: add a reload button or automatic retry
-                });
-                
-                observer.unobserve(entry.target);
+        // Tile sides take the artefact's own background color (sampled at its edges),
+        // so narrower images never sit on white bars.
+        document.querySelectorAll('.tile img').forEach(function(img) {
+            function paint() {
+                try {
+                    const w = img.naturalWidth, h = img.naturalHeight;
+                    const c = document.createElement('canvas');
+                    c.width = c.height = 1;
+                    const ctx = c.getContext('2d', { willReadFrequently: true });
+                    // sample just inside the edges (corners are often transparent)
+                    const spots = [[w * 0.03, h * 0.5], [w * 0.5, h * 0.03], [w * 0.97, h * 0.5], [w * 0.5, h * 0.97]];
+                    for (const [x, y] of spots) {
+                        ctx.clearRect(0, 0, 1, 1);
+                        ctx.drawImage(img, Math.round(x), Math.round(y), 1, 1, 0, 0, 1, 1);
+                        const d = ctx.getImageData(0, 0, 1, 1).data;
+                        if (d[3] > 240) {
+                            img.parentElement.style.background = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+                            return;
+                        }
+                    }
+                } catch (e) { /* keep the default light grey */ }
             }
+            if (img.complete && img.naturalWidth) paint(); else img.addEventListener('load', paint);
         });
-    };
-    
-    // Create the observer
-    const observer = new IntersectionObserver(lazyLoadVideo, options);
-    
-    // Observe the container
-    observer.observe(videoContainer);
-    
-    // Fallback for older browsers that don't support IntersectionObserver
-    if (!('IntersectionObserver' in window)) {
-        // Set the source back immediately
-        videoSource.setAttribute('src', originalSrc);
-        video.load();
-        
-        video.addEventListener('canplay', function() {
-            placeholder.style.display = 'none';
-            video.style.display = 'block';
+
+        // Video "photo" leans gently towards the mouse.
+        if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+            win.addEventListener('mousemove', function(e) {
+                const r = win.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - 0.5;
+                const y = (e.clientY - r.top) / r.height - 0.5;
+                win.style.setProperty('--rx', (x * 8).toFixed(2) + 'deg');
+                win.style.setProperty('--ry', (-y * 8).toFixed(2) + 'deg');
+            });
+            win.addEventListener('mouseleave', function() {
+                win.style.setProperty('--rx', '0deg');
+                win.style.setProperty('--ry', '0deg');
+            });
+        }
+
+        // Contact rail: copy email (with a toast), LinkedIn opens in a new tab.
+        const toast = document.getElementById('toast');
+        document.getElementById('contact-email').addEventListener('click', function() {
+            navigator.clipboard.writeText('lau.guerinoni@gmail.com').then(function() {
+                toast.classList.add('show');
+                setTimeout(function() { toast.classList.remove('show'); }, 2500);
+            });
         });
-    }
-});
     </script>
 </body>
 </html>

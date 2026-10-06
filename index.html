@@ -6,7 +6,6 @@
     <title>Laura Guerinoni</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@350;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="assets/laura.png" type="image/png">
     <style>
         /* Add these styles to reduce spacing and handle new elements */
@@ -116,7 +115,7 @@
         .ticker-track {
             display: flex;
             flex-direction: column;
-            animation: ticker-roll 6.6s infinite;
+            animation: ticker-roll 4.2s infinite;
         }
 
         .ticker--offset .ticker-track {
@@ -138,10 +137,10 @@
             text-decoration-skip-ink: none; /* one continuous line under g/p/y */
         }
 
-        /* 6.6s cycle: each state holds ~2.5s, then a 0.8s roll. */
+        /* 4.2s cycle: each phrase holds 1.5s, then a 0.6s roll (Bain → WithLess → Bain…). */
         @keyframes ticker-roll {
-            0%, 37.9%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-            50%, 87.9%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            0%, 35.7%   { transform: translateY(0);       animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+            50%, 85.7%  { transform: translateY(calc(var(--tick-h, 1.6em) * -1));  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
             100%        { transform: translateY(calc(var(--tick-h, 1.6em) * -2)); }
         }
 
@@ -176,14 +175,14 @@
         .js-reveal .project-content > p,
         .js-reveal .project-gif {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(28px);
             filter: blur(6px);
             transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
                         transform 1s cubic-bezier(0.16, 1, 0.3, 1),
                         filter 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .js-reveal .section-icon { transform: translateY(24px) scale(0.7); }
+        .js-reveal .section-icon { transform: translateY(28px) scale(0.7); }
         .js-reveal .project-title { transition-delay: 0.08s; }
         .js-reveal .project-year-tag { display: inline-block; transition-delay: 0.16s; }
         .js-reveal .project-subtitle { transition-delay: 0.24s; }
@@ -200,6 +199,111 @@
         }
 
         /* Chips wait hidden until they rain in (JS adds .chips-ready) */
+        /* DEEP-DIVE TEXT — project text uses the deep-dive
+           typography and appears the same way: each block rises out of
+           a soft blur (the rules above), no typewriter. */
+        .project-section .project-title {
+            font-size: clamp(30px, 3.2vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* the year sits inside the title, right after its last word,
+           so long titles that wrap keep it close */
+        .project-section .project-year-tag {
+            display: inline-block;
+            margin: 0 0 0 6px;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0;
+            color: rgba(51, 51, 51, 0.6);
+            white-space: nowrap;
+            vertical-align: baseline; /* bottom-aligned with the title */
+        }
+
+        /* icon lines up with the title's first line */
+        .project-section .section-header { align-items: flex-start; }
+        .project-section .section-icon { margin-top: calc((clamp(30px, 3.2vw, 44px) * 1.1 - 48px) / 2); }
+
+        .project-section .project-subtitle {
+            margin-top: 14px;
+            font-size: clamp(19px, 1.7vw, 23px);
+            line-height: 1.45;
+            font-weight: 350; /* only 350/500 are loaded; 400 would render as 500 */
+            color: rgba(51, 51, 51, 0.6);
+        }
+
+        .project-section .project-content-wrapper .project-content > p {
+            font-size: 21px !important;   /* shorter text, a touch bigger */
+            line-height: 1.65;
+            font-weight: 350;
+            max-width: 680px;
+        }
+
+        @media (max-width: 768px) {
+            .project-section .project-content-wrapper .project-content > p { font-size: 17px !important; }
+        }
+
+        .tw-char {
+            opacity: 0;
+        }
+
+        .is-revealed .tw-char,
+        .tw-char.is-revealed {
+            opacity: 1;
+            transition: opacity 0.08s linear;
+            transition-delay: var(--d);
+        }
+
+        /* Keeping pace with fast scrolling: text already typing finishes
+           at once (.tw-done); text not started yet types 5x faster. */
+        .tw-done .tw-char {
+            opacity: 1 !important;
+            transition: none !important;
+        }
+
+        .tw-fast .is-revealed .tw-char {
+            transition-delay: calc(var(--d) * 0.2);
+        }
+
+        .tw-fast .project-gif,
+        .tw-fast .section-icon {
+            transition-duration: 0.4s;
+            transition-delay: 0s;
+        }
+
+        /* Description: each word rises into place out of a soft blur,
+           one after another (--d per word, set in JS). */
+        .tw-word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.6em);
+            filter: blur(8px);
+        }
+
+        .is-revealed .tw-word {
+            opacity: 1;
+            transform: none;
+            filter: blur(0);
+            transition: opacity 0.7s ease,
+                        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 0.7s ease;
+            transition-delay: var(--d);
+        }
+
+        .tw-fast .is-revealed .tw-word {
+            transition-delay: calc(var(--d) * 0.2);
+        }
+
+        .tw-done .tw-word {
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
+            transition: none !important;
+        }
+
         .skills-tags.chips-ready .skill-tag {
             display: inline-block;
             opacity: 0;
@@ -283,7 +387,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 190vh;
+            height: 270vh;
         }
 
         .hero-sticky {
@@ -293,7 +397,7 @@
         }
 
         .projects-container {
-            margin-top: 190vh;
+            margin-top: 270vh;
         }
 
         .reveal-word {
@@ -306,9 +410,36 @@
             opacity: 0.25; /* gray = not in focus */
         }
 
-        .hero-state-2 #hero-line-2 .reveal-word {
-            opacity: 1;
-            transition-delay: calc(var(--i) * 45ms + 0.1s); /* comes to life word by word */
+
+        /* READING HIGHLIGHT — the second sentence lights up word by
+           word with the scroll (driven in JS), with only the 1-2 words at
+           the reading front in lilac, like the project descriptions. */
+        #hero-line-2 .reveal-word.on { opacity: 1; }
+        #hero-line-2 .reveal-word { transition: opacity 0.2s linear, color 0.3s ease; }
+
+        #hero-line-1 .reveal-word { transition: opacity 0.45s ease, color 0.3s ease; }
+
+
+        /* while the intro is being read, the rolling phrases follow the
+           scroll (--roll: 0 = first phrase, 1 = second) instead of auto-rolling */
+        .ticker.is-scrub .ticker-track {
+            animation: none !important;
+            transform: translateY(calc(var(--tick-h, 1.6em) * -1 * var(--roll, 0)));
+            transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        /* the rolling phrase joins the highlight too */
+        #main .reveal-word .ticker-item { color: inherit; }
+
+        /* project descriptions light up with the scroll, like the
+           deep-dive overview; the reading front glows lilac for a moment */
+        .lit-word { opacity: 0.2; transition: opacity 0.2s linear, color 0.3s ease; }
+        .lit-word.on { opacity: 1; }
+
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-word { animation: none !important; }
+            .lit-word { opacity: 1; }
         }
 
         /* A gray sentence holds still on its first phrase; the roll
@@ -484,6 +615,293 @@
         padding: 9px 18px; /* Proportionally reduced */
     }
 }
+
+
+        /* ============================================================
+           LILAC GLOW — just a pinch of lilac on the right,
+           sitting behind the email / LinkedIn buttons.
+           ============================================================ */
+        .hero-glow {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hero-glow span {
+            position: absolute;
+            top: 50%;
+            right: -14vw;
+            width: 34vw;
+            height: 34vw;
+            margin-top: -17vw;
+            border-radius: 50%;
+            background: #ECDBFF;
+            filter: blur(90px);
+            opacity: 0.6;
+            animation: glow-drift 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-drift { to { transform: translate(-4vw, 3vw) scale(1.08); } }
+
+        .hero-sticky { isolation: isolate; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-glow span { animation: none; }
+        }
+
+
+        /* ============================================================
+           PHOTO STICKER ON SCROLL — scrolling into the hero pops
+           Laura's photo out next to her name with the same bouncy
+           sticker animation as the app icons on the deep-dive videos.
+           Hovering the name while it's out gives it a little wiggle.
+           ============================================================ */
+        .hero-photo .laura-hover-photo {
+            opacity: 1;
+            transform: translate(0, -50%) rotate(-8deg) scale(1);
+            transition: opacity 0.2s ease,
+                        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hero-photo .hover-name:hover .laura-hover-photo {
+            transform: translate(0, -50%) rotate(6deg) scale(1.08);
+        }
+
+        /* ============================================================
+           DEEP-DIVE LINK — a white pill like the "Next project"
+           card, with a small dark arrow that slides and turns on hover.
+           ============================================================ */
+        .deep-dive-link {
+            gap: 12px;
+            padding: 8px 8px 8px 20px;
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            opacity: 1;
+            font-weight: 500;
+            font-size: 15px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+
+        /* no lift on hover: a moving button flickers when the cursor sits on its edge */
+        .deep-dive-link:hover {
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 14px 50px;
+        }
+
+        .deep-dive-link svg {
+            width: 28px;
+            height: 28px;
+            margin-left: 0;
+            padding: 7px;
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .deep-dive-link:hover svg { transform: rotate(-45deg); } /* circle stays put, arrow turns */
+
+
+        /* ============================================================
+           PROJECT ICONS — 48px tiles with 28px logos, same as the
+           deep-dive pages; text beside/below them shifts to stay aligned.
+           ============================================================ */
+        .project-section .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin-right: 20px;
+            background: #fff;
+        }
+
+        .project-section .section-icon img { width: 28px; height: 28px; }
+
+        .project-section .project-subtitle,
+        .project-section .project-content { margin-left: 68px; }
+
+        /* ============================================================
+           CHIPS — soft frosted pills: they fall in as before and
+           land straight; no hover effect, and a very light shadow.
+           ============================================================ */
+        .project-section .skill-tag {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);           /* frosted, not solid white */
+            border: 1px solid rgba(51, 51, 51, 0.07);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);          /* quieter than the logo tile */
+        }
+
+        .project-section .skills-tags { gap: 10px; margin: 0 0 48px; }
+
+        /* same 48px rhythm: subtitle -> chips and chips -> description */
+        .project-section .project-content { margin-top: 48px; }
+        .project-section .project-content > p { margin-top: 0; }
+        .project-section .skills-tags.chips-ready .skill-tag { display: inline-block; }
+
+        /* ============================================================
+           CONTACT RAIL — email + LinkedIn on the right, styled
+           like the left menu buttons; label slides out on hover.
+           ============================================================ */
+        .contact-rail {
+            position: fixed;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .contact-btn {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            height: 48px;
+            padding: 0 13px;
+            border: 0;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            text-decoration: none;
+            font: 500 16px 'Inter', sans-serif;
+            cursor: pointer;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .contact-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+        .contact-btn .contact-label {
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            opacity: 0;
+            transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .contact-btn:hover,
+        .contact-btn:focus-visible {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .contact-btn:hover .contact-label,
+        .contact-btn:focus-visible .contact-label {
+            max-width: 260px;
+            opacity: 1;
+            margin-right: 10px;
+        }
+
+@media (max-width: 768px) {
+    /* phones: top-right of the page, scrolling away with it (never covers text) */
+    .contact-rail {
+        position: absolute;
+        top: 16px;
+        bottom: auto;
+        right: 16px;
+        transform: none;
+        flex-direction: row;
+        gap: 8px;
+    }
+    .contact-btn { height: 44px; padding: 0 11px; }
+    .sidebar { padding-top: 84px; } /* room under the contact buttons */
+    .contact-btn .contact-label { display: none; }
+}
+
+
+        /* READING HIGHLIGHT — the words at the reading front turn
+           "dark lilac": the brand lilac's exact hue at text strength, so
+           the site has one accent family (pale for fills, dark for text). */
+        #hero-line-1 .reveal-word,
+        #hero-line-2 .reveal-word,
+        .lit-word {
+            transition: opacity 0.2s linear, color 0.3s ease;
+        }
+
+        /* the intro is "you": dark lilac */
+        #hero-line-1 .reveal-word.hot,
+        #hero-line-2 .reveal-word.hot {
+            color: #9150D0;
+            transition: opacity 0.2s linear, color 0.1s ease;
+        }
+
+        /* each project reads in a deep shade of its own color */
+        #lite-tone     { --hot: #1C6E91; }
+        #laine         { --hot: #1F7A52; }
+        #inviso        { --hot: #3D56A0; }
+        #enjoy         { --hot: #B8323F; }
+        #vr-training   { --hot: #465A78; }
+        #pet-in-a-pot  { --hot: #4A7A44; }
+
+        .lit-word.on.hot {
+            color: var(--hot, #9150D0);
+            transition: opacity 0.2s linear, color 0.1s ease;
+        }
+
+        /* ============================================================
+           COHESION — one small system for every surface on the page:
+           - shadows: hairline (chips), resting (white controls),
+             floating (large media); hover = one step deeper
+           - corners: 12px square controls, pills, 16px media
+           - no outlines; nothing lifts on hover (shadow only)
+           ============================================================ */
+        :root {
+            --shadow-hairline: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 10px 26px rgba(0, 0, 0, 0.08);
+            --shadow-float: 0 2px 6px rgba(0, 0, 0, 0.04), 0 24px 60px rgba(0, 0, 0, 0.1);
+            --radius-control: 12px;
+            --radius-media: 16px;
+        }
+
+        /* left menu (desktop) */
+        @media (min-width: 769px) {
+            html body .sidebar .icon { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+            html body .sidebar .icon:hover { box-shadow: var(--shadow-hover); transform: none; }
+            html body .sidebar .icon.active { box-shadow: var(--shadow-hover); transform: scale(1.18); }
+            html body .sidebar #vr-training-icon:hover { width: 172px; } /* longer label */
+        }
+
+        /* project logo tiles */
+        html body .project-section .section-icon { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+
+        /* chips: frosted, no outline, hairline shadow */
+        html body .project-section .skill-tag {
+            border: 0;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-hairline);
+        }
+
+        /* white pills and buttons share the resting shadow */
+        html body .deep-dive-link { box-shadow: var(--shadow-rest); }
+        html body .deep-dive-link:hover { box-shadow: var(--shadow-hover); }
+
+        html body .contact-btn { border-radius: var(--radius-control); box-shadow: var(--shadow-rest); }
+        html body .contact-btn:hover,
+        html body .contact-btn:focus-visible { box-shadow: var(--shadow-hover); }
+
+        html body .buttons .button { border-radius: var(--radius-control); }
+        html body .buttons .secondary-button { border: 0; background: #fff; box-shadow: var(--shadow-rest); }
+        html body .buttons .primary-button { box-shadow: var(--shadow-rest); }
+        html body .buttons .button:hover { transform: none; box-shadow: var(--shadow-hover); }
+
+        /* large media float */
+        html body .project-gif { border-radius: var(--radius-media); box-shadow: var(--shadow-float); }
+        html body .project-gif video { border-radius: var(--radius-media); }
+        html body .laura-hover-photo { box-shadow: var(--shadow-float); }
+
+        html body .notification { border-radius: var(--radius-control); box-shadow: var(--shadow-hover); }
     </style>
 </head>
 <body>
@@ -516,7 +934,7 @@
         <a href="#vr-training" class="icon chat-icon" id="vr-training-icon">
             <span class="icon-letter">
                 <img src="assets/logo_vr.svg" alt="Icon" width="24" height="24" class="icon-letter"></span>
-            <span class="icon-text">VR Training</span>
+            <span class="icon-text">VR Biofeedback</span>
         </a>
         <a href="#pet-in-a-pot" class="icon other-icon" id="pet-in-a-pot-icon">
             <span class="icon-letter">
@@ -525,11 +943,23 @@
         </a>
     </div>
 
+    <nav class="contact-rail" aria-label="Contact">
+        <button type="button" class="contact-btn" id="contact-email" aria-label="Copy email address">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.4"/><path d="M3.6 6.6L12 12.6L20.4 6.6"/></svg>
+            <span class="contact-label">lau.guerinoni@gmail.com</span>
+        </button>
+        <a class="contact-btn" href="https://www.linkedin.com/in/laura-guerinoni-48290021b/" target="_blank" rel="noopener" aria-label="LinkedIn profile">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3v-11zm6.5 0h3.8v1.5h.06c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.77 2.5 4.77 5.75v5.7h-4v-5.05c0-1.2-.02-2.75-1.7-2.75-1.7 0-1.96 1.3-1.96 2.66v5.14h-4v-11z"/></svg>
+            <span class="contact-label">LinkedIn</span>
+        </a>
+    </nav>
+
     <!-- Invisible anchor point at the top of the page -->
     <div id="main-anchor"></div>
 
     <div class="hero-scroll">
     <div class="hero-sticky">
+    <div class="hero-glow" aria-hidden="true"><span></span></div>
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
@@ -586,7 +1016,7 @@
             <div class="section-icon lite-tone-icon">
                 <img src="assets/logo_lite_tone.svg" alt="Lite-Tone Icon">
             </div>
-            <h2 class="project-title">Lite-Tone</h2> <span class="project-year-tag"> (2025) </span></h2>
+            <h2 class="project-title">Lite-Tone <span class="project-year-tag">(2025)</span></h2>
         </div>
         <h3 class="project-subtitle">Optimizing software spend with financial SaaS</h3>
         <div class="project-content">
@@ -602,7 +1032,7 @@
                 <span class="skill-tag">Minimalism</span>
             </div>
 
-            <p>This SaaS exploration is a personal project I pursued during downtime while working on Laine for Bain & Company. I challenged myself to develop a fast, effective solution to a major business issue: software spending and reliable invoice matching—all within a limited timeframe.</p>
+            <p>A personal project from my downtime at Bain &amp; Company: a fast, effective answer to a major business issue, software spend and reliable invoice matching, designed within a limited timeframe.</p>
             
             <div class="project-gif">
                 <video autoplay loop muted playsinline src="assets/Lite-Tone.mp4" alt="Lite-Tone Project Demo"></video>
@@ -625,7 +1055,7 @@
                     <div class="section-icon laine-icon">
                         <img src="assets/logo_laine.svg" alt="Laine Icon">
                     </div>
-                    <h2 class="project-title">Laine</h2> <span class="project-year-tag"> (2024-2025) </span></h2>
+                    <h2 class="project-title">Laine <span class="project-year-tag">(2024-2025)</span></h2>
                     
                     </div>
                     <h3 class="project-subtitle">AI-powered marketing SaaS at Bain & Company</h3>
@@ -644,7 +1074,7 @@
                         <span class="skill-tag">Webflow website</span>
                     </div>
 
-                    <p>This AI-driven B2B platform helps businesses optimize growth strategies. Developed in Bain & Company's startup incubator, it delivers real-time, actionable insights across marketing, profitability, sales, and customer lifecycle. Unlike traditional tools, Laine automates implementation and continuously refines strategies to drive business growth.</p>
+                    <p>An AI-driven B2B platform from Bain &amp; Company's startup incubator that turns marketing, sales and profitability data into real-time insights, and automates the strategies that drive growth.</p>
                     
                     
                     
@@ -654,7 +1084,7 @@
                     
                     <a href="laine-deep-dive.html" class="deep-dive-link">
                         View project deep-dive
-                        <img src="assets/right.svg" alt="Back">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                     </a>
@@ -672,7 +1102,7 @@
                     <div class="section-icon inviso-icon">
                         <img src="assets/logo_inviso.svg" alt="Inviso Icon">
                     </div>
-                    <h2 class="project-title">Inviso</h2> <span class="project-year-tag"> (2023) </span></h2>
+                    <h2 class="project-title">Inviso <span class="project-year-tag">(2023)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Design of an AI data visualization tool</h3>
                 <div class="project-content">
@@ -687,7 +1117,7 @@
                         <span class="skill-tag">User testing</span>
                     </div>
 
-                    <p>This dashboard for the British Museum combines in-house, digital initiatives, and external data to facilitate strategic operations with AI. It assists managers, financial and marketing departments by predicting future trends, highlighting potential target groups, audience opinions, demographics, and inspiring smarter content delivery.</p>
+                    <p>An AI dashboard for the British Museum that combines in-house, digital and external data, helping managers, finance and marketing predict trends, find target groups and deliver smarter content.</p>
                     
 
                     
@@ -712,7 +1142,7 @@
                     <div class="section-icon enjoy-icon">
                         <img src="assets/logo_enjoy.svg" alt="Enjoy Icon">
                     </div>
-                    <h2 class="project-title">Enjoy</h2> <span class="project-year-tag"> (2023) </span></h2>
+                    <h2 class="project-title">Enjoy <span class="project-year-tag">(2023)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Redesigning the Italian car sharing experience</h3>
 
@@ -734,7 +1164,7 @@
                     </div>
                     
 
-                    <p>Enjoy is a well-known Italian car-sharing service providing cars across major Italian cities. Despite popularity, its ratings aren't the best. This case study project aimed to understand system issues by listening to users and designing a smoother, more enjoyable experience by targeting the app's most problematic aspects based on user insights.</p>
+                    <p>A well-known Italian car-sharing app rated below its popularity. Listening to users, this case study redesigned its most problematic flows: task time down 66%, success rate up to 100%.</p>
                     
 
                     <div class="project-gif">
@@ -758,7 +1188,7 @@
                     <div class="section-icon vr-icon">
                         <img src="assets/logo_vr.svg" alt="VR Training Icon">
                     </div>
-                    <h2 class="project-title">VR Biofeedback Training</h2> <span class="project-year-tag"> (2022) </span></h2>
+                    <h2 class="project-title">VR Biofeedback <span class="project-year-tag">(2022)</span></h2>
 
                 </div>
                 <h3 class="project-subtitle">Maximising shooting athletes trainings</h3>
@@ -775,8 +1205,7 @@
                         <span class="skill-tag">Testing</span>
                     </div>
 
-                    <p>This cost-effective, man-machine digital interface improves shooting athletes' training. VR training isn't new for armed forces, and that knowledge opens new frontiers for shooting athletes, especially combined with biofeedback. The developed virtual reality application integrates shooters' electrodermal activity via sensors to help athletes improve focus and performance.
-                    </p>
+                    <p>A cost-effective VR training app for shooting athletes. It reads their electrodermal activity through sensors, turning biofeedback into better focus and performance.</p>
                     
 
                     
@@ -803,7 +1232,7 @@
                     <div class="section-icon pip-icon">
                         <img src="assets/logo_pip.svg" alt="Pet in a Pot Icon">
                     </div>
-                    <h2 class="project-title">Pet in a Pot</h2> <span class="project-year-tag"> (2022) </span></h2>
+                    <h2 class="project-title">Pet in a Pot <span class="project-year-tag">(2022)</span></h2>
                 </div>
                 <h3 class="project-subtitle">Designing an IoT plant vase and mobile app</h3>
                 <div class="project-content">
@@ -817,8 +1246,7 @@
                         <span class="skill-tag">Prototype design</span>
                     </div>
 
-                    <p>Pet in a Pot is a plant brand with an innovative product: an interactive vase connected to an app teaching people plant care by monitoring conditions and needs. The vase detects people and communicates through cute eyes. The app sends reminders. Its mission educates on proper plant care while raising environmental awareness.
-                    </p>
+                    <p>A plant brand built around an interactive vase and app: the vase reads the plant's conditions and reacts with cute eyes, while the app sends reminders and teaches proper plant care.</p>
                     
 
                     
@@ -952,6 +1380,16 @@
             });
         });
         
+        // CONTACT RAIL: copy email with the same notification as the button
+        document.getElementById('contact-email').addEventListener('click', function() {
+            navigator.clipboard.writeText('lau.guerinoni@gmail.com').then(function() {
+                const notification = document.getElementById('notification');
+                document.getElementById('notification-text').textContent = 'Email copied';
+                notification.classList.add('show');
+                setTimeout(function() { notification.classList.remove('show'); }, 3000);
+            });
+        });
+
         // Improved smooth scrolling for anchor links with perfect alignment
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -1024,44 +1462,297 @@
             elements.forEach(function(el) { observer.observe(el); });
         }
 
+        // Run fn once this section's header sequence (title → year →
+        // subtitle) has finished typing, plus `extra` seconds. If the
+        // visitor is scrolling fast (section "rushed"), run it right away.
+        function afterHeader(section, extra, fn) {
+            let done = false;
+            const once = function() { if (!done) { done = true; fn(); } };
+            (section._waiters = section._waiters || []).push(once);
+            if (section._rushed) { once(); return; }
+            const go = function() {
+                const doneAt = section._headerAt + ((section._subEnd === undefined ? 0.55 : section._subEnd) + extra) * 1000;
+                setTimeout(once, Math.max(0, doneAt - performance.now()));
+            };
+            if (section._headerAt) go();
+            else (section._pending = section._pending || []).push(go);
+        }
+
+        // Catch a section up with the visitor: finish anything mid-typing,
+        // and let everything still waiting play immediately and fast.
+        function rushSection(section) {
+            if (section._rushed) return;
+            section._rushed = true;
+            section.querySelectorAll('.is-revealed').forEach(function(el) {
+                if (el.querySelector('.tw-char, .tw-word')) el.classList.add('tw-done');
+            });
+            section.classList.add('tw-fast');
+            if (!section._headerAt) revealHeader(section.querySelector('.section-header'));
+            (section._waiters || []).forEach(function(once) { once(); });
+        }
+
+        function revealHeader(header) {
+            if (!header) return;
+            const section = header.closest('.project-section');
+            if (section._headerAt) return;
+            header.classList.add('is-revealed');
+            const sub = section.querySelector('.project-subtitle');
+            if (sub) sub.classList.add('is-revealed');
+            section._headerAt = performance.now();
+            (section._pending || []).forEach(function(go) { go(); });
+        }
+
+        function setupPaceKeeping() {
+            const sections = Array.from(document.querySelectorAll('.project-section'));
+            // 1. Fast scrolling: rush every section currently on screen.
+            let lastY = window.scrollY, lastT = performance.now();
+            window.addEventListener('scroll', function() {
+                const now = performance.now();
+                const speed = Math.abs(window.scrollY - lastY) / Math.max(1, now - lastT) * 1000; // px/s
+                lastY = window.scrollY; lastT = now;
+                if (speed < window.innerHeight * 1.5) return;
+                sections.forEach(function(section) {
+                    const r = section.getBoundingClientRect();
+                    if (r.top < window.innerHeight && r.bottom > 0) rushSection(section);
+                });
+            }, { passive: true });
+            // 2. Scrolled past it: anything already in the top 30% of the
+            //    screen should be finished, not still waiting.
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) rushSection(entry.target.closest('.project-section'));
+                });
+            }, { rootMargin: '0px 0px -70% 0px' });
+            document.querySelectorAll('.skills-tags, .project-content > p, .project-gif').forEach(function(el) {
+                observer.observe(el);
+            });
+        }
+
+        // READING HIGHLIGHT: when a project description reaches the
+        // reading position, the project holds still (sticky) while scrolling
+        // lights the text word by word; only the 1-2 words at the reading
+        // front are lilac. Once it's fully lit, the page moves on.
+        // Phones: no pinning, the text just lights up as it scrolls by.
+        function setupDescriptionLighting() {
+            const pinning = !prefersReducedMotion && !window.matchMedia('(max-width: 768px)').matches;
+            const items = Array.from(document.querySelectorAll('.project-content > p')).map(function(p) {
+                const words = p.textContent.trim().split(/\s+/);
+                p.textContent = '';
+                const spans = words.map(function(w, i) {
+                    const span = document.createElement('span');
+                    span.className = 'lit-word';
+                    span.textContent = w;
+                    p.appendChild(span);
+                    if (i < words.length - 1) p.appendChild(document.createTextNode(' '));
+                    return span;
+                });
+                return {
+                    p: p,
+                    spans: spans,
+                    section: p.closest('.project-section'),
+                    wrapper: p.closest('.project-content-wrapper'),
+                    pin: Math.max(420, spans.length * 14)
+                };
+            });
+            if (prefersReducedMotion) {
+                items.forEach(function(x) { x.spans.forEach(function(w) { w.classList.add('on'); }); });
+                return;
+            }
+
+            function layout() {
+                if (!pinning) return;
+                const vh = window.innerHeight;
+                items.forEach(function(x) {
+                    x.wrapper.style.position = 'relative';
+                    x.wrapper.style.top = '0px';
+                    x.section.style.height = '';
+                    const offset = x.p.getBoundingClientRect().top - x.wrapper.getBoundingClientRect().top;
+                    x.stickyTop = vh * 0.38 - offset;          // description sits at 38% of the screen
+                    x.wrapper.style.position = 'sticky';
+                    x.wrapper.style.alignSelf = 'flex-start';
+                    x.wrapper.style.top = x.stickyTop + 'px';
+                    // sticky only moves inside the parent's content box, so the
+                    // pin distance is added to the section's height (not padding)
+                    const cs = getComputedStyle(x.section);
+                    x.section.style.alignItems = 'flex-start';
+                    x.section.style.height = (parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) +
+                        x.wrapper.offsetHeight + x.pin) + 'px';
+                });
+            }
+
+            let ticking = false;
+            function update() {
+                ticking = false;
+                const vh = window.innerHeight;
+                items.forEach(function(x) {
+                    const r = x.section.getBoundingClientRect();
+                    if (r.top > vh || r.bottom < 0) return;
+                    let t;
+                    if (pinning) {
+                        const padTop = parseFloat(getComputedStyle(x.section).paddingTop);
+                        t = (x.stickyTop - (r.top + padTop)) / x.pin;
+                    } else {
+                        const pr = x.p.getBoundingClientRect();
+                        t = (vh * 0.8 - pr.top) / (pr.height + vh * 0.3);
+                    }
+                    t = Math.min(1, Math.max(0, t));
+                    const lit = Math.round(t * x.spans.length);
+                    x.spans.forEach(function(w, i) {
+                        w.classList.toggle('on', i < lit);
+                        w.classList.toggle('hot', i < lit && i >= lit - 2 && t < 1);
+                    });
+                });
+            }
+            document.fonts.ready.then(function() { layout(); update(); });
+            // re-measure when a project's content changes size (e.g. its video loads)
+            if (pinning && 'ResizeObserver' in window) {
+                let pending = null;
+                const ro = new ResizeObserver(function() {
+                    cancelAnimationFrame(pending);
+                    pending = requestAnimationFrame(function() { layout(); update(); });
+                });
+                items.forEach(function(x) { ro.observe(x.wrapper); });
+            }
+            window.addEventListener('resize', function() { layout(); update(); });
+            window.addEventListener('scroll', function() {
+                if (!ticking) { ticking = true; requestAnimationFrame(update); }
+            }, { passive: true });
+            layout();
+            update();
+        }
+
         function setupSectionReveals() {
             setupPageColor();
+            setupDescriptionLighting();
             const reveal = function(el) { el.classList.add('is-revealed'); };
-            onceVisible(document.querySelectorAll('.section-header, .project-subtitle, .project-content > p, .project-gif'), reveal);
+
+            // Header: title → year → subtitle type out as one sequence.
+            onceVisible(document.querySelectorAll('.section-header'), revealHeader);
+            setupPaceKeeping();
+
+            // Everything below waits until it is on screen AND the subtitle
+            // has finished: chips first, then the description, then the video.
+            onceVisible(document.querySelectorAll('.project-content > p'), function(el) {
+                afterHeader(el.closest('.project-section'), 0.8, function() { reveal(el); });
+            });
+            onceVisible(document.querySelectorAll('.project-gif'), function(el) {
+                afterHeader(el.closest('.project-section'), 1.2, function() { reveal(el); });
+            });
 
             if (prefersReducedMotion || !Element.prototype.animate) return; // chips just stay visible
             const chipRows = document.querySelectorAll('.skills-tags');
             chipRows.forEach(function(row) { row.classList.add('chips-ready'); });
             // Only start raining once the whole chip row is on screen.
-            onceVisible(chipRows, rainChips, '0px 0px -12% 0px');
+            onceVisible(chipRows, function(row) {
+                const section = row.closest('.project-section');
+                afterHeader(section, 0.1, function() { rainChips(row, section._rushed); });
+            }, '0px 0px -12% 0px');
         }
 
         // Each chip falls from above with a random tilt and sideways
         // drift, speeds up like it's under gravity, then eases off just
         // above its place in the row and settles in softly.
-        function rainChips(row) {
+        function rainChips(row, fast) {
             const chips = row.querySelectorAll('.skill-tag');
+            const pace = fast ? 0.4 : 1; // quicker rain when catching up with fast scrolling
             chips.forEach(function(chip, i) {
+                const rest = 0;                               // chips land straight
                 const tilt = (Math.random() < 0.5 ? -1 : 1) * (18 + Math.random() * 28);
                 const drift = (Math.random() - 0.5) * 90;
                 const height = 220 + Math.random() * 120;
-                const delay = i * 110 + Math.random() * 80;
+                const delay = (i * 110 + Math.random() * 80) * pace;
 
-                chip.animate([
+                const anim = chip.animate([
                     { offset: 0,    opacity: 0, transform: 'translate(' + drift + 'px,' + (-height) + 'px) rotate(' + tilt + 'deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' },
                     { offset: 0.12, opacity: 1 },
                     { offset: 0.55, opacity: 1, transform: 'translate(' + (drift * 0.08) + 'px, -22px) rotate(' + (-tilt * 0.2) + 'deg)', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-                    { offset: 0.85, opacity: 1, transform: 'translate(0, 1px) rotate(' + (tilt * 0.04) + 'deg)', easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
-                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(0deg)' }
+                    { offset: 0.85, opacity: 1, transform: 'translate(0, 1px) rotate(' + (rest + tilt * 0.04) + 'deg)', easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
+                    { offset: 1,    opacity: 1, transform: 'translate(0, 0) rotate(' + rest + 'deg)' }
                 ], {
-                    duration: 1300,
+                    duration: fast ? 800 : 1300,
                     delay: delay,
                     fill: 'both'
                 });
+                // once landed, hand the chip back to CSS so hover can straighten it
+                anim.onfinish = function() { chip.style.opacity = '1'; anim.cancel(); };
             });
         }
 
         document.addEventListener('DOMContentLoaded', setupSectionReveals);
+
+        // TYPEWRITER TEST — wrap every letter in a span with its own
+        // delay (--d). Returns when the last letter appears (seconds).
+        function typeText(el, start, step) {
+            let t = start;
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(function(node) {
+                const frag = document.createDocumentFragment();
+                node.textContent.split(/(\s+)/).forEach(function(part) {
+                    if (!part) return;
+                    if (/^\s+$/.test(part)) {                 // keep spaces as text so lines wrap normally
+                        frag.appendChild(document.createTextNode(part));
+                        t += step;
+                        return;
+                    }
+                    Array.from(part).forEach(function(ch) {
+                        const span = document.createElement('span');
+                        span.className = 'tw-char';
+                        span.textContent = ch;
+                        span.style.setProperty('--d', t.toFixed(3) + 's');
+                        frag.appendChild(span);
+                        t += step;
+                    });
+                });
+                node.parentNode.replaceChild(frag, node);
+            });
+            return t;
+        }
+
+        // Wrap every word in a span with its own delay (--d).
+        function revealWords(el, start, step) {
+            let t = start;
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(function(node) {
+                const frag = document.createDocumentFragment();
+                node.textContent.split(/(\s+)/).forEach(function(part) {
+                    if (!part) return;
+                    if (/^\s+$/.test(part)) {
+                        frag.appendChild(document.createTextNode(part));
+                        return;
+                    }
+                    const span = document.createElement('span');
+                    span.className = 'tw-word';
+                    span.textContent = part;
+                    span.style.setProperty('--d', t.toFixed(3) + 's');
+                    frag.appendChild(span);
+                    t += step;
+                });
+                node.parentNode.replaceChild(frag, node);
+            });
+            return t;
+        }
+
+        function setupTypewriter() {
+            if (prefersReducedMotion) return;
+            document.querySelectorAll('.project-section').forEach(function(section) {
+                const title = section.querySelector('.project-title');
+                const year = section.querySelector('.project-year-tag');
+                const subtitle = section.querySelector('.project-subtitle');
+                const text = section.querySelector('.project-content > p');
+                // title → year → subtitle play as one sequence when the header shows
+                let t = title ? typeText(title, 0.15, 0.03) : 0.15;
+                if (year) t = typeText(year, t + 0.05, 0.03);
+                // remember when the subtitle finishes, so chips and text can follow it
+                if (subtitle) section._subEnd = typeText(subtitle, t + 0.1, 0.018);
+                else section._subEnd = t;
+                // the description rises in word by word, at a calm reading rhythm
+                if (text) revealWords(text, 0.05, 0.045);
+            });
+        }
 
         // HERO SCROLL — see the matching block in <style>.
         // Wrap each word (and the ticker, as one unit) in .reveal-word.
@@ -1096,7 +1787,9 @@
             const line1 = document.getElementById('hero-line-1');
             const line2 = document.getElementById('hero-line-2');
             if (!line1 || !line2) return;
-            splitWords(line1);
+            splitWords(line1).forEach(function(word, i) {
+                word.style.setProperty('--i', i);
+            });
             splitWords(line2).forEach(function(word, i) {
                 word.style.setProperty('--i', i);
             });
@@ -1115,16 +1808,67 @@
                 if (ticker2) ticker2.classList.toggle('is-idle', !second);
             }
 
+            // Scrolling down: the photo pops out first; then a lilac reading
+            // front (1-2 words) sweeps through the first sentence; then the
+            // first sentence steps back to gray while the second lights up
+            // word by word with the same front. All driven by the scroll.
+            // Scrolling up brings the first sentence straight back; scrolling
+            // down again continues from there.
+            const words1 = Array.from(line1.querySelectorAll('.reveal-word'));
+            const words2 = Array.from(line2.querySelectorAll('.reveal-word'));
+            const n1 = words1.length, n2 = words2.length;
+            const PAUSE = 7;                              // word-units spent on each rolling phrase
+            const total = n1 + PAUSE + n2 + PAUSE;
+            const PX_PER_WORD = 26;
+            let base = null;                             // scroll position where the reading starts
+
+            // roll progress inside a pause: hold phrase 1, roll, hold phrase 2
+            function rollIn(u) { return Math.min(1, Math.max(0, (u - PAUSE * 0.3) / (PAUSE * 0.3))); }
+
+            function setScrub(on) {
+                [ticker1, ticker2].forEach(function(t) { if (t) t.classList.toggle('is-scrub', on); });
+            }
+
+            function paint(U) {
+                // U = scroll progress in word-units (0 .. total)
+                const reading = U > 0 && U < total;
+                const lit1 = Math.min(n1, Math.round(U));
+                const p1 = U - n1;                            // position inside pause 1
+                const u2 = U - n1 - PAUSE;                    // position in sentence 2
+                const lit2 = Math.max(0, Math.min(n2, Math.round(u2)));
+                const p2 = u2 - n2;                           // position inside pause 2
+
+                words1.forEach(function(w, i) {
+                    w.classList.toggle('hot', reading && u2 <= 0 && i < lit1 && i >= lit1 - 2);
+                });
+                words2.forEach(function(w, i) {
+                    w.classList.toggle('on', i < lit2);
+                    w.classList.toggle('hot', reading && i < lit2 && i >= lit2 - 2);
+                });
+                if (ticker1) ticker1.style.setProperty('--roll', rollIn(p1));
+                if (ticker2) ticker2.style.setProperty('--roll', rollIn(p2));
+                setState(lit2 > 0);
+            }
+
             let lastY = window.scrollY;
             let ticking = false;
             function update() {
                 ticking = false;
                 const y = window.scrollY;
                 const vh = window.innerHeight;
-                if (y < vh * 0.05 || y < lastY) {
-                    setState(false);                 // default, and whenever scrolling up
-                } else if (y > lastY && y > vh * 0.1) {
-                    setState(true);                  // scrolling down past a small threshold
+                if (y < vh * 0.03) {                     // back at the top: everything resets
+                    main.classList.remove('hero-photo');
+                    base = null;
+                    setScrub(false);
+                    paint(0);
+                } else if (y < lastY) {                  // scrolling up: first sentence again
+                    base = null;
+                    setScrub(false);
+                    paint(0);
+                } else if (y > lastY) {                  // scrolling down
+                    main.classList.add('hero-photo');
+                    if (base === null) { base = Math.max(y, vh * 0.12); setScrub(true); }
+                    paint(Math.min(total, Math.max(0, (y - base) / PX_PER_WORD)));
                 }
                 lastY = y;
             }
