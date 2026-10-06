@@ -816,22 +816,40 @@
     }
     .contact-btn { height: 44px; padding: 0 11px; }
 
-    /* phones: project logo sits on top of the title (smaller), and the text
-       below uses the full width instead of being indented beside it */
+    /* phones: logo sits beside the project name; everything underneath
+       starts at the logo's left edge and uses the full width */
     html body .project-section .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
     }
     html body .project-section .section-icon {
         width: 40px;
         height: 40px;
         border-radius: 10px;
-        margin: 0;
+        margin: 0 14px 0 0;
     }
     html body .project-section .section-icon img { width: 24px; height: 24px; }
     html body .project-section .project-subtitle,
     html body .project-section .project-content { margin-left: 0; }
+
+    /* phones: no row of project logos above the intro */
+    html body .sidebar { display: none; }
+
+    /* phones: email / LinkedIn appear (fixed, top-right) only once the
+       Copy Email / Download Resume buttons have scrolled out of view */
+    html body .contact-rail {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    html body.cta-away .contact-rail {
+        opacity: 1;
+        pointer-events: auto;
+    }
 
     /* phones: headline lines up with the text below it (left), not centered */
     .main-content h1 { align-self: flex-start; width: 100%; text-align: left; }
@@ -1400,6 +1418,15 @@
             });
         });
         
+        // CONTACT RAIL: on phones it only shows once the hero buttons are off screen
+        (function() {
+            const cta = document.querySelector('.main-content .buttons');
+            if (!cta || !('IntersectionObserver' in window)) { document.body.classList.add('cta-away'); return; }
+            new IntersectionObserver(function(entries) {
+                document.body.classList.toggle('cta-away', !entries[0].isIntersecting);
+            }).observe(cta);
+        })();
+
         // CONTACT RAIL: copy email with the same notification as the button
         document.getElementById('contact-email').addEventListener('click', function() {
             navigator.clipboard.writeText('lau.guerinoni@gmail.com').then(function() {
