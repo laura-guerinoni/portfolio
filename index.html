@@ -851,6 +851,29 @@
         pointer-events: auto;
     }
 
+    /* phones: own line breaks for the intro, and slightly smaller text so
+       "in consulting at Bain & Company." fits on one line */
+    html body .m-break { display: inline; }
+    html body .main-content > p { font-size: clamp(17px, 4.8vw, 20px); }
+
+    /* phones: Laura's photo pops out beside her name once you start scrolling */
+    html body .laura-hover-photo {
+        display: block;
+        width: 56px;
+        height: 56px;
+        padding: 3px;
+        border-radius: 12px;
+        left: calc(100% + 10px);
+        top: 50%;
+        bottom: auto;
+        transform: translate(-10px, -50%) rotate(0deg) scale(0.4);
+        transform-origin: left center;
+    }
+    html body .hero-photo .laura-hover-photo {
+        opacity: 1;
+        transform: translate(0, -50%) rotate(8deg) scale(1);
+    }
+
     /* phones: headline lines up with the text below it (left), not centered */
     .main-content h1 { align-self: flex-start; width: 100%; text-align: left; }
     .sidebar { padding-top: 84px; } /* room under the contact buttons */
@@ -886,6 +909,8 @@
             color: var(--hot, #9150D0);
             transition: opacity 0.2s linear, color 0.1s ease;
         }
+
+        .m-break { display: none; } /* phone-only line breaks */
 
         /* ============================================================
            COHESION — one small system for every surface on the page:
@@ -1001,7 +1026,7 @@
     <div id="main" class="main-content">
         <h1>Hey, I'm <span class="hover-name">Laura<img src="assets/laura.png" alt="" class="laura-hover-photo" aria-hidden="true"></span>.</h1>
         
-        <p id="hero-line-1">I shape digital products, with expertise<br class="line-break"> in
+        <p id="hero-line-1">I shape digital products,<br class="m-break"> with expertise<br class="line-break"><br class="m-break"> in
             <span class="ticker" aria-label="consulting at Bain &amp; Company and fintech at Withless">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">consulting at Bain&nbsp;&amp;&nbsp;Company</span>.</span>
@@ -1010,7 +1035,7 @@
                 </span>
             </span></p>
 
-        <p id="hero-line-2">Design is a conversation. I make sure<br class="line-break"> it speaks the
+        <p id="hero-line-2">Design is a conversation.<br class="m-break"> I make sure<br class="line-break"> it speaks<br class="m-break"> the
             <span class="ticker is-idle" aria-label="human language, user language">
                 <span class="ticker-track" aria-hidden="true">
                     <span class="ticker-item"><span class="ticker-text">human</span> language.</span>
@@ -1846,6 +1871,10 @@
             // Phones: no pinned hero, both sentences stay fully visible and roll.
             if (window.matchMedia('(max-width: 768px)').matches) {
                 if (ticker2) ticker2.classList.remove('is-idle');
+                // the photo sticker still pops out once you start scrolling
+                window.addEventListener('scroll', function() {
+                    main.classList.toggle('hero-photo', window.scrollY > 12);
+                }, { passive: true });
                 return;
             }
 
