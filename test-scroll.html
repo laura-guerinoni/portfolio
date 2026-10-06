@@ -875,6 +875,26 @@
         transform: translate(0, -50%) rotate(8deg) scale(1);
     }
 
+    /* phones: the two intro buttons stack, full width, one line each */
+    html body .main-content .buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        width: 100%;
+    }
+    html body .main-content .buttons .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 50px;
+        padding: 0 18px;
+        font-size: 16px;
+        white-space: nowrap;
+    }
+
     /* phones: headline lines up with the text below it (left), not centered */
     .main-content h1 { align-self: flex-start; width: 100%; text-align: left; }
     .sidebar { padding-top: 84px; } /* room under the contact buttons */
